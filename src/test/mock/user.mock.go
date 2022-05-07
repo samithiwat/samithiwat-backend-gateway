@@ -43,7 +43,11 @@ func (u UserMockClient) Create(ctx context.Context, in *proto.CreateUserRequest,
 }
 
 func (u UserMockClient) Update(ctx context.Context, in *proto.UpdateUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	return nil, nil
+	return &proto.UserResponse{
+		StatusCode: http.StatusOK,
+		Errors:     nil,
+		Data:       &User1,
+	}, nil
 }
 
 func (u UserMockClient) Delete(ctx context.Context, in *proto.DeleteUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
@@ -78,7 +82,11 @@ func (u UserMockErrClient) Create(ctx context.Context, in *proto.CreateUserReque
 }
 
 func (u UserMockErrClient) Update(ctx context.Context, in *proto.UpdateUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	return nil, nil
+	return &proto.UserResponse{
+		StatusCode: http.StatusNotFound,
+		Errors:     []string{"Not found user"},
+		Data:       nil,
+	}, nil
 }
 
 func (u UserMockErrClient) Delete(ctx context.Context, in *proto.DeleteUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
@@ -105,7 +113,7 @@ func (u UserMockErrGrpcClient) Create(ctx context.Context, in *proto.CreateUserR
 }
 
 func (u UserMockErrGrpcClient) Update(ctx context.Context, in *proto.UpdateUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	return nil, nil
+	return nil, errors.New("Service is down")
 }
 
 func (u UserMockErrGrpcClient) Delete(ctx context.Context, in *proto.DeleteUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {

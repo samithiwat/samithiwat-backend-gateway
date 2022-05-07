@@ -84,7 +84,7 @@ func TestCreateUser(t *testing.T) {
 	assert.Equal(want, c.V)
 }
 
-func TestCreateErrorDuplicated(t *testing.T) {
+func TestCreateErrorDuplicatedUser(t *testing.T) {
 	mock.InitializeMockUser()
 
 	assert := assert.New(t)
@@ -116,6 +116,62 @@ func TestCreateGrpcErrUser(t *testing.T) {
 	c := &mock.UserMockContext{}
 
 	srv.Create(c)
+
+	assert.Equal(want, c.V)
+}
+
+func TestUpdateUser(t *testing.T) {
+	mock.InitializeMockUser()
+
+	assert := assert.New(t)
+	want := map[string]interface{}{
+		"ID":        mock.User1.Id,
+		"Firstname": mock.User1.Firstname,
+		"Lastname":  mock.User1.Lastname,
+		"ImageUrl":  mock.User1.ImageUrl,
+	}
+
+	srv := service.NewUserService(&mock.UserMockClient{})
+
+	c := &mock.UserMockContext{}
+
+	srv.Update(c)
+
+	assert.Equal(want, c.V)
+}
+
+func TestUpdateErrorNotFoundUser(t *testing.T) {
+	mock.InitializeMockUser()
+
+	assert := assert.New(t)
+	want := map[string]interface{}{
+		"StatusCode": int32(http.StatusNotFound),
+		"Message":    []string{"Not found user"},
+	}
+
+	srv := service.NewUserService(&mock.UserMockErrClient{})
+
+	c := &mock.UserMockContext{}
+
+	srv.Update(c)
+
+	assert.Equal(want, c.V)
+}
+
+func TestUpdateGrpcErrUser(t *testing.T) {
+	mock.InitializeMockUser()
+
+	assert := assert.New(t)
+	want := map[string]interface{}{
+		"StatusCode": http.StatusBadGateway,
+		"Message":    "Service is down",
+	}
+
+	srv := service.NewUserService(&mock.UserMockErrGrpcClient{})
+
+	c := &mock.UserMockContext{}
+
+	srv.Update(c)
 
 	assert.Equal(want, c.V)
 }
