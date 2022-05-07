@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/config"
+	_ "github.com/samithiwat/samithiwat-backend-gateway/src/docs"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/router"
 	"log"
 	"net/http"
