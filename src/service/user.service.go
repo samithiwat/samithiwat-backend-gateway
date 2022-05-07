@@ -21,6 +21,32 @@ type UserContext interface {
 	Bind(interface{}) error
 	JSON(int, interface{})
 	UserId() uint
+	QueryParam() *proto.FindAllUserRequest
+}
+
+func (s *UserService) FindAll(c UserContext) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	res, err := s.client.FindAll(ctx, &proto.FindAllUserRequest{Page: 1, Limit: 10})
+	if err != nil {
+		c.JSON(http.StatusBadGateway, map[string]interface{}{
+			"StatusCode": http.StatusBadGateway,
+			"Message":    "Service is down",
+		})
+		return
+	}
+
+	if res.StatusCode != http.StatusOK {
+		c.JSON(int(res.StatusCode), map[string]interface{}{
+			"StatusCode": res.StatusCode,
+			"Message":    res.Errors,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, res.Data)
+	return
 }
 
 func (s *UserService) FindOne(c UserContext) {
@@ -37,19 +63,14 @@ func (s *UserService) FindOne(c UserContext) {
 	}
 
 	if res.StatusCode != http.StatusOK {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
+		c.JSON(int(res.StatusCode), map[string]interface{}{
 			"StatusCode": res.StatusCode,
 			"Message":    res.Errors,
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"ID":        res.Data.Id,
-		"Firstname": res.Data.Firstname,
-		"Lastname":  res.Data.Lastname,
-		"ImageUrl":  res.Data.ImageUrl,
-	})
+	c.JSON(http.StatusOK, res.Data)
 	return
 }
 
@@ -78,19 +99,14 @@ func (s *UserService) Create(c UserContext) {
 	}
 
 	if res.StatusCode != http.StatusCreated {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
+		c.JSON(int(res.StatusCode), map[string]interface{}{
 			"StatusCode": res.StatusCode,
 			"Message":    res.Errors,
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"ID":        res.Data.Id,
-		"Firstname": res.Data.Firstname,
-		"Lastname":  res.Data.Lastname,
-		"ImageUrl":  res.Data.ImageUrl,
-	})
+	c.JSON(http.StatusCreated, res.Data)
 	return
 }
 
@@ -119,19 +135,14 @@ func (s *UserService) Update(c UserContext) {
 	}
 
 	if res.StatusCode != http.StatusOK {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
+		c.JSON(int(res.StatusCode), map[string]interface{}{
 			"StatusCode": res.StatusCode,
 			"Message":    res.Errors,
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"ID":        res.Data.Id,
-		"Firstname": res.Data.Firstname,
-		"Lastname":  res.Data.Lastname,
-		"ImageUrl":  res.Data.ImageUrl,
-	})
+	c.JSON(http.StatusOK, res.Data)
 	return
 }
 
@@ -160,18 +171,13 @@ func (s *UserService) Delete(c UserContext) {
 	}
 
 	if res.StatusCode != http.StatusOK {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
+		c.JSON(int(res.StatusCode), map[string]interface{}{
 			"StatusCode": res.StatusCode,
 			"Message":    res.Errors,
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"ID":        res.Data.Id,
-		"Firstname": res.Data.Firstname,
-		"Lastname":  res.Data.Lastname,
-		"ImageUrl":  res.Data.ImageUrl,
-	})
+	c.JSON(http.StatusOK, res.Data)
 	return
 }

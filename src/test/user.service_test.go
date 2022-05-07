@@ -1,6 +1,7 @@
 package test
 
 import (
+	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/service"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/test/mock"
 	"github.com/stretchr/testify/assert"
@@ -8,16 +9,53 @@ import (
 	"testing"
 )
 
-func TestFindOneUser(t *testing.T) {
+func TestFindAllUser(t *testing.T) {
+	mock.InitializeMockUser()
+
+	assert := assert.New(t)
+	want := &proto.UserPagination{
+		Items: mock.Users,
+		Meta: &proto.PaginationMetadata{
+			TotalItem:    4,
+			ItemCount:    4,
+			ItemsPerPage: 10,
+			TotalPage:    1,
+			CurrentPage:  1,
+		},
+	}
+
+	srv := service.NewUserService(&mock.UserMockClient{})
+
+	c := &mock.UserMockContext{}
+
+	srv.FindAll(c)
+
+	assert.Equal(want, c.V)
+}
+
+func TestFindAllGrpcErrUser(t *testing.T) {
 	mock.InitializeMockUser()
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
-		"ID":        mock.User1.Id,
-		"Firstname": mock.User1.Firstname,
-		"Lastname":  mock.User1.Lastname,
-		"ImageUrl":  mock.User1.ImageUrl,
+		"StatusCode": http.StatusBadGateway,
+		"Message":    "Service is down",
 	}
+
+	srv := service.NewUserService(&mock.UserMockErrGrpcClient{})
+
+	c := &mock.UserMockContext{}
+
+	srv.FindAll(c)
+
+	assert.Equal(want, c.V)
+}
+
+func TestFindOneUser(t *testing.T) {
+	mock.InitializeMockUser()
+
+	assert := assert.New(t)
+	want := &mock.User1
 
 	srv := service.NewUserService(&mock.UserMockClient{})
 
@@ -68,12 +106,7 @@ func TestCreateUser(t *testing.T) {
 	mock.InitializeMockUser()
 
 	assert := assert.New(t)
-	want := map[string]interface{}{
-		"ID":        mock.User1.Id,
-		"Firstname": mock.User1.Firstname,
-		"Lastname":  mock.User1.Lastname,
-		"ImageUrl":  mock.User1.ImageUrl,
-	}
+	want := &mock.User1
 
 	srv := service.NewUserService(&mock.UserMockClient{})
 
@@ -124,12 +157,7 @@ func TestUpdateUser(t *testing.T) {
 	mock.InitializeMockUser()
 
 	assert := assert.New(t)
-	want := map[string]interface{}{
-		"ID":        mock.User1.Id,
-		"Firstname": mock.User1.Firstname,
-		"Lastname":  mock.User1.Lastname,
-		"ImageUrl":  mock.User1.ImageUrl,
-	}
+	want := &mock.User1
 
 	srv := service.NewUserService(&mock.UserMockClient{})
 
@@ -180,12 +208,7 @@ func TestDeleteUser(t *testing.T) {
 	mock.InitializeMockUser()
 
 	assert := assert.New(t)
-	want := map[string]interface{}{
-		"ID":        mock.User1.Id,
-		"Firstname": mock.User1.Firstname,
-		"Lastname":  mock.User1.Lastname,
-		"ImageUrl":  mock.User1.ImageUrl,
-	}
+	want := &mock.User1
 
 	srv := service.NewUserService(&mock.UserMockClient{})
 

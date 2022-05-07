@@ -19,7 +19,20 @@ type UserMockClient struct {
 }
 
 func (u UserMockClient) FindAll(ctx context.Context, in *proto.FindAllUserRequest, opts ...grpc.CallOption) (*proto.UserPaginationResponse, error) {
-	return nil, nil
+	return &proto.UserPaginationResponse{
+		StatusCode: http.StatusOK,
+		Errors:     nil,
+		Data: &proto.UserPagination{
+			Items: Users,
+			Meta: &proto.PaginationMetadata{
+				TotalItem:    4,
+				ItemCount:    4,
+				ItemsPerPage: 10,
+				TotalPage:    1,
+				CurrentPage:  1,
+			},
+		},
+	}, nil
 }
 
 func (u UserMockClient) FindOne(ctx context.Context, in *proto.FindOneUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
@@ -105,7 +118,7 @@ type UserMockErrGrpcClient struct {
 }
 
 func (u UserMockErrGrpcClient) FindAll(ctx context.Context, in *proto.FindAllUserRequest, opts ...grpc.CallOption) (*proto.UserPaginationResponse, error) {
-	return nil, nil
+	return nil, errors.New("Service is down")
 }
 
 func (u UserMockErrGrpcClient) FindOne(ctx context.Context, in *proto.FindOneUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
@@ -129,18 +142,27 @@ func (u UserMockErrGrpcClient) Delete(ctx context.Context, in *proto.DeleteUserR
 }
 
 type UserMockContext struct {
-	V map[string]interface{}
+	V interface{}
 }
 
 func (UserMockContext) Bind(v interface{}) error {
 	*v.(*proto.User) = User1
 	return nil
 }
+
 func (c *UserMockContext) JSON(_ int, v interface{}) {
-	c.V = v.(map[string]interface{})
+	c.V = v
 }
+
 func (UserMockContext) UserId() uint {
 	return 1
+}
+
+func (UserMockContext) QueryParam() *proto.FindAllUserRequest {
+	return &proto.FindAllUserRequest{
+		Page:  1,
+		Limit: 10,
+	}
 }
 
 func InitializeMockUser() {
