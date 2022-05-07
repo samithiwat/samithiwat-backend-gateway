@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package organization;
+
+import "dto.proto";
+import "common.proto";
+
+option go_package = "github.com/samithiwat/samithiwat-backend-user/src/proto";
+
+service OrganizationService {
+  rpc FindAll(FindAllOrganizationRequest) returns (OrganizationPaginationResponse){}
+  rpc FindOne(FindOneOrganizationRequest) returns (OrganizationResponse){}
+  rpc FindMulti(FindMultiOrganizationRequest) returns (OrganizationListResponse){}
+  rpc Create(CreateOrganizationRequest) returns (OrganizationResponse){}
+  rpc Update(UpdateOrganizationRequest) returns (OrganizationResponse){}
+  rpc Delete(DeleteOrganizationRequest) returns (OrganizationResponse){}
+}
+
+message OrganizationResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  dto.Organization data = 3;
+}
+
+message OrganizationListResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  repeated dto.Organization data = 3;
+}
+
+message OrganizationPagination{
+  repeated dto.Organization items = 1;
+  common.PaginationMetadata meta = 2;
+}
+
+message OrganizationPaginationResponse{
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  OrganizationPagination data = 3;
+}
+
+// FindAll
+
+message FindAllOrganizationRequest{
+  int64 limit = 1;
+  int64 page = 2;
+}
+
+// FindOne
+
+message FindOneOrganizationRequest{
+  int32 id = 1;
+}
+
+// FindMulti
+
+message FindMultiOrganizationRequest{
+  repeated uint32 ids = 1;
+}
+
+
+// Create
+
+message CreateOrganizationRequest{
+  dto.Organization organization = 1;
+}
+
+// Update
+
+message UpdateOrganizationRequest{
+  dto.Organization organization = 1;
+}
+
+// Delete
+
+message DeleteOrganizationRequest{
+  int32 id = 1;
+}

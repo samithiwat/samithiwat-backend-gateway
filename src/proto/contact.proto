@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package contact;
+
+import "dto.proto";
+
+option go_package = "github.com/samithiwat/samithiwat-backend-user/src/proto";
+
+service ContactService {
+  rpc FindOne(FindOneContactRequest) returns (ContactResponse){}
+  rpc FindMulti(FindMultiContactRequest) returns (ContactListResponse){}
+  rpc Create(CreateContactRequest) returns (ContactResponse){}
+  rpc Update(UpdateContactRequest) returns (ContactResponse){}
+  rpc Delete(DeleteContactRequest) returns (ContactResponse){}
+}
+
+message ContactResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  dto.Contact data = 3;
+}
+
+message ContactListResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  repeated dto.Contact data = 3;
+}
+
+// FindOne
+
+message FindOneContactRequest{
+  int32 id = 1;
+}
+
+// FindMulti
+
+message FindMultiContactRequest{
+  repeated uint32 ids = 1;
+}
+
+// Create
+
+message CreateContactRequest{
+  dto.Contact contact = 1;
+}
+
+// Update
+
+message UpdateContactRequest{
+  dto.Contact contact = 1;
+}
+
+// Delete
+
+message DeleteContactRequest{
+  int32 id = 1;
+}

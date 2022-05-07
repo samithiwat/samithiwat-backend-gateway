@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package location;
+
+import "dto.proto";
+
+option go_package = "github.com/samithiwat/samithiwat-backend-user/src/proto";
+
+service LocationService {
+  rpc FindOne(FindOneLocationRequest) returns (LocationResponse){}
+  rpc FindMulti(FindMultiLocationRequest) returns (LocationListResponse){}
+  rpc Create(CreateLocationRequest) returns (LocationResponse){}
+  rpc Update(UpdateLocationRequest) returns (LocationResponse){}
+  rpc Delete(DeleteLocationRequest) returns (LocationResponse){}
+}
+
+message LocationResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  dto.Location data = 3;
+}
+
+message LocationListResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  repeated dto.Location data = 3;
+}
+
+// FindOne
+
+message FindOneLocationRequest{
+  int32 id = 1;
+}
+
+// FindMulti
+
+message FindMultiLocationRequest{
+  repeated uint32 ids = 1;
+}
+
+// Create
+
+message CreateLocationRequest{
+  dto.Location location = 1;
+}
+
+// Update
+
+message UpdateLocationRequest{
+  dto.Location location = 1;
+}
+
+// Delete
+
+message DeleteLocationRequest{
+  int32 id = 1;
+}

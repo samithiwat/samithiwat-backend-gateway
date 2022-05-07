@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package team;
+
+import "dto.proto";
+import "common.proto";
+
+option go_package = "github.com/samithiwat/samithiwat-backend-user/src/proto";
+
+service TeamService {
+  rpc FindAll(FindAllTeamRequest) returns (TeamPaginationResponse){}
+  rpc FindOne(FindOneTeamRequest) returns (TeamResponse){}
+  rpc FindMulti(FindMultiTeamRequest) returns (TeamListResponse){}
+  rpc Create(CreateTeamRequest) returns (TeamResponse){}
+  rpc Update(UpdateTeamRequest) returns (TeamResponse){}
+  rpc Delete(DeleteTeamRequest) returns (TeamResponse){}
+}
+
+message TeamResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  dto.Team data = 3;
+}
+
+message TeamPagination{
+  repeated dto.Team items = 1;
+  common.PaginationMetadata meta = 2;
+}
+
+message TeamListResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  repeated dto.Team data = 3;
+}
+
+
+message TeamPaginationResponse{
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  TeamPagination data = 3;
+}
+
+// FindAll
+
+message FindAllTeamRequest{
+  int64 limit = 1;
+  int64 page = 2;
+}
+
+// FindOne
+
+message FindOneTeamRequest{
+  int32 id = 1;
+}
+
+// FindMulti
+
+message FindMultiTeamRequest{
+  repeated uint32 ids = 1;
+}
+
+
+// Create
+
+message CreateTeamRequest{
+  dto.Team team = 1;
+}
+
+// Update
+
+message UpdateTeamRequest{
+  dto.Team team = 1;
+}
+
+// Delete
+
+message DeleteTeamRequest{
+  int32 id = 1;
+}

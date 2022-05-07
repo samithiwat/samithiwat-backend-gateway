@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package common;
+
+option go_package = "github.com/samithiwat/samithiwat-backend-user/src/proto";
+
+message PaginationQuery {
+    int32 limit = 1;
+    int32 page = 2;
+}
+
+message PaginationMetadata{
+    int64 totalItem = 1;
+    int64 itemCount = 2;
+    int64 itemsPerPage = 3;
+    int64 totalPage = 4;
+    int64 currentPage = 5;
+}

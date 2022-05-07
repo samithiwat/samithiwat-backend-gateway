@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package user;
+
+import "dto.proto";
+import "common.proto";
+
+option go_package = "github.com/samithiwat/samithiwat-backend-user/src/proto";
+
+service UserService {
+  rpc FindAll(FindAllUserRequest) returns (UserPaginationResponse){}
+  rpc FindOne(FindOneUserRequest) returns (UserResponse){}
+  rpc FindMulti(FindMultiUserRequest) returns (UserListResponse){}
+  rpc Create(CreateUserRequest) returns (UserResponse){}
+  rpc Update(UpdateUserRequest) returns (UserResponse){}
+  rpc Delete(DeleteUserRequest) returns (UserResponse){}
+}
+
+message UserResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  dto.User data = 3;
+}
+
+message UserListResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  repeated dto.User data = 3;
+}
+
+message UserPagination{
+  repeated dto.User items = 1;
+  common.PaginationMetadata meta = 2;
+}
+
+message UserPaginationResponse{
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  UserPagination data = 3;
+}
+
+// FindAll
+
+message FindAllUserRequest{
+  int64 limit = 1;
+  int64 page = 2;
+}
+
+// FindOne
+
+message FindOneUserRequest{
+  int32 id = 1;
+}
+
+// FindMulti
+
+message FindMultiUserRequest{
+  repeated uint32 ids = 1;
+}
+
+
+// Create
+
+message CreateUserRequest{
+  dto.User user = 1;
+}
+
+// Update
+
+message UpdateUserRequest{
+  dto.User user = 1;
+}
+
+// Delete
+
+message DeleteUserRequest{
+  int32 id = 1;
+}

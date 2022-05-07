@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package dto;
+
+option go_package = "github.com/samithiwat/samithiwat-backend-user/src/proto";
+
+enum LogType{
+  POST = 0;
+  EDIT = 1;
+  LOGIN = 2;
+  CHANGE_PASSWORD = 3;
+  BOOKMARK = 4;
+}
+
+message User{
+  uint32 id = 1;
+  string firstname = 2;
+  string lastname = 3;
+  string imageUrl = 5;
+  Location address = 6;
+  Contact contact = 7;
+  repeated Organization organizations = 8;
+  repeated Team teams = 9;
+  repeated Log logs = 10;
+}
+
+message Location{
+  uint32 id = 1;
+  string address = 2;
+  string district = 3;
+  string province  = 4;
+  string country = 5;
+  string zipcode = 6;
+}
+
+message Contact{
+  uint32 id = 1;
+  string facebook  = 2;
+  string instagram = 3;
+  string twitter = 4;
+  string linkedin = 5;
+}
+
+message Organization{
+  uint32 id = 1;
+  string name = 2;
+  string description = 3;
+  Location location = 4;
+  Contact  contact = 5;
+  repeated User members = 6;
+  repeated Team teams = 7;
+  repeated Role roles = 8;
+  repeated Log logs = 9;
+}
+
+message Team {
+  uint32 id = 1;
+  string name = 2;
+  string description = 3;
+  repeated User members = 4;
+  repeated Team subTeams = 5;
+  Organization organization = 6;
+  repeated Log logs = 7;
+}
+
+message Log{
+  string title = 1;
+  string description = 2;
+  LogType type = 3;
+  User user = 4;
+  string timestamp = 5;
+}
+
+message Permission{
+  uint32 id = 1;
+  string name = 2;
+  string code = 3;
+  repeated Role roles = 4;
+}
+
+message Role {
+  uint32 id = 1;
+  string name = 2;
+  string description = 3;
+  repeated Permission permissions = 4;
+  repeated User users  = 5;
+}
