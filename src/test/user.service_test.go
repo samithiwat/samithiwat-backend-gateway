@@ -175,3 +175,59 @@ func TestUpdateGrpcErrUser(t *testing.T) {
 
 	assert.Equal(want, c.V)
 }
+
+func TestDeleteUser(t *testing.T) {
+	mock.InitializeMockUser()
+
+	assert := assert.New(t)
+	want := map[string]interface{}{
+		"ID":        mock.User1.Id,
+		"Firstname": mock.User1.Firstname,
+		"Lastname":  mock.User1.Lastname,
+		"ImageUrl":  mock.User1.ImageUrl,
+	}
+
+	srv := service.NewUserService(&mock.UserMockClient{})
+
+	c := &mock.UserMockContext{}
+
+	srv.Delete(c)
+
+	assert.Equal(want, c.V)
+}
+
+func TestDeleteErrorNotFoundUser(t *testing.T) {
+	mock.InitializeMockUser()
+
+	assert := assert.New(t)
+	want := map[string]interface{}{
+		"StatusCode": int32(http.StatusNotFound),
+		"Message":    []string{"Not found user"},
+	}
+
+	srv := service.NewUserService(&mock.UserMockErrClient{})
+
+	c := &mock.UserMockContext{}
+
+	srv.Delete(c)
+
+	assert.Equal(want, c.V)
+}
+
+func TestDeleteGrpcErrUser(t *testing.T) {
+	mock.InitializeMockUser()
+
+	assert := assert.New(t)
+	want := map[string]interface{}{
+		"StatusCode": http.StatusBadGateway,
+		"Message":    "Service is down",
+	}
+
+	srv := service.NewUserService(&mock.UserMockErrGrpcClient{})
+
+	c := &mock.UserMockContext{}
+
+	srv.Delete(c)
+
+	assert.Equal(want, c.V)
+}

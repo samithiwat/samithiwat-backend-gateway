@@ -51,7 +51,11 @@ func (u UserMockClient) Update(ctx context.Context, in *proto.UpdateUserRequest,
 }
 
 func (u UserMockClient) Delete(ctx context.Context, in *proto.DeleteUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	return nil, nil
+	return &proto.UserResponse{
+		StatusCode: http.StatusOK,
+		Errors:     nil,
+		Data:       &User1,
+	}, nil
 }
 
 type UserMockErrClient struct {
@@ -90,7 +94,11 @@ func (u UserMockErrClient) Update(ctx context.Context, in *proto.UpdateUserReque
 }
 
 func (u UserMockErrClient) Delete(ctx context.Context, in *proto.DeleteUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	return nil, nil
+	return &proto.UserResponse{
+		StatusCode: http.StatusNotFound,
+		Errors:     []string{"Not found user"},
+		Data:       nil,
+	}, nil
 }
 
 type UserMockErrGrpcClient struct {
@@ -117,7 +125,7 @@ func (u UserMockErrGrpcClient) Update(ctx context.Context, in *proto.UpdateUserR
 }
 
 func (u UserMockErrGrpcClient) Delete(ctx context.Context, in *proto.DeleteUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	return nil, nil
+	return nil, errors.New("Service is down")
 }
 
 type UserMockContext struct {
