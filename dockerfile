@@ -11,7 +11,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy the source code
-COPY src .
+COPY . .
 
 # Build the application
 RUN go build -o server ./src/.
