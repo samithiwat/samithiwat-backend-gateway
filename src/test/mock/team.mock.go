@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/bxcodec/faker/v3"
 	"github.com/pkg/errors"
+	"github.com/samithiwat/samithiwat-backend-gateway/src/model"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	"google.golang.org/grpc"
 	"net/http"
@@ -154,12 +155,12 @@ func (c *TeamMockContext) JSON(_ int, v interface{}) {
 	c.V = v
 }
 
-func (TeamMockContext) TeamID() uint {
+func (TeamMockContext) ID() uint {
 	return 1
 }
 
-func (TeamMockContext) QueryParam() *proto.FindAllTeamRequest {
-	return &proto.FindAllTeamRequest{
+func (TeamMockContext) PaginationQueryParam() *model.PaginationQueryParams {
+	return &model.PaginationQueryParams{
 		Page:  1,
 		Limit: 10,
 	}
