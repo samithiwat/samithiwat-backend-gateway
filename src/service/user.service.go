@@ -25,14 +25,17 @@ type UserContext interface {
 	PaginationQueryParam(*model.PaginationQueryParams) error
 }
 
-// FindAllUser is a function that get all users in database
+// FindAll is a function that get all users in database
 // @Summary Get all users
-// @Description Get all users
-// @Tags users
+// @Description Return the arrays of user dto if successfully
+// @Param limit query int false "Limit"
+// @Param page query int false "Page"
+// @Tags user
 // @Accept json
 // @Produce json
-// @Success 200 {object} ResponseHTTP{data=[]models.Book}
-// @Failure 503 {object} ResponseHTTP{}
+// @Success 200 {object} proto.User
+// @Failure 400 {object} model.ResponseErr "Invalid query param"
+// @Failure 503 {object} model.ResponseErr "Service is down"
 // @Router /user [get]
 func (s *UserService) FindAll(c UserContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -75,6 +78,18 @@ func (s *UserService) FindAll(c UserContext) {
 	return
 }
 
+// FindOne is a function that get the specific users with id
+// @Summary Get specific user with id
+// @Description Return the user dto if successfully
+// @Param id path int true "id"
+// @Tags user
+// @Accept json
+// @Produce json
+// @Success 200 {object} proto.User
+// @Failure 400 {object} model.ResponseErr "Invalid ID"
+// @Failure 404 {object} model.ResponseErr "Not found user"
+// @Failure 503 {object} model.ResponseErr "Service is down"
+// @Router /user/{id} [get]
 func (s *UserService) FindOne(c UserContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -110,6 +125,18 @@ func (s *UserService) FindOne(c UserContext) {
 	return
 }
 
+// Create is a function that create the user
+// @Summary Create the user
+// @Description Return the user dto if successfully
+// @Param user body dto.CreateUserDto true "user dto"
+// @Tags user
+// @Accept json
+// @Produce json
+// @Success 201 {object} proto.User
+// @Failure 400 {object} model.ResponseErr "Invalid ID"
+// @Failure 404 {object} model.ResponseErr "Not found user"
+// @Failure 503 {object} model.ResponseErr "Service is down"
+// @Router /user [post]
 func (s *UserService) Create(c UserContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -146,6 +173,19 @@ func (s *UserService) Create(c UserContext) {
 	return
 }
 
+// Update is a function that update the user
+// @Summary Update the existing user
+// @Description Return the user dto if successfully
+// @Param id path int true "id"
+// @Param user body dto.UpdateUserDto true "user dto"
+// @Tags user
+// @Accept json
+// @Produce json
+// @Success 200 {object} proto.User
+// @Failure 400 {object} model.ResponseErr "Invalid ID"
+// @Failure 404 {object} model.ResponseErr "Not found user"
+// @Failure 503 {object} model.ResponseErr "Service is down"
+// @Router /user/{id} [patch]
 func (s *UserService) Update(c UserContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -194,6 +234,18 @@ func (s *UserService) Update(c UserContext) {
 	return
 }
 
+// Delete is a function that delete the user
+// @Summary Delete the user
+// @Description Return the user dto if successfully
+// @Param id path int true "id"
+// @Tags user
+// @Accept json
+// @Produce json
+// @Success 200 {object} proto.User
+// @Failure 400 {object} model.ResponseErr "Invalid ID"
+// @Failure 404 {object} model.ResponseErr "Not found user"
+// @Failure 503 {object} model.ResponseErr "Service is down"
+// @Router /user/{id} [delete]
 func (s *UserService) Delete(c UserContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
