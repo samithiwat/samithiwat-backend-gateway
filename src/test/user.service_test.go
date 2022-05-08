@@ -54,7 +54,7 @@ func TestFindAllGrpcErrUser(t *testing.T) {
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
-		"StatusCode": http.StatusBadGateway,
+		"StatusCode": http.StatusServiceUnavailable,
 		"Message":    "Service is down",
 	}
 
@@ -123,7 +123,7 @@ func TestFindOneGrpcErrUser(t *testing.T) {
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
-		"StatusCode": http.StatusBadGateway,
+		"StatusCode": http.StatusServiceUnavailable,
 		"Message":    "Service is down",
 	}
 
@@ -174,7 +174,7 @@ func TestCreateGrpcErrUser(t *testing.T) {
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
-		"StatusCode": http.StatusBadGateway,
+		"StatusCode": http.StatusServiceUnavailable,
 		"Message":    "Service is down",
 	}
 
@@ -243,7 +243,7 @@ func TestUpdateGrpcErrUser(t *testing.T) {
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
-		"StatusCode": http.StatusBadGateway,
+		"StatusCode": http.StatusServiceUnavailable,
 		"Message":    "Service is down",
 	}
 
@@ -312,7 +312,7 @@ func TestDeleteGrpcErrUser(t *testing.T) {
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
-		"StatusCode": http.StatusBadGateway,
+		"StatusCode": http.StatusServiceUnavailable,
 		"Message":    "Service is down",
 	}
 

@@ -54,7 +54,7 @@ func TestFindAllGrpcErrOrganization(t *testing.T) {
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
-		"StatusCode": http.StatusBadGateway,
+		"StatusCode": http.StatusServiceUnavailable,
 		"Message":    "Service is down",
 	}
 
@@ -123,7 +123,7 @@ func TestFindOneGrpcErrOrganization(t *testing.T) {
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
-		"StatusCode": http.StatusBadGateway,
+		"StatusCode": http.StatusServiceUnavailable,
 		"Message":    "Service is down",
 	}
 
@@ -174,7 +174,7 @@ func TestCreateGrpcErrOrganization(t *testing.T) {
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
-		"StatusCode": http.StatusBadGateway,
+		"StatusCode": http.StatusServiceUnavailable,
 		"Message":    "Service is down",
 	}
 
@@ -243,7 +243,7 @@ func TestUpdateGrpcErrOrganization(t *testing.T) {
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
-		"StatusCode": http.StatusBadGateway,
+		"StatusCode": http.StatusServiceUnavailable,
 		"Message":    "Service is down",
 	}
 
@@ -312,7 +312,7 @@ func TestDeleteGrpcErrOrganization(t *testing.T) {
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
-		"StatusCode": http.StatusBadGateway,
+		"StatusCode": http.StatusServiceUnavailable,
 		"Message":    "Service is down",
 	}
 
