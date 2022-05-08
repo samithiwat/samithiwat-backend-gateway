@@ -25,6 +25,15 @@ type UserContext interface {
 	PaginationQueryParam(*model.PaginationQueryParams) error
 }
 
+// FindAllUser is a function that get all users in database
+// @Summary Get all users
+// @Description Get all users
+// @Tags users
+// @Accept json
+// @Produce json
+// @Success 200 {object} ResponseHTTP{data=[]models.Book}
+// @Failure 503 {object} ResponseHTTP{}
+// @Router /user [get]
 func (s *UserService) FindAll(c UserContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -47,8 +56,8 @@ func (s *UserService) FindAll(c UserContext) {
 
 	res, err := s.client.FindAll(ctx, req)
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return
@@ -82,8 +91,8 @@ func (s *UserService) FindOne(c UserContext) {
 
 	res, err := s.client.FindOne(ctx, &proto.FindOneUserRequest{Id: id})
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return
@@ -118,8 +127,8 @@ func (s *UserService) Create(c UserContext) {
 
 	res, err := s.client.Create(ctx, &proto.CreateUserRequest{User: &user})
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return
@@ -166,8 +175,8 @@ func (s *UserService) Update(c UserContext) {
 
 	res, err := s.client.Update(ctx, &proto.UpdateUserRequest{User: &user})
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return
@@ -212,8 +221,8 @@ func (s *UserService) Delete(c UserContext) {
 
 	res, err := s.client.Delete(ctx, &proto.DeleteUserRequest{Id: id})
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return

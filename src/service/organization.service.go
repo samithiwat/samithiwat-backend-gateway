@@ -47,8 +47,8 @@ func (s *OrganizationService) FindAll(c OrganizationContext) {
 
 	res, err := s.client.FindAll(ctx, req)
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return
@@ -82,8 +82,8 @@ func (s *OrganizationService) FindOne(c OrganizationContext) {
 
 	res, err := s.client.FindOne(ctx, &proto.FindOneOrganizationRequest{Id: id})
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return
@@ -118,8 +118,8 @@ func (s *OrganizationService) Create(c OrganizationContext) {
 
 	res, err := s.client.Create(ctx, &proto.CreateOrganizationRequest{Organization: &user})
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return
@@ -154,8 +154,8 @@ func (s *OrganizationService) Update(c OrganizationContext) {
 
 	res, err := s.client.Update(ctx, &proto.UpdateOrganizationRequest{Organization: &user})
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return
@@ -200,8 +200,8 @@ func (s *OrganizationService) Delete(c OrganizationContext) {
 
 	res, err := s.client.Delete(ctx, &proto.DeleteOrganizationRequest{Id: id})
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return

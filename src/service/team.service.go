@@ -47,8 +47,8 @@ func (s *TeamService) FindAll(c TeamContext) {
 
 	res, err := s.client.FindAll(ctx, req)
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return
@@ -82,8 +82,8 @@ func (s *TeamService) FindOne(c TeamContext) {
 
 	res, err := s.client.FindOne(ctx, &proto.FindOneTeamRequest{Id: id})
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return
@@ -118,8 +118,8 @@ func (s *TeamService) Create(c TeamContext) {
 
 	res, err := s.client.Create(ctx, &proto.CreateTeamRequest{Team: &user})
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return
@@ -154,8 +154,8 @@ func (s *TeamService) Update(c TeamContext) {
 
 	res, err := s.client.Update(ctx, &proto.UpdateTeamRequest{Team: &user})
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return
@@ -200,8 +200,8 @@ func (s *TeamService) Delete(c TeamContext) {
 
 	res, err := s.client.Delete(ctx, &proto.DeleteTeamRequest{Id: id})
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return
