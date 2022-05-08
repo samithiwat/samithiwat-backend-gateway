@@ -333,6 +333,174 @@ paths:
       summary: Update the existing organization
       tags:
       - organization
+  /team:
+    get:
+      consumes:
+      - application/json
+      description: Return the arrays of team dto if successfully
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Team'
+        "400":
+          description: Invalid query param
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Get all teams
+      tags:
+      - team
+    post:
+      consumes:
+      - application/json
+      description: Return the team dto if successfully
+      parameters:
+      - description: team dto
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/proto.Team'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/proto.Team'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found team
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Create the team
+      tags:
+      - team
+  /team/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Return the team dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Team'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found team
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Delete the team
+      tags:
+      - team
+    get:
+      consumes:
+      - application/json
+      description: Return the team dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Team'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found team
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Get specific team with id
+      tags:
+      - team
+    patch:
+      consumes:
+      - application/json
+      description: Return the team dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: team dto
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/proto.Team'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Team'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found team
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Update the existing team
+      tags:
+      - team
   /user:
     get:
       consumes:
@@ -516,3 +684,5 @@ tags:
 - description: "# Organization Tag API Documentation\r\n**Organization** functions
     goes here"
   name: organization
+- description: "# Team Tag API Documentation\r\n**Team** functions goes here"
+  name: team
