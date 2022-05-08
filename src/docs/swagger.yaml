@@ -1,22 +1,4 @@
 definitions:
-  dto.CreateUserDto:
-    properties:
-      firstname:
-        type: string
-      image_url:
-        type: string
-      lastname:
-        type: string
-    type: object
-  dto.UpdateUserDto:
-    properties:
-      firstname:
-        type: string
-      image_url:
-        type: string
-      lastname:
-        type: string
-    type: object
   model.ResponseErr:
     properties:
       message:
@@ -183,6 +165,174 @@ info:
   title: Samithiwat Backend
   version: "1.0"
 paths:
+  /organization:
+    get:
+      consumes:
+      - application/json
+      description: Return the arrays of organization dto if successfully
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Organization'
+        "400":
+          description: Invalid query param
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Get all organizations
+      tags:
+      - organization
+    post:
+      consumes:
+      - application/json
+      description: Return the organization dto if successfully
+      parameters:
+      - description: organization dto
+        in: body
+        name: organization
+        required: true
+        schema:
+          $ref: '#/definitions/proto.Organization'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/proto.Organization'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found organization
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Create the organization
+      tags:
+      - organization
+  /organization/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Return the organization dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Organization'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found organization
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Delete the organization
+      tags:
+      - organization
+    get:
+      consumes:
+      - application/json
+      description: Return the organization dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Organization'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found organization
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Get specific organization with id
+      tags:
+      - organization
+    patch:
+      consumes:
+      - application/json
+      description: Return the organization dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: organization dto
+        in: body
+        name: organization
+        required: true
+        schema:
+          $ref: '#/definitions/proto.Organization'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Organization'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found organization
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Update the existing organization
+      tags:
+      - organization
   /user:
     get:
       consumes:
@@ -225,7 +375,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/dto.CreateUserDto'
+          $ref: '#/definitions/proto.User'
       produces:
       - application/json
       responses:
@@ -328,7 +478,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/dto.UpdateUserDto'
+          $ref: '#/definitions/proto.User'
       produces:
       - application/json
       responses:
@@ -363,3 +513,6 @@ swagger: "2.0"
 tags:
 - description: "# User Tag API Documentation\r\n**User** functions goes here"
   name: user
+- description: "# Organization Tag API Documentation\r\n**Organization** functions
+    goes here"
+  name: organization

@@ -20,6 +20,260 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/organization": {
+            "get": {
+                "description": "Return the arrays of organization dto if successfully",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Get all organizations",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/proto.Organization"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid query param",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResponseErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service is down",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResponseErr"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Return the organization dto if successfully",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Create the organization",
+                "parameters": [
+                    {
+                        "description": "organization dto",
+                        "name": "organization",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/proto.Organization"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/proto.Organization"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResponseErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found organization",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResponseErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service is down",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResponseErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/{id}": {
+            "get": {
+                "description": "Return the organization dto if successfully",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Get specific organization with id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/proto.Organization"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResponseErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found organization",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResponseErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service is down",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResponseErr"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Return the organization dto if successfully",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Delete the organization",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/proto.Organization"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResponseErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found organization",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResponseErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service is down",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResponseErr"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Return the organization dto if successfully",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Update the existing organization",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "organization dto",
+                        "name": "organization",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/proto.Organization"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/proto.Organization"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResponseErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found organization",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResponseErr"
+                        }
+                    },
+                    "503": {
+                        "description": "Service is down",
+                        "schema": {
+                            "$ref": "#/definitions/model.ResponseErr"
+                        }
+                    }
+                }
+            }
+        },
         "/user": {
             "get": {
                 "description": "Return the arrays of user dto if successfully",
@@ -87,7 +341,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateUserDto"
+                            "$ref": "#/definitions/proto.User"
                         }
                     }
                 ],
@@ -242,7 +496,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UpdateUserDto"
+                            "$ref": "#/definitions/proto.User"
                         }
                     }
                 ],
@@ -276,34 +530,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dto.CreateUserDto": {
-            "type": "object",
-            "properties": {
-                "firstname": {
-                    "type": "string"
-                },
-                "image_url": {
-                    "type": "string"
-                },
-                "lastname": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.UpdateUserDto": {
-            "type": "object",
-            "properties": {
-                "firstname": {
-                    "type": "string"
-                },
-                "image_url": {
-                    "type": "string"
-                },
-                "lastname": {
-                    "type": "string"
-                }
-            }
-        },
         "model.ResponseErr": {
             "type": "object",
             "properties": {
@@ -556,6 +782,10 @@ const docTemplate = `{
         {
             "description": "# User Tag API Documentation\r\n**User** functions goes here",
             "name": "user"
+        },
+        {
+            "description": "# Organization Tag API Documentation\r\n**Organization** functions goes here",
+            "name": "organization"
         }
     ]
 }`
