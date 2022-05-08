@@ -128,7 +128,7 @@ func (s *UserService) FindOne(c UserContext) {
 // Create is a function that create the user
 // @Summary Create the user
 // @Description Return the user dto if successfully
-// @Param user body dto.CreateUserDto true "user dto"
+// @Param user body proto.User true "user dto"
 // @Tags user
 // @Accept json
 // @Produce json
@@ -177,7 +177,7 @@ func (s *UserService) Create(c UserContext) {
 // @Summary Update the existing user
 // @Description Return the user dto if successfully
 // @Param id path int true "id"
-// @Param user body dto.UpdateUserDto true "user dto"
+// @Param user body proto.User true "user dto"
 // @Tags user
 // @Accept json
 // @Produce json
