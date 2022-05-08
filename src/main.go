@@ -82,7 +82,7 @@ func main() {
 
 	r.GetUser("/user", userSrv.FindAll)
 	r.GetUser("/user/:id", userSrv.FindOne)
-	r.CreateUser("user/:id", userSrv.Create)
+	r.CreateUser("user", userSrv.Create)
 	r.PatchUser("/user/:id", userSrv.Update)
 	r.DeleteUser("user/:id", userSrv.Delete)
 
