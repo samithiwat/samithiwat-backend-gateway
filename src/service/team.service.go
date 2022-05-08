@@ -15,8 +15,8 @@ type TeamService struct {
 type TeamContext interface {
 	Bind(interface{}) error
 	JSON(int, interface{})
-	ID() uint
-	PaginationQueryParam() *model.PaginationQueryParams
+	ID(*int32) error
+	PaginationQueryParam(*model.PaginationQueryParams) error
 }
 
 func NewTeamService(client proto.TeamServiceClient) *TeamService {

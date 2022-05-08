@@ -21,15 +21,25 @@ func NewUserService(client proto.UserServiceClient) *UserService {
 type UserContext interface {
 	Bind(interface{}) error
 	JSON(int, interface{})
-	ID() uint
-	PaginationQueryParam() *model.PaginationQueryParams
+	ID(*int32) error
+	PaginationQueryParam(*model.PaginationQueryParams) error
 }
 
 func (s *UserService) FindAll(c UserContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	query := c.PaginationQueryParam()
+	query := &model.PaginationQueryParams{}
+
+	err := c.PaginationQueryParam(query)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"StatusCode": http.StatusBadRequest,
+			"Message":    "Invalid query param",
+		})
+		return
+	}
+
 	req := &proto.FindAllUserRequest{
 		Page:  query.Page,
 		Limit: query.Limit,
