@@ -37,6 +37,9 @@ import (
 // @tag.name user
 // @tag.description.markdown
 
+// @tag.name organization
+// @tag.description.markdown
+
 func main() {
 	conf, err := config.LoadConfig()
 	if err != nil {
