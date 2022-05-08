@@ -33,6 +33,22 @@ func TestFindAllTeam(t *testing.T) {
 	assert.Equal(want, c.V)
 }
 
+func TestFindAllInvalidQueryParamTeam(t *testing.T) {
+	assert := assert.New(t)
+	want := map[string]interface{}{
+		"StatusCode": http.StatusBadRequest,
+		"Message":    "Invalid query param",
+	}
+
+	srv := service.NewTeamService(&mock.TeamMockClient{})
+
+	c := &mock.TeamMockErrContext{}
+
+	srv.FindAll(c)
+
+	assert.Equal(want, c.V)
+}
+
 func TestFindAllGrpcErrTeam(t *testing.T) {
 	mock.InitializeMockTeam()
 
@@ -60,6 +76,24 @@ func TestFindOneTeam(t *testing.T) {
 	srv := service.NewTeamService(&mock.TeamMockClient{})
 
 	c := &mock.TeamMockContext{}
+
+	srv.FindOne(c)
+
+	assert.Equal(want, c.V)
+}
+
+func TestFindOneInvalidRequestParamIDTeam(t *testing.T) {
+	mock.InitializeMockTeam()
+
+	assert := assert.New(t)
+	want := map[string]interface{}{
+		"StatusCode": http.StatusBadRequest,
+		"Message":    "Invalid id",
+	}
+
+	srv := service.NewTeamService(&mock.TeamMockClient{})
+
+	c := &mock.TeamMockErrContext{}
 
 	srv.FindOne(c)
 
@@ -168,6 +202,24 @@ func TestUpdateTeam(t *testing.T) {
 	assert.Equal(want, c.V)
 }
 
+func TestUpdateInvalidRequestParamIDTeam(t *testing.T) {
+	mock.InitializeMockTeam()
+
+	assert := assert.New(t)
+	want := map[string]interface{}{
+		"StatusCode": http.StatusBadRequest,
+		"Message":    "Invalid id",
+	}
+
+	srv := service.NewTeamService(&mock.TeamMockClient{})
+
+	c := &mock.TeamMockErrContext{}
+
+	srv.FindOne(c)
+
+	assert.Equal(want, c.V)
+}
+
 func TestUpdateErrorNotFoundTeam(t *testing.T) {
 	mock.InitializeMockTeam()
 
@@ -215,6 +267,24 @@ func TestDeleteTeam(t *testing.T) {
 	c := &mock.TeamMockContext{}
 
 	srv.Delete(c)
+
+	assert.Equal(want, c.V)
+}
+
+func TestDeleteInvalidRequestParamIDTeam(t *testing.T) {
+	mock.InitializeMockTeam()
+
+	assert := assert.New(t)
+	want := map[string]interface{}{
+		"StatusCode": http.StatusBadRequest,
+		"Message":    "Invalid id",
+	}
+
+	srv := service.NewTeamService(&mock.TeamMockClient{})
+
+	c := &mock.TeamMockErrContext{}
+
+	srv.FindOne(c)
 
 	assert.Equal(want, c.V)
 }

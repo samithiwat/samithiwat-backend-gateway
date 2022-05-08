@@ -33,6 +33,22 @@ func TestFindAllUser(t *testing.T) {
 	assert.Equal(want, c.V)
 }
 
+func TestFindAllInvalidQueryParamUser(t *testing.T) {
+	assert := assert.New(t)
+	want := map[string]interface{}{
+		"StatusCode": http.StatusBadRequest,
+		"Message":    "Invalid query param",
+	}
+
+	srv := service.NewUserService(&mock.UserMockClient{})
+
+	c := &mock.UserMockErrContext{}
+
+	srv.FindAll(c)
+
+	assert.Equal(want, c.V)
+}
+
 func TestFindAllGrpcErrUser(t *testing.T) {
 	mock.InitializeMockUser()
 
@@ -60,6 +76,24 @@ func TestFindOneUser(t *testing.T) {
 	srv := service.NewUserService(&mock.UserMockClient{})
 
 	c := &mock.UserMockContext{}
+
+	srv.FindOne(c)
+
+	assert.Equal(want, c.V)
+}
+
+func TestFindOneInvalidRequestParamIDUser(t *testing.T) {
+	mock.InitializeMockUser()
+
+	assert := assert.New(t)
+	want := map[string]interface{}{
+		"StatusCode": http.StatusBadRequest,
+		"Message":    "Invalid id",
+	}
+
+	srv := service.NewUserService(&mock.UserMockClient{})
+
+	c := &mock.UserMockErrContext{}
 
 	srv.FindOne(c)
 
@@ -168,6 +202,24 @@ func TestUpdateUser(t *testing.T) {
 	assert.Equal(want, c.V)
 }
 
+func TestUpdateInvalidRequestParamIDUser(t *testing.T) {
+	mock.InitializeMockUser()
+
+	assert := assert.New(t)
+	want := map[string]interface{}{
+		"StatusCode": http.StatusBadRequest,
+		"Message":    "Invalid id",
+	}
+
+	srv := service.NewUserService(&mock.UserMockClient{})
+
+	c := &mock.UserMockErrContext{}
+
+	srv.Update(c)
+
+	assert.Equal(want, c.V)
+}
+
 func TestUpdateErrorNotFoundUser(t *testing.T) {
 	mock.InitializeMockUser()
 
@@ -213,6 +265,24 @@ func TestDeleteUser(t *testing.T) {
 	srv := service.NewUserService(&mock.UserMockClient{})
 
 	c := &mock.UserMockContext{}
+
+	srv.Delete(c)
+
+	assert.Equal(want, c.V)
+}
+
+func TestDeleteInvalidRequestParamIDUser(t *testing.T) {
+	mock.InitializeMockUser()
+
+	assert := assert.New(t)
+	want := map[string]interface{}{
+		"StatusCode": http.StatusBadRequest,
+		"Message":    "Invalid id",
+	}
+
+	srv := service.NewUserService(&mock.UserMockClient{})
+
+	c := &mock.UserMockErrContext{}
 
 	srv.Delete(c)
 
