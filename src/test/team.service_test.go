@@ -106,7 +106,7 @@ func TestFindOneErrorNotFoundTeam(t *testing.T) {
 	assert := assert.New(t)
 	want := map[string]interface{}{
 		"StatusCode": int32(http.StatusNotFound),
-		"Message":    []string{"Not found user"},
+		"Message":    []string{"Not found team"},
 	}
 
 	srv := service.NewTeamService(&mock.TeamMockErrClient{})
@@ -157,7 +157,7 @@ func TestCreateErrorDuplicatedTeam(t *testing.T) {
 	assert := assert.New(t)
 	want := map[string]interface{}{
 		"StatusCode": int32(http.StatusUnprocessableEntity),
-		"Message":    []string{"Duplicated username or email"},
+		"Message":    []string{"Duplicated team name"},
 	}
 
 	srv := service.NewTeamService(&mock.TeamMockErrClient{})
@@ -226,7 +226,7 @@ func TestUpdateErrorNotFoundTeam(t *testing.T) {
 	assert := assert.New(t)
 	want := map[string]interface{}{
 		"StatusCode": int32(http.StatusNotFound),
-		"Message":    []string{"Not found user"},
+		"Message":    []string{"Not found team"},
 	}
 
 	srv := service.NewTeamService(&mock.TeamMockErrClient{})
@@ -295,7 +295,7 @@ func TestDeleteErrorNotFoundTeam(t *testing.T) {
 	assert := assert.New(t)
 	want := map[string]interface{}{
 		"StatusCode": int32(http.StatusNotFound),
-		"Message":    []string{"Not found user"},
+		"Message":    []string{"Not found team"},
 	}
 
 	srv := service.NewTeamService(&mock.TeamMockErrClient{})

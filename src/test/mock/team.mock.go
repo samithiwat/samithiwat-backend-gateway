@@ -82,7 +82,7 @@ func (u TeamMockErrClient) FindAll(ctx context.Context, in *proto.FindAllTeamReq
 func (u TeamMockErrClient) FindOne(ctx context.Context, in *proto.FindOneTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
 	return &proto.TeamResponse{
 		StatusCode: http.StatusNotFound,
-		Errors:     []string{"Not found user"},
+		Errors:     []string{"Not found team"},
 		Data:       nil,
 	}, nil
 }
@@ -94,7 +94,7 @@ func (u TeamMockErrClient) FindMulti(ctx context.Context, in *proto.FindMultiTea
 func (u TeamMockErrClient) Create(ctx context.Context, in *proto.CreateTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
 	return &proto.TeamResponse{
 		StatusCode: http.StatusUnprocessableEntity,
-		Errors:     []string{"Duplicated username or email"},
+		Errors:     []string{"Duplicated team name"},
 		Data:       nil,
 	}, nil
 }
@@ -102,7 +102,7 @@ func (u TeamMockErrClient) Create(ctx context.Context, in *proto.CreateTeamReque
 func (u TeamMockErrClient) Update(ctx context.Context, in *proto.UpdateTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
 	return &proto.TeamResponse{
 		StatusCode: http.StatusNotFound,
-		Errors:     []string{"Not found user"},
+		Errors:     []string{"Not found team"},
 		Data:       nil,
 	}, nil
 }
@@ -110,7 +110,7 @@ func (u TeamMockErrClient) Update(ctx context.Context, in *proto.UpdateTeamReque
 func (u TeamMockErrClient) Delete(ctx context.Context, in *proto.DeleteTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
 	return &proto.TeamResponse{
 		StatusCode: http.StatusNotFound,
-		Errors:     []string{"Not found user"},
+		Errors:     []string{"Not found team"},
 		Data:       nil,
 	}, nil
 }
