@@ -70,7 +70,17 @@ func (s *UserService) FindOne(c UserContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	res, err := s.client.FindOne(ctx, &proto.FindOneUserRequest{Id: int32(c.ID())})
+	var id int32
+	err := c.ID(&id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"StatusCode": http.StatusBadRequest,
+			"Message":    "Invalid id",
+		})
+		return
+	}
+
+	res, err := s.client.FindOne(ctx, &proto.FindOneUserRequest{Id: id})
 	if err != nil {
 		c.JSON(http.StatusBadGateway, map[string]interface{}{
 			"StatusCode": http.StatusBadGateway,
@@ -142,6 +152,18 @@ func (s *UserService) Update(c UserContext) {
 		return
 	}
 
+	var id int32
+	err = c.ID(&id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"StatusCode": http.StatusBadRequest,
+			"Message":    "Invalid id",
+		})
+		return
+	}
+
+	user.Id = uint32(id)
+
 	res, err := s.client.Update(ctx, &proto.UpdateUserRequest{User: &user})
 	if err != nil {
 		c.JSON(http.StatusBadGateway, map[string]interface{}{
@@ -178,7 +200,17 @@ func (s *UserService) Delete(c UserContext) {
 		return
 	}
 
-	res, err := s.client.Delete(ctx, &proto.DeleteUserRequest{Id: int32(c.ID())})
+	var id int32
+	err = c.ID(&id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"StatusCode": http.StatusBadRequest,
+			"Message":    "Invalid id",
+		})
+		return
+	}
+
+	res, err := s.client.Delete(ctx, &proto.DeleteUserRequest{Id: id})
 	if err != nil {
 		c.JSON(http.StatusBadGateway, map[string]interface{}{
 			"StatusCode": http.StatusBadGateway,

@@ -29,7 +29,17 @@ func (s *TeamService) FindAll(c TeamContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	query := c.PaginationQueryParam()
+	query := &model.PaginationQueryParams{}
+
+	err := c.PaginationQueryParam(query)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"StatusCode": http.StatusBadRequest,
+			"Message":    "Invalid query param",
+		})
+		return
+	}
+
 	req := &proto.FindAllTeamRequest{
 		Page:  query.Page,
 		Limit: query.Limit,
@@ -60,7 +70,17 @@ func (s *TeamService) FindOne(c TeamContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	res, err := s.client.FindOne(ctx, &proto.FindOneTeamRequest{Id: int32(c.ID())})
+	var id int32
+	err := c.ID(&id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"StatusCode": http.StatusBadRequest,
+			"Message":    "Invalid id",
+		})
+		return
+	}
+
+	res, err := s.client.FindOne(ctx, &proto.FindOneTeamRequest{Id: id})
 	if err != nil {
 		c.JSON(http.StatusBadGateway, map[string]interface{}{
 			"StatusCode": http.StatusBadGateway,
@@ -168,7 +188,17 @@ func (s *TeamService) Delete(c TeamContext) {
 		return
 	}
 
-	res, err := s.client.Delete(ctx, &proto.DeleteTeamRequest{Id: int32(c.ID())})
+	var id int32
+	err = c.ID(&id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"StatusCode": http.StatusBadRequest,
+			"Message":    "Invalid id",
+		})
+		return
+	}
+
+	res, err := s.client.Delete(ctx, &proto.DeleteTeamRequest{Id: id})
 	if err != nil {
 		c.JSON(http.StatusBadGateway, map[string]interface{}{
 			"StatusCode": http.StatusBadGateway,
