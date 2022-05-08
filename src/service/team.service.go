@@ -8,24 +8,24 @@ import (
 	"time"
 )
 
-type UserService struct {
-	client proto.UserServiceClient
+type TeamService struct {
+	client proto.TeamServiceClient
 }
 
-func NewUserService(client proto.UserServiceClient) *UserService {
-	return &UserService{
-		client: client,
-	}
-}
-
-type UserContext interface {
+type TeamContext interface {
 	Bind(interface{}) error
 	JSON(int, interface{})
 	ID(*int32) error
 	PaginationQueryParam(*model.PaginationQueryParams) error
 }
 
-func (s *UserService) FindAll(c UserContext) {
+func NewTeamService(client proto.TeamServiceClient) *TeamService {
+	return &TeamService{
+		client: client,
+	}
+}
+
+func (s *TeamService) FindAll(c TeamContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -40,7 +40,7 @@ func (s *UserService) FindAll(c UserContext) {
 		return
 	}
 
-	req := &proto.FindAllUserRequest{
+	req := &proto.FindAllTeamRequest{
 		Page:  query.Page,
 		Limit: query.Limit,
 	}
@@ -66,7 +66,7 @@ func (s *UserService) FindAll(c UserContext) {
 	return
 }
 
-func (s *UserService) FindOne(c UserContext) {
+func (s *TeamService) FindOne(c TeamContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -80,7 +80,7 @@ func (s *UserService) FindOne(c UserContext) {
 		return
 	}
 
-	res, err := s.client.FindOne(ctx, &proto.FindOneUserRequest{Id: id})
+	res, err := s.client.FindOne(ctx, &proto.FindOneTeamRequest{Id: id})
 	if err != nil {
 		c.JSON(http.StatusBadGateway, map[string]interface{}{
 			"StatusCode": http.StatusBadGateway,
@@ -101,11 +101,11 @@ func (s *UserService) FindOne(c UserContext) {
 	return
 }
 
-func (s *UserService) Create(c UserContext) {
+func (s *TeamService) Create(c TeamContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	var user proto.User
+	var user proto.Team
 
 	err := c.Bind(&user)
 	if err != nil {
@@ -116,7 +116,7 @@ func (s *UserService) Create(c UserContext) {
 		return
 	}
 
-	res, err := s.client.Create(ctx, &proto.CreateUserRequest{User: &user})
+	res, err := s.client.Create(ctx, &proto.CreateTeamRequest{Team: &user})
 	if err != nil {
 		c.JSON(http.StatusBadGateway, map[string]interface{}{
 			"StatusCode": http.StatusBadGateway,
@@ -137,11 +137,11 @@ func (s *UserService) Create(c UserContext) {
 	return
 }
 
-func (s *UserService) Update(c UserContext) {
+func (s *TeamService) Update(c TeamContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	var user proto.User
+	var user proto.Team
 
 	err := c.Bind(&user)
 	if err != nil {
@@ -152,19 +152,7 @@ func (s *UserService) Update(c UserContext) {
 		return
 	}
 
-	var id int32
-	err = c.ID(&id)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"StatusCode": http.StatusBadRequest,
-			"Message":    "Invalid id",
-		})
-		return
-	}
-
-	user.Id = uint32(id)
-
-	res, err := s.client.Update(ctx, &proto.UpdateUserRequest{User: &user})
+	res, err := s.client.Update(ctx, &proto.UpdateTeamRequest{Team: &user})
 	if err != nil {
 		c.JSON(http.StatusBadGateway, map[string]interface{}{
 			"StatusCode": http.StatusBadGateway,
@@ -185,11 +173,11 @@ func (s *UserService) Update(c UserContext) {
 	return
 }
 
-func (s *UserService) Delete(c UserContext) {
+func (s *TeamService) Delete(c TeamContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	var user proto.User
+	var user proto.Team
 
 	err := c.Bind(&user)
 	if err != nil {
@@ -210,7 +198,7 @@ func (s *UserService) Delete(c UserContext) {
 		return
 	}
 
-	res, err := s.client.Delete(ctx, &proto.DeleteUserRequest{Id: id})
+	res, err := s.client.Delete(ctx, &proto.DeleteTeamRequest{Id: id})
 	if err != nil {
 		c.JSON(http.StatusBadGateway, map[string]interface{}{
 			"StatusCode": http.StatusBadGateway,

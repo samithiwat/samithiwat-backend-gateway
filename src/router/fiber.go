@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
+	"github.com/samithiwat/samithiwat-backend-gateway/src/model"
 )
 
 type FiberRouter struct {
@@ -39,12 +39,20 @@ func (c *FiberCtx) JSON(statusCode int, v interface{}) {
 	c.Ctx.Status(statusCode).JSON(v)
 }
 
-func (c *FiberCtx) UserId() uint {
-	//TODO implement me
-	panic("implement me")
+func (c *FiberCtx) ID(id *int32) error {
+	v, err := c.ParamsInt("id")
+	if err != nil {
+		return err
+	}
+
+	*id = int32(v)
+	
+	return nil
 }
 
-func (c *FiberCtx) QueryParam() *proto.FindAllUserRequest {
-	//TODO implement me
-	panic("implement me")
+func (c *FiberCtx) PaginationQueryParam(query *model.PaginationQueryParams) error {
+	if err := c.QueryParser(query); err != nil {
+		return err
+	}
+	return nil
 }

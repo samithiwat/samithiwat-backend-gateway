@@ -9,12 +9,12 @@ import (
 	"testing"
 )
 
-func TestFindAllUser(t *testing.T) {
-	mock.InitializeMockUser()
+func TestFindAllTeam(t *testing.T) {
+	mock.InitializeMockTeam()
 
 	assert := assert.New(t)
-	want := &proto.UserPagination{
-		Items: mock.Users,
+	want := &proto.TeamPagination{
+		Items: mock.Teams,
 		Meta: &proto.PaginationMetadata{
 			TotalItem:    4,
 			ItemCount:    4,
@@ -24,33 +24,33 @@ func TestFindAllUser(t *testing.T) {
 		},
 	}
 
-	srv := service.NewUserService(&mock.UserMockClient{})
+	srv := service.NewTeamService(&mock.TeamMockClient{})
 
-	c := &mock.UserMockContext{}
+	c := &mock.TeamMockContext{}
 
 	srv.FindAll(c)
 
 	assert.Equal(want, c.V)
 }
 
-func TestFindAllInvalidQueryParamUser(t *testing.T) {
+func TestFindAllInvalidQueryParamTeam(t *testing.T) {
 	assert := assert.New(t)
 	want := map[string]interface{}{
 		"StatusCode": http.StatusBadRequest,
 		"Message":    "Invalid query param",
 	}
 
-	srv := service.NewUserService(&mock.UserMockClient{})
+	srv := service.NewTeamService(&mock.TeamMockClient{})
 
-	c := &mock.UserMockErrContext{}
+	c := &mock.TeamMockErrContext{}
 
 	srv.FindAll(c)
 
 	assert.Equal(want, c.V)
 }
 
-func TestFindAllGrpcErrUser(t *testing.T) {
-	mock.InitializeMockUser()
+func TestFindAllGrpcErrTeam(t *testing.T) {
+	mock.InitializeMockTeam()
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
@@ -58,32 +58,32 @@ func TestFindAllGrpcErrUser(t *testing.T) {
 		"Message":    "Service is down",
 	}
 
-	srv := service.NewUserService(&mock.UserMockErrGrpcClient{})
+	srv := service.NewTeamService(&mock.TeamMockErrGrpcClient{})
 
-	c := &mock.UserMockContext{}
+	c := &mock.TeamMockContext{}
 
 	srv.FindAll(c)
 
 	assert.Equal(want, c.V)
 }
 
-func TestFindOneUser(t *testing.T) {
-	mock.InitializeMockUser()
+func TestFindOneTeam(t *testing.T) {
+	mock.InitializeMockTeam()
 
 	assert := assert.New(t)
-	want := &mock.User1
+	want := &mock.Team1
 
-	srv := service.NewUserService(&mock.UserMockClient{})
+	srv := service.NewTeamService(&mock.TeamMockClient{})
 
-	c := &mock.UserMockContext{}
+	c := &mock.TeamMockContext{}
 
 	srv.FindOne(c)
 
 	assert.Equal(want, c.V)
 }
 
-func TestFindOneInvalidRequestParamIDUser(t *testing.T) {
-	mock.InitializeMockUser()
+func TestFindOneInvalidRequestParamIDTeam(t *testing.T) {
+	mock.InitializeMockTeam()
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
@@ -91,17 +91,17 @@ func TestFindOneInvalidRequestParamIDUser(t *testing.T) {
 		"Message":    "Invalid id",
 	}
 
-	srv := service.NewUserService(&mock.UserMockClient{})
+	srv := service.NewTeamService(&mock.TeamMockClient{})
 
-	c := &mock.UserMockErrContext{}
+	c := &mock.TeamMockErrContext{}
 
 	srv.FindOne(c)
 
 	assert.Equal(want, c.V)
 }
 
-func TestFindOneErrorNotFoundUser(t *testing.T) {
-	mock.InitializeMockUser()
+func TestFindOneErrorNotFoundTeam(t *testing.T) {
+	mock.InitializeMockTeam()
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
@@ -109,17 +109,17 @@ func TestFindOneErrorNotFoundUser(t *testing.T) {
 		"Message":    []string{"Not found user"},
 	}
 
-	srv := service.NewUserService(&mock.UserMockErrClient{})
+	srv := service.NewTeamService(&mock.TeamMockErrClient{})
 
-	c := &mock.UserMockContext{}
+	c := &mock.TeamMockContext{}
 
 	srv.FindOne(c)
 
 	assert.Equal(want, c.V)
 }
 
-func TestFindOneGrpcErrUser(t *testing.T) {
-	mock.InitializeMockUser()
+func TestFindOneGrpcErrTeam(t *testing.T) {
+	mock.InitializeMockTeam()
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
@@ -127,32 +127,32 @@ func TestFindOneGrpcErrUser(t *testing.T) {
 		"Message":    "Service is down",
 	}
 
-	srv := service.NewUserService(&mock.UserMockErrGrpcClient{})
+	srv := service.NewTeamService(&mock.TeamMockErrGrpcClient{})
 
-	c := &mock.UserMockContext{}
+	c := &mock.TeamMockContext{}
 
 	srv.FindOne(c)
 
 	assert.Equal(want, c.V)
 }
 
-func TestCreateUser(t *testing.T) {
-	mock.InitializeMockUser()
+func TestCreateTeam(t *testing.T) {
+	mock.InitializeMockTeam()
 
 	assert := assert.New(t)
-	want := &mock.User1
+	want := &mock.Team1
 
-	srv := service.NewUserService(&mock.UserMockClient{})
+	srv := service.NewTeamService(&mock.TeamMockClient{})
 
-	c := &mock.UserMockContext{}
+	c := &mock.TeamMockContext{}
 
 	srv.Create(c)
 
 	assert.Equal(want, c.V)
 }
 
-func TestCreateErrorDuplicatedUser(t *testing.T) {
-	mock.InitializeMockUser()
+func TestCreateErrorDuplicatedTeam(t *testing.T) {
+	mock.InitializeMockTeam()
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
@@ -160,17 +160,17 @@ func TestCreateErrorDuplicatedUser(t *testing.T) {
 		"Message":    []string{"Duplicated username or email"},
 	}
 
-	srv := service.NewUserService(&mock.UserMockErrClient{})
+	srv := service.NewTeamService(&mock.TeamMockErrClient{})
 
-	c := &mock.UserMockContext{}
+	c := &mock.TeamMockContext{}
 
 	srv.Create(c)
 
 	assert.Equal(want, c.V)
 }
 
-func TestCreateGrpcErrUser(t *testing.T) {
-	mock.InitializeMockUser()
+func TestCreateGrpcErrTeam(t *testing.T) {
+	mock.InitializeMockTeam()
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
@@ -178,32 +178,32 @@ func TestCreateGrpcErrUser(t *testing.T) {
 		"Message":    "Service is down",
 	}
 
-	srv := service.NewUserService(&mock.UserMockErrGrpcClient{})
+	srv := service.NewTeamService(&mock.TeamMockErrGrpcClient{})
 
-	c := &mock.UserMockContext{}
+	c := &mock.TeamMockContext{}
 
 	srv.Create(c)
 
 	assert.Equal(want, c.V)
 }
 
-func TestUpdateUser(t *testing.T) {
-	mock.InitializeMockUser()
+func TestUpdateTeam(t *testing.T) {
+	mock.InitializeMockTeam()
 
 	assert := assert.New(t)
-	want := &mock.User1
+	want := &mock.Team1
 
-	srv := service.NewUserService(&mock.UserMockClient{})
+	srv := service.NewTeamService(&mock.TeamMockClient{})
 
-	c := &mock.UserMockContext{}
+	c := &mock.TeamMockContext{}
 
 	srv.Update(c)
 
 	assert.Equal(want, c.V)
 }
 
-func TestUpdateInvalidRequestParamIDUser(t *testing.T) {
-	mock.InitializeMockUser()
+func TestUpdateInvalidRequestParamIDTeam(t *testing.T) {
+	mock.InitializeMockTeam()
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
@@ -211,17 +211,17 @@ func TestUpdateInvalidRequestParamIDUser(t *testing.T) {
 		"Message":    "Invalid id",
 	}
 
-	srv := service.NewUserService(&mock.UserMockClient{})
+	srv := service.NewTeamService(&mock.TeamMockClient{})
 
-	c := &mock.UserMockErrContext{}
+	c := &mock.TeamMockErrContext{}
 
-	srv.Update(c)
+	srv.FindOne(c)
 
 	assert.Equal(want, c.V)
 }
 
-func TestUpdateErrorNotFoundUser(t *testing.T) {
-	mock.InitializeMockUser()
+func TestUpdateErrorNotFoundTeam(t *testing.T) {
+	mock.InitializeMockTeam()
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
@@ -229,17 +229,17 @@ func TestUpdateErrorNotFoundUser(t *testing.T) {
 		"Message":    []string{"Not found user"},
 	}
 
-	srv := service.NewUserService(&mock.UserMockErrClient{})
+	srv := service.NewTeamService(&mock.TeamMockErrClient{})
 
-	c := &mock.UserMockContext{}
+	c := &mock.TeamMockContext{}
 
 	srv.Update(c)
 
 	assert.Equal(want, c.V)
 }
 
-func TestUpdateGrpcErrUser(t *testing.T) {
-	mock.InitializeMockUser()
+func TestUpdateGrpcErrTeam(t *testing.T) {
+	mock.InitializeMockTeam()
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
@@ -247,32 +247,32 @@ func TestUpdateGrpcErrUser(t *testing.T) {
 		"Message":    "Service is down",
 	}
 
-	srv := service.NewUserService(&mock.UserMockErrGrpcClient{})
+	srv := service.NewTeamService(&mock.TeamMockErrGrpcClient{})
 
-	c := &mock.UserMockContext{}
+	c := &mock.TeamMockContext{}
 
 	srv.Update(c)
 
 	assert.Equal(want, c.V)
 }
 
-func TestDeleteUser(t *testing.T) {
-	mock.InitializeMockUser()
+func TestDeleteTeam(t *testing.T) {
+	mock.InitializeMockTeam()
 
 	assert := assert.New(t)
-	want := &mock.User1
+	want := &mock.Team1
 
-	srv := service.NewUserService(&mock.UserMockClient{})
+	srv := service.NewTeamService(&mock.TeamMockClient{})
 
-	c := &mock.UserMockContext{}
+	c := &mock.TeamMockContext{}
 
 	srv.Delete(c)
 
 	assert.Equal(want, c.V)
 }
 
-func TestDeleteInvalidRequestParamIDUser(t *testing.T) {
-	mock.InitializeMockUser()
+func TestDeleteInvalidRequestParamIDTeam(t *testing.T) {
+	mock.InitializeMockTeam()
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
@@ -280,17 +280,17 @@ func TestDeleteInvalidRequestParamIDUser(t *testing.T) {
 		"Message":    "Invalid id",
 	}
 
-	srv := service.NewUserService(&mock.UserMockClient{})
+	srv := service.NewTeamService(&mock.TeamMockClient{})
 
-	c := &mock.UserMockErrContext{}
+	c := &mock.TeamMockErrContext{}
 
-	srv.Delete(c)
+	srv.FindOne(c)
 
 	assert.Equal(want, c.V)
 }
 
-func TestDeleteErrorNotFoundUser(t *testing.T) {
-	mock.InitializeMockUser()
+func TestDeleteErrorNotFoundTeam(t *testing.T) {
+	mock.InitializeMockTeam()
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
@@ -298,17 +298,17 @@ func TestDeleteErrorNotFoundUser(t *testing.T) {
 		"Message":    []string{"Not found user"},
 	}
 
-	srv := service.NewUserService(&mock.UserMockErrClient{})
+	srv := service.NewTeamService(&mock.TeamMockErrClient{})
 
-	c := &mock.UserMockContext{}
+	c := &mock.TeamMockContext{}
 
 	srv.Delete(c)
 
 	assert.Equal(want, c.V)
 }
 
-func TestDeleteGrpcErrUser(t *testing.T) {
-	mock.InitializeMockUser()
+func TestDeleteGrpcErrTeam(t *testing.T) {
+	mock.InitializeMockTeam()
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
@@ -316,9 +316,9 @@ func TestDeleteGrpcErrUser(t *testing.T) {
 		"Message":    "Service is down",
 	}
 
-	srv := service.NewUserService(&mock.UserMockErrGrpcClient{})
+	srv := service.NewTeamService(&mock.TeamMockErrGrpcClient{})
 
-	c := &mock.UserMockContext{}
+	c := &mock.TeamMockContext{}
 
 	srv.Delete(c)
 

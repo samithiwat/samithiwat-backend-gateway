@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/bxcodec/faker/v3"
 	"github.com/pkg/errors"
+	"github.com/samithiwat/samithiwat-backend-gateway/src/model"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	"google.golang.org/grpc"
 	"net/http"
@@ -154,15 +155,39 @@ func (c *UserMockContext) JSON(_ int, v interface{}) {
 	c.V = v
 }
 
-func (UserMockContext) UserId() uint {
-	return 1
+func (UserMockContext) ID(id *int32) error {
+	*id = 1
+	return nil
 }
 
-func (UserMockContext) QueryParam() *proto.FindAllUserRequest {
-	return &proto.FindAllUserRequest{
+func (UserMockContext) PaginationQueryParam(query *model.PaginationQueryParams) error {
+	*query = model.PaginationQueryParams{
 		Page:  1,
 		Limit: 10,
 	}
+
+	return nil
+}
+
+type UserMockErrContext struct {
+	V interface{}
+}
+
+func (UserMockErrContext) Bind(v interface{}) error {
+	*v.(*proto.User) = User1
+	return nil
+}
+
+func (c *UserMockErrContext) JSON(_ int, v interface{}) {
+	c.V = v
+}
+
+func (UserMockErrContext) ID(*int32) error {
+	return errors.New("Invalid ID")
+}
+
+func (UserMockErrContext) PaginationQueryParam(*model.PaginationQueryParams) error {
+	return errors.New("Invalid Query Param")
 }
 
 func InitializeMockUser() {
