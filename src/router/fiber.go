@@ -39,12 +39,20 @@ func (c *FiberCtx) JSON(statusCode int, v interface{}) {
 	c.Ctx.Status(statusCode).JSON(v)
 }
 
-func (c *FiberCtx) ID() uint {
-	//TODO implement me
-	panic("implement me")
+func (c *FiberCtx) ID(id *int32) error {
+	v, err := c.ParamsInt("id")
+	if err != nil {
+		return err
+	}
+
+	*id = int32(v)
+	
+	return nil
 }
 
-func (c *FiberCtx) PaginationQueryParam() *model.PaginationQueryParams {
-	//TODO implement me
-	panic("implement me")
+func (c *FiberCtx) PaginationQueryParam(query *model.PaginationQueryParams) error {
+	if err := c.QueryParser(query); err != nil {
+		return err
+	}
+	return nil
 }
