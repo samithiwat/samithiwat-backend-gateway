@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"github.com/samithiwat/samithiwat-backend-gateway/src/model"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	"net/http"
 	"time"
@@ -20,15 +21,21 @@ func NewUserService(client proto.UserServiceClient) *UserService {
 type UserContext interface {
 	Bind(interface{}) error
 	JSON(int, interface{})
-	UserID() uint
-	QueryParam() *proto.FindAllUserRequest
+	ID() uint
+	PaginationQueryParam() *model.PaginationQueryParams
 }
 
 func (s *UserService) FindAll(c UserContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	res, err := s.client.FindAll(ctx, &proto.FindAllUserRequest{Page: 1, Limit: 10})
+	query := c.PaginationQueryParam()
+	req := &proto.FindAllUserRequest{
+		Page:  query.Page,
+		Limit: query.Limit,
+	}
+
+	res, err := s.client.FindAll(ctx, req)
 	if err != nil {
 		c.JSON(http.StatusBadGateway, map[string]interface{}{
 			"StatusCode": http.StatusBadGateway,
@@ -53,7 +60,7 @@ func (s *UserService) FindOne(c UserContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	res, err := s.client.FindOne(ctx, &proto.FindOneUserRequest{Id: int32(c.UserID())})
+	res, err := s.client.FindOne(ctx, &proto.FindOneUserRequest{Id: int32(c.ID())})
 	if err != nil {
 		c.JSON(http.StatusBadGateway, map[string]interface{}{
 			"StatusCode": http.StatusBadGateway,
@@ -161,7 +168,7 @@ func (s *UserService) Delete(c UserContext) {
 		return
 	}
 
-	res, err := s.client.Delete(ctx, &proto.DeleteUserRequest{Id: int32(c.UserID())})
+	res, err := s.client.Delete(ctx, &proto.DeleteUserRequest{Id: int32(c.ID())})
 	if err != nil {
 		c.JSON(http.StatusBadGateway, map[string]interface{}{
 			"StatusCode": http.StatusBadGateway,

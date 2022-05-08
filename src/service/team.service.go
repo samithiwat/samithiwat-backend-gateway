@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"github.com/samithiwat/samithiwat-backend-gateway/src/model"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	"net/http"
 	"time"
@@ -14,7 +15,8 @@ type TeamService struct {
 type TeamContext interface {
 	Bind(interface{}) error
 	JSON(int, interface{})
-	TeamID() uint
+	ID() uint
+	PaginationQueryParam() *model.PaginationQueryParams
 }
 
 func NewTeamService(client proto.TeamServiceClient) *TeamService {
@@ -27,7 +29,13 @@ func (s *TeamService) FindAll(c TeamContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	res, err := s.client.FindAll(ctx, &proto.FindAllTeamRequest{Page: 1, Limit: 10})
+	query := c.PaginationQueryParam()
+	req := &proto.FindAllTeamRequest{
+		Page:  query.Page,
+		Limit: query.Limit,
+	}
+
+	res, err := s.client.FindAll(ctx, req)
 	if err != nil {
 		c.JSON(http.StatusBadGateway, map[string]interface{}{
 			"StatusCode": http.StatusBadGateway,
@@ -52,7 +60,7 @@ func (s *TeamService) FindOne(c TeamContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	res, err := s.client.FindOne(ctx, &proto.FindOneTeamRequest{Id: int32(c.TeamID())})
+	res, err := s.client.FindOne(ctx, &proto.FindOneTeamRequest{Id: int32(c.ID())})
 	if err != nil {
 		c.JSON(http.StatusBadGateway, map[string]interface{}{
 			"StatusCode": http.StatusBadGateway,
@@ -160,7 +168,7 @@ func (s *TeamService) Delete(c TeamContext) {
 		return
 	}
 
-	res, err := s.client.Delete(ctx, &proto.DeleteTeamRequest{Id: int32(c.TeamID())})
+	res, err := s.client.Delete(ctx, &proto.DeleteTeamRequest{Id: int32(c.ID())})
 	if err != nil {
 		c.JSON(http.StatusBadGateway, map[string]interface{}{
 			"StatusCode": http.StatusBadGateway,
