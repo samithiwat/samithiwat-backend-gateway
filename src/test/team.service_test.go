@@ -54,7 +54,7 @@ func TestFindAllGrpcErrTeam(t *testing.T) {
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
-		"StatusCode": http.StatusBadGateway,
+		"StatusCode": http.StatusServiceUnavailable,
 		"Message":    "Service is down",
 	}
 
@@ -123,7 +123,7 @@ func TestFindOneGrpcErrTeam(t *testing.T) {
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
-		"StatusCode": http.StatusBadGateway,
+		"StatusCode": http.StatusServiceUnavailable,
 		"Message":    "Service is down",
 	}
 
@@ -174,7 +174,7 @@ func TestCreateGrpcErrTeam(t *testing.T) {
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
-		"StatusCode": http.StatusBadGateway,
+		"StatusCode": http.StatusServiceUnavailable,
 		"Message":    "Service is down",
 	}
 
@@ -243,7 +243,7 @@ func TestUpdateGrpcErrTeam(t *testing.T) {
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
-		"StatusCode": http.StatusBadGateway,
+		"StatusCode": http.StatusServiceUnavailable,
 		"Message":    "Service is down",
 	}
 
@@ -312,7 +312,7 @@ func TestDeleteGrpcErrTeam(t *testing.T) {
 
 	assert := assert.New(t)
 	want := map[string]interface{}{
-		"StatusCode": http.StatusBadGateway,
+		"StatusCode": http.StatusServiceUnavailable,
 		"Message":    "Service is down",
 	}
 

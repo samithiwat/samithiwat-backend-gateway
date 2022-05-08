@@ -9,6 +9,9 @@ proto:
 	protoc --proto_path=src/proto --go_out=plugins=grpc:. role.proto
 	protoc --proto_path=src/proto --go_out=plugins=grpc:. permission.proto
 
+create-doc:
+	swag init -d ./src -o ./src/docs -md ./src/docs/markdown
+
 test:
 	go test ./src/test
 

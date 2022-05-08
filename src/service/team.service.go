@@ -25,6 +25,18 @@ func NewTeamService(client proto.TeamServiceClient) *TeamService {
 	}
 }
 
+// FindAll is a function that get all teams in database
+// @Summary Get all teams
+// @Description Return the arrays of team dto if successfully
+// @Param limit query int false "Limit"
+// @Param page query int false "Page"
+// @Tags team
+// @Accept json
+// @Produce json
+// @Success 200 {object} proto.Team
+// @Failure 400 {object} model.ResponseErr "Invalid query param"
+// @Failure 503 {object} model.ResponseErr "Service is down"
+// @Router /team [get]
 func (s *TeamService) FindAll(c TeamContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -47,8 +59,8 @@ func (s *TeamService) FindAll(c TeamContext) {
 
 	res, err := s.client.FindAll(ctx, req)
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return
@@ -66,6 +78,18 @@ func (s *TeamService) FindAll(c TeamContext) {
 	return
 }
 
+// FindOne is a function that get the specific teams with id
+// @Summary Get specific team with id
+// @Description Return the team dto if successfully
+// @Param id path int true "id"
+// @Tags team
+// @Accept json
+// @Produce json
+// @Success 200 {object} proto.Team
+// @Failure 400 {object} model.ResponseErr "Invalid ID"
+// @Failure 404 {object} model.ResponseErr "Not found team"
+// @Failure 503 {object} model.ResponseErr "Service is down"
+// @Router /team/{id} [get]
 func (s *TeamService) FindOne(c TeamContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -82,8 +106,8 @@ func (s *TeamService) FindOne(c TeamContext) {
 
 	res, err := s.client.FindOne(ctx, &proto.FindOneTeamRequest{Id: id})
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return
@@ -101,13 +125,25 @@ func (s *TeamService) FindOne(c TeamContext) {
 	return
 }
 
+// Create is a function that create the team
+// @Summary Create the team
+// @Description Return the team dto if successfully
+// @Param team body proto.Team true "team dto"
+// @Tags team
+// @Accept json
+// @Produce json
+// @Success 201 {object} proto.Team
+// @Failure 400 {object} model.ResponseErr "Invalid ID"
+// @Failure 404 {object} model.ResponseErr "Not found team"
+// @Failure 503 {object} model.ResponseErr "Service is down"
+// @Router /team [post]
 func (s *TeamService) Create(c TeamContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	var user proto.Team
+	var team proto.Team
 
-	err := c.Bind(&user)
+	err := c.Bind(&team)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"StatusCode": http.StatusBadRequest,
@@ -116,10 +152,10 @@ func (s *TeamService) Create(c TeamContext) {
 		return
 	}
 
-	res, err := s.client.Create(ctx, &proto.CreateTeamRequest{Team: &user})
+	res, err := s.client.Create(ctx, &proto.CreateTeamRequest{Team: &team})
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return
@@ -137,13 +173,26 @@ func (s *TeamService) Create(c TeamContext) {
 	return
 }
 
+// Update is a function that update the team
+// @Summary Update the existing team
+// @Description Return the team dto if successfully
+// @Param id path int true "id"
+// @Param team body proto.Team true "team dto"
+// @Tags team
+// @Accept json
+// @Produce json
+// @Success 200 {object} proto.Team
+// @Failure 400 {object} model.ResponseErr "Invalid ID"
+// @Failure 404 {object} model.ResponseErr "Not found team"
+// @Failure 503 {object} model.ResponseErr "Service is down"
+// @Router /team/{id} [patch]
 func (s *TeamService) Update(c TeamContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	var user proto.Team
+	var team proto.Team
 
-	err := c.Bind(&user)
+	err := c.Bind(&team)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"StatusCode": http.StatusBadRequest,
@@ -152,10 +201,10 @@ func (s *TeamService) Update(c TeamContext) {
 		return
 	}
 
-	res, err := s.client.Update(ctx, &proto.UpdateTeamRequest{Team: &user})
+	res, err := s.client.Update(ctx, &proto.UpdateTeamRequest{Team: &team})
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return
@@ -173,13 +222,25 @@ func (s *TeamService) Update(c TeamContext) {
 	return
 }
 
+// Delete is a function that delete the team
+// @Summary Delete the team
+// @Description Return the team dto if successfully
+// @Param id path int true "id"
+// @Tags team
+// @Accept json
+// @Produce json
+// @Success 200 {object} proto.Team
+// @Failure 400 {object} model.ResponseErr "Invalid ID"
+// @Failure 404 {object} model.ResponseErr "Not found team"
+// @Failure 503 {object} model.ResponseErr "Service is down"
+// @Router /team/{id} [delete]
 func (s *TeamService) Delete(c TeamContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	var user proto.Team
+	var team proto.Team
 
-	err := c.Bind(&user)
+	err := c.Bind(&team)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"StatusCode": http.StatusBadRequest,
@@ -200,8 +261,8 @@ func (s *TeamService) Delete(c TeamContext) {
 
 	res, err := s.client.Delete(ctx, &proto.DeleteTeamRequest{Id: id})
 	if err != nil {
-		c.JSON(http.StatusBadGateway, map[string]interface{}{
-			"StatusCode": http.StatusBadGateway,
+		c.JSON(http.StatusServiceUnavailable, map[string]interface{}{
+			"StatusCode": http.StatusServiceUnavailable,
 			"Message":    "Service is down",
 		})
 		return

@@ -19,50 +19,29 @@ import (
 	"time"
 )
 
-type operation func(ctx context.Context) error
+// @title Samithiwat Backend
+// @version 1.0
+// @description.markdown
 
-func gracefulShutdown(ctx context.Context, timeout time.Duration, ops map[string]operation) <-chan struct{} {
-	wait := make(chan struct{})
-	go func() {
-		s := make(chan os.Signal, 1)
+// @contact.name Samithiwat
+// @contact.email admin@samithiwat.dev
+// @contact.url https://samithiwat.dev
 
-		signal.Notify(s, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
-		sig := <-s
+// @schemes https http
 
-		log.Printf("got signal \"%v\" shutting down service", sig)
+// @securityDefinitions.apikey  Auth Token
+// @in                          header
+// @name                        Authorization
+// @description					Description for what is this security definition being used
 
-		timeoutFunc := time.AfterFunc(timeout, func() {
-			log.Printf("timeout %v ms has been elapsed, force exit", timeout.Milliseconds())
-			os.Exit(0)
-		})
+// @tag.name user
+// @tag.description.markdown
 
-		defer timeoutFunc.Stop()
+// @tag.name organization
+// @tag.description.markdown
 
-		var wg sync.WaitGroup
-
-		for key, op := range ops {
-			wg.Add(1)
-			innerOp := op
-			innerKey := key
-			go func() {
-				defer wg.Done()
-
-				log.Printf("cleaning up: %v", innerKey)
-				if err := innerOp(ctx); err != nil {
-					log.Printf("%v: clean up failed: %v", innerKey, err.Error())
-					return
-				}
-
-				log.Printf("%v was shutdown gracefully", innerKey)
-			}()
-		}
-
-		wg.Wait()
-		close(wait)
-	}()
-
-	return wait
-}
+// @tag.name team
+// @tag.description.markdown
 
 func main() {
 	conf, err := config.LoadConfig()
@@ -122,4 +101,49 @@ func main() {
 	})
 
 	<-wait
+}
+
+type operation func(ctx context.Context) error
+
+func gracefulShutdown(ctx context.Context, timeout time.Duration, ops map[string]operation) <-chan struct{} {
+	wait := make(chan struct{})
+	go func() {
+		s := make(chan os.Signal, 1)
+
+		signal.Notify(s, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
+		sig := <-s
+
+		log.Printf("got signal \"%v\" shutting down service", sig)
+
+		timeoutFunc := time.AfterFunc(timeout, func() {
+			log.Printf("timeout %v ms has been elapsed, force exit", timeout.Milliseconds())
+			os.Exit(0)
+		})
+
+		defer timeoutFunc.Stop()
+
+		var wg sync.WaitGroup
+
+		for key, op := range ops {
+			wg.Add(1)
+			innerOp := op
+			innerKey := key
+			go func() {
+				defer wg.Done()
+
+				log.Printf("cleaning up: %v", innerKey)
+				if err := innerOp(ctx); err != nil {
+					log.Printf("%v: clean up failed: %v", innerKey, err.Error())
+					return
+				}
+
+				log.Printf("%v was shutdown gracefully", innerKey)
+			}()
+		}
+
+		wg.Wait()
+		close(wait)
+	}()
+
+	return wait
 }

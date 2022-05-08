@@ -1,4 +1,688 @@
+definitions:
+  model.ResponseErr:
+    properties:
+      message:
+        type: string
+      status_code:
+        type: integer
+    type: object
+  proto.Contact:
+    properties:
+      facebook:
+        type: string
+      id:
+        type: integer
+      instagram:
+        type: string
+      linkedin:
+        type: string
+      twitter:
+        type: string
+    type: object
+  proto.Location:
+    properties:
+      address:
+        type: string
+      country:
+        type: string
+      district:
+        type: string
+      id:
+        type: integer
+      province:
+        type: string
+      zipcode:
+        type: string
+    type: object
+  proto.Log:
+    properties:
+      description:
+        type: string
+      timestamp:
+        type: string
+      title:
+        type: string
+      type:
+        type: integer
+      user:
+        $ref: '#/definitions/proto.User'
+    type: object
+  proto.Organization:
+    properties:
+      contact:
+        $ref: '#/definitions/proto.Contact'
+      description:
+        type: string
+      id:
+        type: integer
+      location:
+        $ref: '#/definitions/proto.Location'
+      logs:
+        items:
+          $ref: '#/definitions/proto.Log'
+        type: array
+      members:
+        items:
+          $ref: '#/definitions/proto.User'
+        type: array
+      name:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/proto.Role'
+        type: array
+      teams:
+        items:
+          $ref: '#/definitions/proto.Team'
+        type: array
+    type: object
+  proto.Permission:
+    properties:
+      code:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/proto.Role'
+        type: array
+    type: object
+  proto.Role:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      permissions:
+        items:
+          $ref: '#/definitions/proto.Permission'
+        type: array
+      users:
+        items:
+          $ref: '#/definitions/proto.User'
+        type: array
+    type: object
+  proto.Team:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      logs:
+        items:
+          $ref: '#/definitions/proto.Log'
+        type: array
+      members:
+        items:
+          $ref: '#/definitions/proto.User'
+        type: array
+      name:
+        type: string
+      organization:
+        $ref: '#/definitions/proto.Organization'
+      subTeams:
+        items:
+          $ref: '#/definitions/proto.Team'
+        type: array
+    type: object
+  proto.User:
+    properties:
+      address:
+        $ref: '#/definitions/proto.Location'
+      contact:
+        $ref: '#/definitions/proto.Contact'
+      firstname:
+        type: string
+      id:
+        type: integer
+      imageUrl:
+        type: string
+      lastname:
+        type: string
+      logs:
+        items:
+          $ref: '#/definitions/proto.Log'
+        type: array
+      organizations:
+        items:
+          $ref: '#/definitions/proto.Organization'
+        type: array
+      teams:
+        items:
+          $ref: '#/definitions/proto.Team'
+        type: array
+    type: object
 info:
-  contact: {}
-paths: {}
+  contact:
+    email: admin@samithiwat.dev
+    name: Samithiwat
+    url: https://samithiwat.dev
+  description: "# Samithiwat's API\r\nThis is the documentation for https://samithiwat.dev"
+  title: Samithiwat Backend
+  version: "1.0"
+paths:
+  /organization:
+    get:
+      consumes:
+      - application/json
+      description: Return the arrays of organization dto if successfully
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Organization'
+        "400":
+          description: Invalid query param
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Get all organizations
+      tags:
+      - organization
+    post:
+      consumes:
+      - application/json
+      description: Return the organization dto if successfully
+      parameters:
+      - description: organization dto
+        in: body
+        name: organization
+        required: true
+        schema:
+          $ref: '#/definitions/proto.Organization'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/proto.Organization'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found organization
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Create the organization
+      tags:
+      - organization
+  /organization/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Return the organization dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Organization'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found organization
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Delete the organization
+      tags:
+      - organization
+    get:
+      consumes:
+      - application/json
+      description: Return the organization dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Organization'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found organization
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Get specific organization with id
+      tags:
+      - organization
+    patch:
+      consumes:
+      - application/json
+      description: Return the organization dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: organization dto
+        in: body
+        name: organization
+        required: true
+        schema:
+          $ref: '#/definitions/proto.Organization'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Organization'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found organization
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Update the existing organization
+      tags:
+      - organization
+  /team:
+    get:
+      consumes:
+      - application/json
+      description: Return the arrays of team dto if successfully
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Team'
+        "400":
+          description: Invalid query param
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Get all teams
+      tags:
+      - team
+    post:
+      consumes:
+      - application/json
+      description: Return the team dto if successfully
+      parameters:
+      - description: team dto
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/proto.Team'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/proto.Team'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found team
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Create the team
+      tags:
+      - team
+  /team/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Return the team dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Team'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found team
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Delete the team
+      tags:
+      - team
+    get:
+      consumes:
+      - application/json
+      description: Return the team dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Team'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found team
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Get specific team with id
+      tags:
+      - team
+    patch:
+      consumes:
+      - application/json
+      description: Return the team dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: team dto
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/proto.Team'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Team'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found team
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Update the existing team
+      tags:
+      - team
+  /user:
+    get:
+      consumes:
+      - application/json
+      description: Return the arrays of user dto if successfully
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Invalid query param
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Get all users
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      parameters:
+      - description: user dto
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/proto.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found user
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Create the user
+      tags:
+      - user
+  /user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found user
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Delete the user
+      tags:
+      - user
+    get:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found user
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Get specific user with id
+      tags:
+      - user
+    patch:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: user dto
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/proto.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "404":
+          description: Not found user
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/model.ResponseErr'
+      summary: Update the existing user
+      tags:
+      - user
+schemes:
+- https
+- http
+securityDefinitions:
+  Auth Token:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
+tags:
+- description: "# User Tag API Documentation\r\n**User** functions goes here"
+  name: user
+- description: "# Organization Tag API Documentation\r\n**Organization** functions
+    goes here"
+  name: organization
+- description: "# Team Tag API Documentation\r\n**Team** functions goes here"
+  name: team
