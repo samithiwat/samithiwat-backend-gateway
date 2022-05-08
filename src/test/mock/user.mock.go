@@ -155,15 +155,39 @@ func (c *UserMockContext) JSON(_ int, v interface{}) {
 	c.V = v
 }
 
-func (UserMockContext) ID() uint {
-	return 1
+func (UserMockContext) ID(id *int32) error {
+	*id = 1
+	return nil
 }
 
-func (UserMockContext) PaginationQueryParam() *model.PaginationQueryParams {
-	return &model.PaginationQueryParams{
+func (UserMockContext) PaginationQueryParam(query *model.PaginationQueryParams) error {
+	*query = model.PaginationQueryParams{
 		Page:  1,
 		Limit: 10,
 	}
+
+	return nil
+}
+
+type UserMockErrContext struct {
+	V interface{}
+}
+
+func (UserMockErrContext) Bind(v interface{}) error {
+	*v.(*proto.User) = User1
+	return nil
+}
+
+func (c *UserMockErrContext) JSON(_ int, v interface{}) {
+	c.V = v
+}
+
+func (UserMockErrContext) ID(*int32) error {
+	return errors.New("Invalid ID")
+}
+
+func (UserMockErrContext) PaginationQueryParam(*model.PaginationQueryParams) error {
+	return errors.New("Invalid Query Param")
 }
 
 func InitializeMockUser() {

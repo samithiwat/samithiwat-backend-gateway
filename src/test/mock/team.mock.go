@@ -155,15 +155,38 @@ func (c *TeamMockContext) JSON(_ int, v interface{}) {
 	c.V = v
 }
 
-func (TeamMockContext) ID() uint {
-	return 1
+func (TeamMockContext) ID(id *int32) error {
+	*id = 1
+	return nil
 }
 
-func (TeamMockContext) PaginationQueryParam() *model.PaginationQueryParams {
-	return &model.PaginationQueryParams{
+func (TeamMockContext) PaginationQueryParam(query *model.PaginationQueryParams) error {
+	*query = model.PaginationQueryParams{
 		Page:  1,
 		Limit: 10,
 	}
+	return nil
+}
+
+type TeamMockErrContext struct {
+	V interface{}
+}
+
+func (TeamMockErrContext) Bind(v interface{}) error {
+	*v.(*proto.Team) = Team1
+	return nil
+}
+
+func (c *TeamMockErrContext) JSON(_ int, v interface{}) {
+	c.V = v
+}
+
+func (TeamMockErrContext) ID(*int32) error {
+	return errors.New("Invalid ID")
+}
+
+func (TeamMockErrContext) PaginationQueryParam(*model.PaginationQueryParams) error {
+	return errors.New("Invalid Query Param")
 }
 
 func InitializeMockTeam() {
