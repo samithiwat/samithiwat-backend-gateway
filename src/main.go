@@ -40,6 +40,9 @@ import (
 // @tag.name organization
 // @tag.description.markdown
 
+// @tag.name team
+// @tag.description.markdown
+
 func main() {
 	conf, err := config.LoadConfig()
 	if err != nil {
