@@ -46,7 +46,7 @@ func (c *FiberCtx) ID(id *int32) error {
 	}
 
 	*id = int32(v)
-	
+
 	return nil
 }
 
@@ -54,5 +54,6 @@ func (c *FiberCtx) PaginationQueryParam(query *model.PaginationQueryParams) erro
 	if err := c.QueryParser(query); err != nil {
 		return err
 	}
+
 	return nil
 }
