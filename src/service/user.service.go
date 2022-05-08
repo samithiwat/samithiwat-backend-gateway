@@ -20,7 +20,7 @@ func NewUserService(client proto.UserServiceClient) *UserService {
 type UserContext interface {
 	Bind(interface{}) error
 	JSON(int, interface{})
-	UserId() uint
+	UserID() uint
 	QueryParam() *proto.FindAllUserRequest
 }
 
@@ -53,7 +53,7 @@ func (s *UserService) FindOne(c UserContext) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	res, err := s.client.FindOne(ctx, &proto.FindOneUserRequest{Id: int32(c.UserId())})
+	res, err := s.client.FindOne(ctx, &proto.FindOneUserRequest{Id: int32(c.UserID())})
 	if err != nil {
 		c.JSON(http.StatusBadGateway, map[string]interface{}{
 			"StatusCode": http.StatusBadGateway,
@@ -161,7 +161,7 @@ func (s *UserService) Delete(c UserContext) {
 		return
 	}
 
-	res, err := s.client.Delete(ctx, &proto.DeleteUserRequest{Id: int32(c.UserId())})
+	res, err := s.client.Delete(ctx, &proto.DeleteUserRequest{Id: int32(c.UserID())})
 	if err != nil {
 		c.JSON(http.StatusBadGateway, map[string]interface{}{
 			"StatusCode": http.StatusBadGateway,

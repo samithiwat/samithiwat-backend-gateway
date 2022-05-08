@@ -154,7 +154,7 @@ func (c *UserMockContext) JSON(_ int, v interface{}) {
 	c.V = v
 }
 
-func (UserMockContext) UserId() uint {
+func (UserMockContext) UserID() uint {
 	return 1
 }
 

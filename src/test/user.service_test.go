@@ -66,7 +66,7 @@ func TestFindOneUser(t *testing.T) {
 	assert.Equal(want, c.V)
 }
 
-func TestFindOneErrorNotFound(t *testing.T) {
+func TestFindOneErrorNotFoundUser(t *testing.T) {
 	mock.InitializeMockUser()
 
 	assert := assert.New(t)
