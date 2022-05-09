@@ -49,7 +49,7 @@ func main() {
 		log.Fatal("Cannot load config", err.Error())
 	}
 
-	userConn, err := grpc.Dial("localhost:3002", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	userConn, err := grpc.Dial(conf.Service.User, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal("Cannot connect to user service")
 	}
@@ -57,7 +57,7 @@ func main() {
 	userClient := proto.NewUserServiceClient(userConn)
 	userSrv := service.NewUserService(userClient)
 
-	orgConn, err := grpc.Dial("localhost:3004", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	orgConn, err := grpc.Dial(conf.Service.Organization, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal("Cannot connect to team service")
 	}
