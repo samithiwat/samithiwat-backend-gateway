@@ -1,10 +1,23 @@
 definitions:
-  model.ResponseErr:
+  dto.ResponseErr:
     properties:
+      data: {}
       message:
         type: string
       status_code:
         type: integer
+    type: object
+  dto.UserDto:
+    properties:
+      firstname:
+        type: string
+      image_url:
+        type: string
+      lastname:
+        type: string
+    required:
+    - firstname
+    - lastname
     type: object
   proto.Contact:
     properties:
@@ -189,11 +202,11 @@ paths:
         "400":
           description: Invalid query param
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "503":
           description: Service is down
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
       summary: Get all organizations
       tags:
       - organization
@@ -218,15 +231,15 @@ paths:
         "400":
           description: Invalid ID
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "404":
           description: Not found organization
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "503":
           description: Service is down
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
       summary: Create the organization
       tags:
       - organization
@@ -251,15 +264,15 @@ paths:
         "400":
           description: Invalid ID
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "404":
           description: Not found organization
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "503":
           description: Service is down
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
       summary: Delete the organization
       tags:
       - organization
@@ -283,15 +296,15 @@ paths:
         "400":
           description: Invalid ID
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "404":
           description: Not found organization
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "503":
           description: Service is down
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
       summary: Get specific organization with id
       tags:
       - organization
@@ -321,15 +334,15 @@ paths:
         "400":
           description: Invalid ID
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "404":
           description: Not found organization
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "503":
           description: Service is down
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
       summary: Update the existing organization
       tags:
       - organization
@@ -357,11 +370,11 @@ paths:
         "400":
           description: Invalid query param
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "503":
           description: Service is down
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
       summary: Get all teams
       tags:
       - team
@@ -386,15 +399,15 @@ paths:
         "400":
           description: Invalid ID
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "404":
           description: Not found team
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "503":
           description: Service is down
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
       summary: Create the team
       tags:
       - team
@@ -419,15 +432,15 @@ paths:
         "400":
           description: Invalid ID
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "404":
           description: Not found team
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "503":
           description: Service is down
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
       summary: Delete the team
       tags:
       - team
@@ -451,15 +464,15 @@ paths:
         "400":
           description: Invalid ID
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "404":
           description: Not found team
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "503":
           description: Service is down
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
       summary: Get specific team with id
       tags:
       - team
@@ -489,15 +502,15 @@ paths:
         "400":
           description: Invalid ID
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "404":
           description: Not found team
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "503":
           description: Service is down
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
       summary: Update the existing team
       tags:
       - team
@@ -523,13 +536,13 @@ paths:
           schema:
             $ref: '#/definitions/proto.User'
         "400":
-          description: Invalid query param
+          description: Bad Request
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "503":
-          description: Service is down
+          description: Service Unavailable
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
       summary: Get all users
       tags:
       - user
@@ -543,7 +556,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/proto.User'
+          $ref: '#/definitions/dto.UserDto'
       produces:
       - application/json
       responses:
@@ -552,17 +565,17 @@ paths:
           schema:
             $ref: '#/definitions/proto.User'
         "400":
-          description: Invalid ID
+          description: Bad Request
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "404":
-          description: Not found user
+          description: Not Found
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "503":
-          description: Service is down
+          description: Service Unavailable
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
       summary: Create the user
       tags:
       - user
@@ -585,17 +598,17 @@ paths:
           schema:
             $ref: '#/definitions/proto.User'
         "400":
-          description: Invalid ID
+          description: Bad Request
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "404":
-          description: Not found user
+          description: Not Found
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "503":
-          description: Service is down
+          description: Service Unavailable
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
       summary: Delete the user
       tags:
       - user
@@ -617,17 +630,17 @@ paths:
           schema:
             $ref: '#/definitions/proto.User'
         "400":
-          description: Invalid ID
+          description: Bad Request
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "404":
           description: Not found user
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "503":
-          description: Service is down
+          description: Service Unavailable
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
       summary: Get specific user with id
       tags:
       - user
@@ -655,17 +668,17 @@ paths:
           schema:
             $ref: '#/definitions/proto.User'
         "400":
-          description: Invalid ID
+          description: Bad Request
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "404":
-          description: Not found user
+          description: Not Found
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
         "503":
-          description: Service is down
+          description: Service Unavailable
           schema:
-            $ref: '#/definitions/model.ResponseErr'
+            $ref: '#/definitions/dto.ResponseErr'
       summary: Update the existing user
       tags:
       - user
