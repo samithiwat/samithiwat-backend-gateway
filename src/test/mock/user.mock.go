@@ -4,8 +4,9 @@ import (
 	"context"
 	"github.com/bxcodec/faker/v3"
 	"github.com/pkg/errors"
-	"github.com/samithiwat/samithiwat-backend-gateway/src/model"
+	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
+	"github.com/stretchr/testify/mock"
 	"google.golang.org/grpc"
 	"net/http"
 )
@@ -16,130 +17,119 @@ var User3 proto.User
 var User4 proto.User
 var Users []*proto.User
 
-type UserMockClient struct {
+type UserMockService struct {
+	mock.Mock
 }
 
-func (u UserMockClient) FindAll(ctx context.Context, in *proto.FindAllUserRequest, opts ...grpc.CallOption) (*proto.UserPaginationResponse, error) {
-	return &proto.UserPaginationResponse{
-		StatusCode: http.StatusOK,
-		Errors:     nil,
-		Data: &proto.UserPagination{
-			Items: Users,
-			Meta: &proto.PaginationMetadata{
-				TotalItem:    4,
-				ItemCount:    4,
-				ItemsPerPage: 10,
-				TotalPage:    1,
-				CurrentPage:  1,
-			},
+func (m UserMockService) FindAll(dto.PaginationQueryParams) (*proto.UserPagination, *dto.ResponseErr) {
+	return &proto.UserPagination{
+		Items: Users,
+		Meta: &proto.PaginationMetadata{
+			TotalItem:    4,
+			ItemCount:    4,
+			ItemsPerPage: 10,
+			TotalPage:    1,
+			CurrentPage:  1,
 		},
 	}, nil
 }
 
-func (u UserMockClient) FindOne(ctx context.Context, in *proto.FindOneUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	return &proto.UserResponse{
-		StatusCode: http.StatusOK,
-		Errors:     nil,
-		Data:       &User1,
-	}, nil
+func (m UserMockService) FindOne(int32) (*proto.User, *dto.ResponseErr) {
+	return &User1, nil
 }
 
-func (u UserMockClient) FindMulti(ctx context.Context, in *proto.FindMultiUserRequest, opts ...grpc.CallOption) (*proto.UserListResponse, error) {
+func (m UserMockService) Create(dto.UserDto) (*proto.User, *dto.ResponseErr) {
+	return &User1, nil
+}
+
+func (m UserMockService) Update(int32, dto.UserDto) (*proto.User, *dto.ResponseErr) {
+	return &User1, nil
+}
+
+func (m UserMockService) Delete(int32) (*proto.User, *dto.ResponseErr) {
+	return &User1, nil
+}
+
+type UserMockErrService struct {
+}
+
+func (UserMockErrService) FindAll(dto.PaginationQueryParams) (*proto.UserPagination, *dto.ResponseErr) {
 	return nil, nil
 }
 
-func (u UserMockClient) Create(ctx context.Context, in *proto.CreateUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	return &proto.UserResponse{
-		StatusCode: http.StatusCreated,
-		Errors:     nil,
-		Data:       &User1,
-	}, nil
-}
-
-func (u UserMockClient) Update(ctx context.Context, in *proto.UpdateUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	return &proto.UserResponse{
-		StatusCode: http.StatusOK,
-		Errors:     nil,
-		Data:       &User1,
-	}, nil
-}
-
-func (u UserMockClient) Delete(ctx context.Context, in *proto.DeleteUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	return &proto.UserResponse{
-		StatusCode: http.StatusOK,
-		Errors:     nil,
-		Data:       &User1,
-	}, nil
-}
-
-type UserMockErrClient struct {
-}
-
-func (u UserMockErrClient) FindAll(ctx context.Context, in *proto.FindAllUserRequest, opts ...grpc.CallOption) (*proto.UserPaginationResponse, error) {
-	return nil, nil
-}
-
-func (u UserMockErrClient) FindOne(ctx context.Context, in *proto.FindOneUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	return &proto.UserResponse{
+func (UserMockErrService) FindOne(int32) (*proto.User, *dto.ResponseErr) {
+	return nil, &dto.ResponseErr{
 		StatusCode: http.StatusNotFound,
-		Errors:     []string{"Not found user"},
+		Message:    "Not found user",
 		Data:       nil,
-	}, nil
+	}
 }
 
-func (u UserMockErrClient) FindMulti(ctx context.Context, in *proto.FindMultiUserRequest, opts ...grpc.CallOption) (*proto.UserListResponse, error) {
-	return nil, nil
-}
-
-func (u UserMockErrClient) Create(ctx context.Context, in *proto.CreateUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	return &proto.UserResponse{
+func (UserMockErrService) Create(dto.UserDto) (*proto.User, *dto.ResponseErr) {
+	return nil, &dto.ResponseErr{
 		StatusCode: http.StatusUnprocessableEntity,
-		Errors:     []string{"Duplicated username or email"},
+		Message:    "Duplicated email or username",
 		Data:       nil,
-	}, nil
+	}
 }
 
-func (u UserMockErrClient) Update(ctx context.Context, in *proto.UpdateUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	return &proto.UserResponse{
+func (UserMockErrService) Update(int32, dto.UserDto) (*proto.User, *dto.ResponseErr) {
+	return nil, &dto.ResponseErr{
 		StatusCode: http.StatusNotFound,
-		Errors:     []string{"Not found user"},
+		Message:    "Not found user",
 		Data:       nil,
-	}, nil
+	}
 }
 
-func (u UserMockErrClient) Delete(ctx context.Context, in *proto.DeleteUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	return &proto.UserResponse{
+func (UserMockErrService) Delete(int32) (*proto.User, *dto.ResponseErr) {
+	return nil, &dto.ResponseErr{
 		StatusCode: http.StatusNotFound,
-		Errors:     []string{"Not found user"},
+		Message:    "Not found user",
 		Data:       nil,
-	}, nil
+	}
 }
 
-type UserMockErrGrpcClient struct {
+type UserMockErrGrpcService struct {
 }
 
-func (u UserMockErrGrpcClient) FindAll(ctx context.Context, in *proto.FindAllUserRequest, opts ...grpc.CallOption) (*proto.UserPaginationResponse, error) {
-	return nil, errors.New("Service is down")
+func (UserMockErrGrpcService) FindAll(dto.PaginationQueryParams) (*proto.UserPagination, *dto.ResponseErr) {
+	return nil, &dto.ResponseErr{
+		StatusCode: http.StatusServiceUnavailable,
+		Message:    "Service is down",
+		Data:       nil,
+	}
 }
 
-func (u UserMockErrGrpcClient) FindOne(ctx context.Context, in *proto.FindOneUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	return nil, errors.New("Service is down")
+func (UserMockErrGrpcService) FindOne(int32) (*proto.User, *dto.ResponseErr) {
+	return nil, &dto.ResponseErr{
+		StatusCode: http.StatusServiceUnavailable,
+		Message:    "Service is down",
+		Data:       nil,
+	}
 }
 
-func (u UserMockErrGrpcClient) FindMulti(ctx context.Context, in *proto.FindMultiUserRequest, opts ...grpc.CallOption) (*proto.UserListResponse, error) {
-	return nil, nil
+func (UserMockErrGrpcService) Create(dto.UserDto) (*proto.User, *dto.ResponseErr) {
+	return nil, &dto.ResponseErr{
+		StatusCode: http.StatusServiceUnavailable,
+		Message:    "Service is down",
+		Data:       nil,
+	}
 }
 
-func (u UserMockErrGrpcClient) Create(ctx context.Context, in *proto.CreateUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	return nil, errors.New("Service is down")
+func (UserMockErrGrpcService) Update(int32, dto.UserDto) (*proto.User, *dto.ResponseErr) {
+	return nil, &dto.ResponseErr{
+		StatusCode: http.StatusServiceUnavailable,
+		Message:    "Service is down",
+		Data:       nil,
+	}
 }
 
-func (u UserMockErrGrpcClient) Update(ctx context.Context, in *proto.UpdateUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	return nil, errors.New("Service is down")
-}
-
-func (u UserMockErrGrpcClient) Delete(ctx context.Context, in *proto.DeleteUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	return nil, errors.New("Service is down")
+func (UserMockErrGrpcService) Delete(int32) (*proto.User, *dto.ResponseErr) {
+	return nil, &dto.ResponseErr{
+		StatusCode: http.StatusServiceUnavailable,
+		Message:    "Service is down",
+		Data:       nil,
+	}
 }
 
 type UserMockContext struct {
@@ -160,8 +150,8 @@ func (UserMockContext) ID(id *int32) error {
 	return nil
 }
 
-func (UserMockContext) PaginationQueryParam(query *model.PaginationQueryParams) error {
-	*query = model.PaginationQueryParams{
+func (UserMockContext) PaginationQueryParam(query *dto.PaginationQueryParams) error {
+	*query = dto.PaginationQueryParams{
 		Page:  1,
 		Limit: 10,
 	}
@@ -186,7 +176,7 @@ func (UserMockErrContext) ID(*int32) error {
 	return errors.New("Invalid ID")
 }
 
-func (UserMockErrContext) PaginationQueryParam(*model.PaginationQueryParams) error {
+func (UserMockErrContext) PaginationQueryParam(*dto.PaginationQueryParams) error {
 	return errors.New("Invalid Query Param")
 }
 
@@ -220,4 +210,76 @@ func InitializeMockUser() {
 	}
 
 	Users = append(Users, &User1, &User2, &User3, &User4)
+}
+
+type UserServiceMock struct {
+	mock.Mock
+}
+
+func (m UserServiceMock) FindAll(params dto.PaginationQueryParams) (*proto.UserPagination, *dto.ResponseErr) {
+	args := m.Called(params)
+
+	return args.Get(0).(*proto.UserPagination), nil
+}
+
+func (m UserServiceMock) FindOne(id int32) (*proto.User, *dto.ResponseErr) {
+	args := m.Called(id)
+
+	return args.Get(0).(*proto.User), args.Get(1).(*dto.ResponseErr)
+}
+
+func (m UserServiceMock) Create(user dto.UserDto) (*proto.User, *dto.ResponseErr) {
+	args := m.Called(user)
+
+	return args.Get(0).(*proto.User), args.Get(1).(*dto.ResponseErr)
+}
+
+func (m UserServiceMock) Update(id int32, user dto.UserDto) (*proto.User, *dto.ResponseErr) {
+	args := m.Called(id, user)
+
+	return args.Get(0).(*proto.User), args.Get(1).(*dto.ResponseErr)
+}
+
+func (m UserServiceMock) Delete(id int32) (*proto.User, *dto.ResponseErr) {
+	args := m.Called(id)
+
+	return args.Get(0).(*proto.User), args.Get(1).(*dto.ResponseErr)
+}
+
+type UserClientMock struct {
+	mock.Mock
+}
+
+func (m UserClientMock) FindAll(ctx context.Context, in *proto.FindAllUserRequest, opts ...grpc.CallOption) (*proto.UserPaginationResponse, error) {
+	args := m.Called()
+
+	return args.Get(0).(*proto.UserPaginationResponse), args.Error(1)
+}
+
+func (m UserClientMock) FindOne(ctx context.Context, in *proto.FindOneUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
+	args := m.Called()
+
+	return args.Get(0).(*proto.UserResponse), args.Error(1)
+}
+
+func (m UserClientMock) FindMulti(ctx context.Context, in *proto.FindMultiUserRequest, opts ...grpc.CallOption) (*proto.UserListResponse, error) {
+	return nil, nil
+}
+
+func (m UserClientMock) Create(ctx context.Context, in *proto.CreateUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
+	args := m.Called()
+
+	return args.Get(0).(*proto.UserResponse), args.Error(1)
+}
+
+func (m UserClientMock) Update(ctx context.Context, in *proto.UpdateUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
+	args := m.Called()
+
+	return args.Get(0).(*proto.UserResponse), args.Error(1)
+}
+
+func (m UserClientMock) Delete(ctx context.Context, in *proto.DeleteUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
+	args := m.Called()
+
+	return args.Get(0).(*proto.UserResponse), args.Error(1)
 }
