@@ -2,15 +2,15 @@ package handler
 
 import (
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
-	"github.com/samithiwat/samithiwat-backend-gateway/src/service"
+	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	"net/http"
 )
 
 type UserHandler struct {
-	service service.UserService
+	service UserService
 }
 
-func NewUserHandler(service service.UserService) *UserHandler {
+func NewUserHandler(service UserService) *UserHandler {
 	return &UserHandler{
 		service: service,
 	}
@@ -21,6 +21,14 @@ type UserContext interface {
 	JSON(int, interface{})
 	ID(*int32) error
 	PaginationQueryParam(*dto.PaginationQueryParams) error
+}
+
+type UserService interface {
+	FindAll(dto.PaginationQueryParams) (*proto.UserPagination, *dto.ResponseErr)
+	FindOne(int32) (*proto.User, *dto.ResponseErr)
+	Create(dto.UserDto) (*proto.User, *dto.ResponseErr)
+	Update(int32, dto.UserDto) (*proto.User, *dto.ResponseErr)
+	Delete(int32) (*proto.User, *dto.ResponseErr)
 }
 
 // FindAll is a function that get all users in database
@@ -40,31 +48,20 @@ func (h *UserHandler) FindAll(c UserContext) {
 
 	err := c.PaginationQueryParam(&query)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, dto.ResponseErr{
+		c.JSON(http.StatusInternalServerError, &dto.ResponseErr{
 			StatusCode: http.StatusInternalServerError,
-			Message:    []string{"Cannot parse query param"},
+			Message:    "Cannot parse query param",
 		})
 		return
 	}
 
-	res, err := h.service.FindAll(query)
-	if err != nil {
-		c.JSON(http.StatusServiceUnavailable, dto.ResponseErr{
-			StatusCode: http.StatusServiceUnavailable,
-			Message:    []string{"Service is down"},
-		})
+	users, errRes := h.service.FindAll(query)
+	if users.Items == nil {
+		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
 
-	if res.StatusCode != http.StatusOK {
-		c.JSON(int(res.StatusCode), dto.ResponseErr{
-			StatusCode: int(res.StatusCode),
-			Data:       res.Errors,
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, res.Data)
+	c.JSON(http.StatusOK, users)
 	return
 }
 
@@ -84,23 +81,20 @@ func (h *UserHandler) FindOne(c UserContext) {
 	var id int32
 	err := c.ID(&id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.ResponseErr{
+		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
-			Message:    []string{"Invalid ID"},
+			Message:    "Invalid ID",
 		})
 		return
 	}
 
-	res, err := h.service.FindOne(id)
-	if err != nil {
-		c.JSON(http.StatusServiceUnavailable, dto.ResponseErr{
-			StatusCode: http.StatusServiceUnavailable,
-			Message:    []string{"Service is down"},
-		})
+	user, errRes := h.service.FindOne(id)
+	if user.Id == 0 {
+		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
 
-	c.JSON(int(res.StatusCode), res)
+	c.JSON(http.StatusOK, user)
 	return
 }
 
@@ -120,33 +114,30 @@ func (h *UserHandler) Create(c UserContext) {
 	userDto := dto.UserDto{}
 	err := c.Bind(&userDto)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, dto.ResponseErr{
-			StatusCode: http.StatusInternalServerError,
-			Message:    []string{"Cannot parse user dto"},
+		c.JSON(http.StatusInternalServerError, &dto.ResponseErr{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Cannot parse user dto",
 		})
 		return
 	}
 
 	errors := dto.ValidateUser(userDto)
 	if errors != nil {
-		c.JSON(http.StatusBadRequest, dto.ResponseErr{
+		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
-			Message:    []string{"Invalid body request"},
+			Message:    "Invalid body request",
 			Data:       errors,
 		})
 		return
 	}
 
-	res, err := h.service.Create(userDto)
-	if err != nil {
-		c.JSON(http.StatusServiceUnavailable, dto.ResponseErr{
-			StatusCode: http.StatusServiceUnavailable,
-			Message:    []string{"Service is down"},
-		})
+	user, errRes := h.service.Create(userDto)
+	if user.Id == 0 {
+		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
 
-	c.JSON(int(res.StatusCode), res.Data)
+	c.JSON(http.StatusCreated, user)
 	return
 }
 
@@ -167,18 +158,18 @@ func (h *UserHandler) Update(c UserContext) {
 	userDto := dto.UserDto{}
 	err := c.Bind(&userDto)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, dto.ResponseErr{
-			StatusCode: http.StatusInternalServerError,
-			Message:    []string{"Cannot parse user dto"},
+		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Cannot parse user dto",
 		})
 		return
 	}
 
 	errors := dto.ValidateUser(userDto)
 	if errors != nil {
-		c.JSON(http.StatusBadRequest, dto.ResponseErr{
+		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
-			Message:    []string{"Invalid body request"},
+			Message:    "Invalid body request",
 			Data:       errors,
 		})
 		return
@@ -187,23 +178,20 @@ func (h *UserHandler) Update(c UserContext) {
 	var id int32
 	err = c.ID(&id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, dto.ResponseErr{
-			StatusCode: http.StatusInternalServerError,
-			Message:    []string{"Invalid ID"},
+		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid ID",
 		})
 		return
 	}
 
-	res, err := h.service.Update(id, userDto)
-	if err != nil {
-		c.JSON(http.StatusServiceUnavailable, dto.ResponseErr{
-			StatusCode: http.StatusServiceUnavailable,
-			Message:    []string{"Service is down"},
-		})
+	user, errRes := h.service.Update(id, userDto)
+	if user.Id == 0 {
+		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
 
-	c.JSON(int(res.StatusCode), res.Data)
+	c.JSON(http.StatusOK, user)
 	return
 }
 
@@ -223,30 +211,19 @@ func (h *UserHandler) Delete(c UserContext) {
 	var id int32
 	err := c.ID(&id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, dto.ResponseErr{
-			StatusCode: http.StatusInternalServerError,
-			Message:    []string{"Invalid ID"},
+		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid ID",
 		})
 		return
 	}
 
-	res, err := h.service.Delete(id)
-	if err != nil {
-		c.JSON(http.StatusServiceUnavailable, dto.ResponseErr{
-			StatusCode: http.StatusServiceUnavailable,
-			Message:    []string{"Service is down"},
-		})
+	user, errRes := h.service.Delete(id)
+	if user.Id == 0 {
+		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
 
-	if res.StatusCode != http.StatusOK {
-		c.JSON(int(res.StatusCode), dto.ResponseErr{
-			StatusCode: http.StatusServiceUnavailable,
-			Message:    res.Errors,
-		})
-		return
-	}
-
-	c.JSON(int(res.StatusCode), res.Data)
+	c.JSON(http.StatusOK, user)
 	return
 }
