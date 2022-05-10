@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
+	"net/http"
 	"time"
 )
 
@@ -17,7 +18,7 @@ func NewUserService(client proto.UserServiceClient) *UserService {
 	}
 }
 
-func (s *UserService) FindAll(query dto.PaginationQueryParams) (res *proto.UserPaginationResponse, err error) {
+func (s *UserService) FindAll(query dto.PaginationQueryParams) (result *proto.UserPagination, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -26,48 +27,132 @@ func (s *UserService) FindAll(query dto.PaginationQueryParams) (res *proto.UserP
 		Limit: query.Limit,
 	}
 
-	res, err = s.client.FindAll(ctx, req)
+	res, errRes := s.client.FindAll(ctx, req)
+	if errRes != nil {
+		return nil, &dto.ResponseErr{
+			StatusCode: http.StatusServiceUnavailable,
+			Message:    "Service is down",
+			Data:       nil,
+		}
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, &dto.ResponseErr{
+			StatusCode: int(res.StatusCode),
+			Message:    FormatErr(res.Errors),
+			Data:       nil,
+		}
+	}
+
+	result = res.Data
 
 	return
 }
 
-func (s *UserService) FindOne(id int32) (res *proto.UserResponse, err error) {
+func (s *UserService) FindOne(id int32) (result *proto.User, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	res, err = s.client.FindOne(ctx, &proto.FindOneUserRequest{Id: id})
+	res, errRes := s.client.FindOne(ctx, &proto.FindOneUserRequest{Id: id})
+	if errRes != nil {
+		return nil, &dto.ResponseErr{
+			StatusCode: http.StatusServiceUnavailable,
+			Message:    "Service is down",
+			Data:       nil,
+		}
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, &dto.ResponseErr{
+			StatusCode: int(res.StatusCode),
+			Message:    FormatErr(res.Errors),
+			Data:       nil,
+		}
+	}
+
+	result = res.Data
 
 	return
 }
 
-func (s *UserService) Create(userDto dto.UserDto) (res *proto.UserResponse, err error) {
+func (s *UserService) Create(userDto *dto.UserDto) (result *proto.User, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	user := s.DtoToRaw(&userDto)
+	user := s.DtoToRaw(userDto)
 
-	res, err = s.client.Create(ctx, &proto.CreateUserRequest{User: user})
+	res, errRes := s.client.Create(ctx, &proto.CreateUserRequest{User: user})
+	if errRes != nil {
+		return nil, &dto.ResponseErr{
+			StatusCode: http.StatusServiceUnavailable,
+			Message:    "Service is down",
+			Data:       nil,
+		}
+	}
 
+	if res.StatusCode != http.StatusCreated {
+		return nil, &dto.ResponseErr{
+			StatusCode: int(res.StatusCode),
+			Message:    FormatErr(res.Errors),
+			Data:       nil,
+		}
+	}
+
+	result = res.Data
 	return
 }
 
-func (s *UserService) Update(id int32, userDto dto.UserDto) (res *proto.UserResponse, err error) {
+func (s *UserService) Update(id int32, userDto *dto.UserDto) (result *proto.User, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	user := s.DtoToRaw(&userDto)
+	user := s.DtoToRaw(userDto)
 	user.Id = uint32(id)
 
-	res, err = s.client.Update(ctx, &proto.UpdateUserRequest{User: user})
+	res, errRes := s.client.Update(ctx, &proto.UpdateUserRequest{User: user})
+	if errRes != nil {
+		return nil, &dto.ResponseErr{
+			StatusCode: http.StatusServiceUnavailable,
+			Message:    "Service is down",
+			Data:       nil,
+		}
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, &dto.ResponseErr{
+			StatusCode: int(res.StatusCode),
+			Message:    FormatErr(res.Errors),
+			Data:       nil,
+		}
+	}
+
+	result = res.Data
 
 	return
 }
 
-func (s *UserService) Delete(id int32) (res *proto.UserResponse, err error) {
+func (s *UserService) Delete(id int32) (result *proto.User, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	res, err = s.client.Delete(ctx, &proto.DeleteUserRequest{Id: id})
+	res, errRes := s.client.Delete(ctx, &proto.DeleteUserRequest{Id: id})
+	if errRes != nil {
+		return nil, &dto.ResponseErr{
+			StatusCode: http.StatusServiceUnavailable,
+			Message:    "Service is down",
+			Data:       nil,
+		}
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, &dto.ResponseErr{
+			StatusCode: int(res.StatusCode),
+			Message:    FormatErr(res.Errors),
+			Data:       nil,
+		}
+	}
+
+	result = res.Data
 
 	return
 }
