@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/config"
 	_ "github.com/samithiwat/samithiwat-backend-gateway/src/docs"
+	"github.com/samithiwat/samithiwat-backend-gateway/src/handler"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/router"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/service"
@@ -56,6 +57,7 @@ func main() {
 
 	userClient := proto.NewUserServiceClient(userConn)
 	userSrv := service.NewUserService(userClient)
+	userHandler := handler.NewUserHandler(userSrv)
 
 	orgConn, err := grpc.Dial(conf.Service.Organization, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -70,11 +72,11 @@ func main() {
 
 	r := router.NewFiberRouter()
 
-	r.GetUser("/user", userSrv.FindAll)
-	r.GetUser("/user/:id", userSrv.FindOne)
-	r.CreateUser("user", userSrv.Create)
-	r.PatchUser("/user/:id", userSrv.Update)
-	r.DeleteUser("user/:id", userSrv.Delete)
+	r.GetUser("/user", userHandler.FindAll)
+	r.GetUser("/user/:id", userHandler.FindOne)
+	r.CreateUser("user", userHandler.Create)
+	r.PatchUser("/user/:id", userHandler.Update)
+	r.DeleteUser("user/:id", userHandler.Delete)
 
 	r.GetTeam("/team", teamSrv.FindAll)
 	r.GetTeam("/team/:id", teamSrv.FindOne)
