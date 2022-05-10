@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/samithiwat/samithiwat-backend-gateway/src/model"
+	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 )
 
 type FiberRouter struct {
@@ -50,7 +50,7 @@ func (c *FiberCtx) ID(id *int32) error {
 	return nil
 }
 
-func (c *FiberCtx) PaginationQueryParam(query *model.PaginationQueryParams) error {
+func (c *FiberCtx) PaginationQueryParam(query *dto.PaginationQueryParams) error {
 	if err := c.QueryParser(query); err != nil {
 		return err
 	}
