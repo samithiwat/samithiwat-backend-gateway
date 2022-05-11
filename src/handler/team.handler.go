@@ -24,10 +24,10 @@ type TeamContext interface {
 }
 
 type TeamService interface {
-	FindAll(dto.PaginationQueryParams) (*proto.TeamPagination, *dto.ResponseErr)
+	FindAll(*dto.PaginationQueryParams) (*proto.TeamPagination, *dto.ResponseErr)
 	FindOne(int32) (*proto.Team, *dto.ResponseErr)
-	Create(dto.TeamDto) (*proto.Team, *dto.ResponseErr)
-	Update(int32, dto.TeamDto) (*proto.Team, *dto.ResponseErr)
+	Create(*dto.TeamDto) (*proto.Team, *dto.ResponseErr)
+	Update(int32, *dto.TeamDto) (*proto.Team, *dto.ResponseErr)
 	Delete(int32) (*proto.Team, *dto.ResponseErr)
 }
 
@@ -55,7 +55,7 @@ func (h *TeamHandler) FindAll(c TeamContext) {
 		return
 	}
 
-	teams, errRes := h.service.FindAll(query)
+	teams, errRes := h.service.FindAll(&query)
 	if teams.Items == nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
@@ -131,7 +131,7 @@ func (h *TeamHandler) Create(c TeamContext) {
 	//	return
 	//}
 
-	team, errRes := h.service.Create(teamDto)
+	team, errRes := h.service.Create(&teamDto)
 	if team.Id == 0 {
 		c.JSON(errRes.StatusCode, errRes)
 		return
@@ -185,7 +185,7 @@ func (h *TeamHandler) Update(c TeamContext) {
 		return
 	}
 
-	team, errRes := h.service.Update(id, teamDto)
+	team, errRes := h.service.Update(id, &teamDto)
 	if team.Id == 0 {
 		c.JSON(errRes.StatusCode, errRes)
 		return

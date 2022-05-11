@@ -18,7 +18,7 @@ func NewTeamService(client proto.TeamServiceClient) *TeamService {
 	}
 }
 
-func (s *TeamService) FindAll(query dto.PaginationQueryParams) (result *proto.TeamPagination, err *dto.ResponseErr) {
+func (s *TeamService) FindAll(query *dto.PaginationQueryParams) (result *proto.TeamPagination, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
