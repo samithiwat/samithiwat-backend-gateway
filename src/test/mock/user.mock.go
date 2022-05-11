@@ -2,7 +2,6 @@ package mock
 
 import (
 	"context"
-	"fmt"
 	"github.com/bxcodec/faker/v3"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
@@ -21,7 +20,6 @@ func (m *UserServiceMock) FindAll(params dto.PaginationQueryParams) (*proto.User
 }
 
 func (m *UserServiceMock) FindOne(id int32) (*proto.User, *dto.ResponseErr) {
-	fmt.Println(id)
 	args := m.Called(id)
 
 	return args.Get(0).(*proto.User), args.Get(1).(*dto.ResponseErr)
