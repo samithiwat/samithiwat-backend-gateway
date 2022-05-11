@@ -2,6 +2,7 @@ package test
 
 import (
 	"github.com/bxcodec/faker/v3"
+	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/handler"
@@ -92,8 +93,9 @@ func (u *UserHandlerTest) TestFindAllUser() {
 
 	srv.On("FindAll").Return(want, &dto.ResponseErr{})
 	c.On("PaginationQueryParam").Return(nil)
+	v := validator.New()
 
-	h := handler.NewUserHandler(srv)
+	h := handler.NewUserHandler(srv, v)
 	h.FindAll(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -111,7 +113,9 @@ func (u *UserHandlerTest) TestFindAllInvalidQueryParamUser() {
 	srv.On("FindAll").Return(nil, nil)
 	c.On("PaginationQueryParam").Return(errors.New("Cannot parse query param"))
 
-	h := handler.NewUserHandler(srv)
+	v := validator.New()
+
+	h := handler.NewUserHandler(srv, v)
 
 	h.FindAll(c)
 
@@ -127,7 +131,9 @@ func (u *UserHandlerTest) TestFindAllGrpcErrUser() {
 	srv.On("FindAll").Return(&proto.UserPagination{}, u.ServiceDownErr)
 	c.On("PaginationQueryParam").Return(nil)
 
-	h := handler.NewUserHandler(srv)
+	v := validator.New()
+
+	h := handler.NewUserHandler(srv, v)
 
 	h.FindAll(c)
 
@@ -143,7 +149,9 @@ func (u *UserHandlerTest) TestFindOneUser() {
 	srv.On("FindOne", int32(1)).Return(u.User, &dto.ResponseErr{})
 	c.On("ID").Return(nil)
 
-	h := handler.NewUserHandler(srv)
+	v := validator.New()
+
+	h := handler.NewUserHandler(srv, v)
 
 	h.FindOne(c)
 
@@ -159,7 +167,9 @@ func (u *UserHandlerTest) TestFindOneInvalidRequestParamIDUser() {
 	srv.On("FindOne", int32(1)).Return(&proto.User{}, &dto.ResponseErr{})
 	c.On("ID").Return(errors.New("Invalid ID"))
 
-	h := handler.NewUserHandler(srv)
+	v := validator.New()
+
+	h := handler.NewUserHandler(srv, v)
 	h.FindOne(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -174,7 +184,9 @@ func (u *UserHandlerTest) TestFindOneErrorNotFoundUser() {
 	srv.On("FindOne", int32(1)).Return(&proto.User{}, u.NotFoundErr)
 	c.On("ID").Return(nil)
 
-	h := handler.NewUserHandler(srv)
+	v := validator.New()
+
+	h := handler.NewUserHandler(srv, v)
 
 	h.FindOne(c)
 
@@ -190,7 +202,9 @@ func (u *UserHandlerTest) TestFindOneGrpcErrUser() {
 	srv.On("FindOne", int32(1)).Return(&proto.User{}, u.ServiceDownErr)
 	c.On("ID").Return(nil)
 
-	h := handler.NewUserHandler(srv)
+	v := validator.New()
+
+	h := handler.NewUserHandler(srv, v)
 
 	h.FindOne(c)
 
@@ -206,7 +220,9 @@ func (u *UserHandlerTest) TestCreateUser() {
 	srv.On("Create").Return(u.User, &dto.ResponseErr{})
 	c.On("Bind").Return(nil)
 
-	h := handler.NewUserHandler(srv)
+	v := validator.New()
+
+	h := handler.NewUserHandler(srv, v)
 	h.Create(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -224,7 +240,9 @@ func (u *UserHandlerTest) TestCreateErrorDuplicatedUser() {
 	srv.On("Create").Return(&proto.User{}, want)
 	c.On("Bind").Return(nil)
 
-	h := handler.NewUserHandler(srv)
+	v := validator.New()
+
+	h := handler.NewUserHandler(srv, v)
 	h.Create(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -242,7 +260,9 @@ func (u *UserHandlerTest) TestCreateInvalidBodyRequest() {
 	srv.On("Create").Return(&proto.User{}, &dto.ResponseErr{})
 	c.On("Bind").Return(errors.New("Cannot parse body request"))
 
-	h := handler.NewUserHandler(srv)
+	v := validator.New()
+
+	h := handler.NewUserHandler(srv, v)
 	h.Create(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -257,7 +277,9 @@ func (u *UserHandlerTest) TestCreateGrpcErrUser() {
 	srv.On("Create").Return(&proto.User{}, u.ServiceDownErr)
 	c.On("Bind").Return(nil)
 
-	h := handler.NewUserHandler(srv)
+	v := validator.New()
+
+	h := handler.NewUserHandler(srv, v)
 
 	h.Create(c)
 
@@ -274,7 +296,9 @@ func (u *UserHandlerTest) TestUpdateUser() {
 	c.On("Bind").Return(nil)
 	c.On("ID").Return(nil)
 
-	h := handler.NewUserHandler(srv)
+	v := validator.New()
+
+	h := handler.NewUserHandler(srv, v)
 
 	h.Update(c)
 
@@ -291,7 +315,9 @@ func (u *UserHandlerTest) TestUpdateInvalidRequestParamIDUser() {
 	c.On("ID").Return(errors.New("Invalid ID"))
 	c.On("Bind").Return(nil)
 
-	h := handler.NewUserHandler(srv)
+	v := validator.New()
+
+	h := handler.NewUserHandler(srv, v)
 
 	h.Update(c)
 
@@ -311,7 +337,9 @@ func (u *UserHandlerTest) TestUpdateInvalidBodyRequest() {
 	c.On("ID").Return(nil)
 	c.On("Bind").Return(errors.New("Cannot parse user dto"))
 
-	h := handler.NewUserHandler(srv)
+	v := validator.New()
+
+	h := handler.NewUserHandler(srv, v)
 	h.Create(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -327,7 +355,9 @@ func (u *UserHandlerTest) TestUpdateErrorNotFoundUser() {
 	c.On("ID").Return(nil)
 	c.On("Bind").Return(nil)
 
-	h := handler.NewUserHandler(srv)
+	v := validator.New()
+
+	h := handler.NewUserHandler(srv, v)
 	h.Update(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -343,7 +373,9 @@ func (u *UserHandlerTest) TestUpdateGrpcErrUser() {
 	c.On("Bind").Return(nil)
 	c.On("ID").Return(nil)
 
-	h := handler.NewUserHandler(srv)
+	v := validator.New()
+
+	h := handler.NewUserHandler(srv, v)
 
 	h.Update(c)
 
@@ -359,7 +391,9 @@ func (u *UserHandlerTest) TestDeleteUser() {
 	srv.On("Delete", int32(1)).Return(u.User, &dto.ResponseErr{})
 	c.On("ID").Return(nil)
 
-	h := handler.NewUserHandler(srv)
+	v := validator.New()
+
+	h := handler.NewUserHandler(srv, v)
 
 	h.Delete(c)
 
@@ -375,7 +409,9 @@ func (u *UserHandlerTest) TestDeleteInvalidRequestParamIDUser() {
 	srv.On("Delete", int32(1)).Return(&proto.User{}, &dto.ResponseErr{})
 	c.On("ID").Return(errors.New("Invalid ID"))
 
-	h := handler.NewUserHandler(srv)
+	v := validator.New()
+
+	h := handler.NewUserHandler(srv, v)
 
 	h.Delete(c)
 
@@ -391,7 +427,9 @@ func (u *UserHandlerTest) TestDeleteErrorNotFoundUser() {
 	srv.On("Delete", int32(1)).Return(&proto.User{}, u.NotFoundErr)
 	c.On("ID").Return(nil)
 
-	h := handler.NewUserHandler(srv)
+	v := validator.New()
+
+	h := handler.NewUserHandler(srv, v)
 
 	h.Delete(c)
 
@@ -407,7 +445,9 @@ func (u *UserHandlerTest) TestDeleteGrpcErrUser() {
 	srv.On("Delete", int32(1)).Return(&proto.User{}, u.ServiceDownErr)
 	c.On("ID").Return(nil)
 
-	h := handler.NewUserHandler(srv)
+	v := validator.New()
+
+	h := handler.NewUserHandler(srv, v)
 
 	h.Delete(c)
 

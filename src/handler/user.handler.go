@@ -1,18 +1,22 @@
 package handler
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
+	validate "github.com/samithiwat/samithiwat-backend-gateway/src/validator"
 	"net/http"
 )
 
 type UserHandler struct {
-	service UserService
+	service  UserService
+	validate *validator.Validate
 }
 
-func NewUserHandler(service UserService) *UserHandler {
+func NewUserHandler(service UserService, validate *validator.Validate) *UserHandler {
 	return &UserHandler{
-		service: service,
+		service:  service,
+		validate: validate,
 	}
 }
 
@@ -121,7 +125,8 @@ func (h *UserHandler) Create(c UserContext) {
 		return
 	}
 
-	errors := dto.ValidateUser(userDto)
+	v := h.validate.Struct(userDto)
+	errors := validate.Format(v.(validator.ValidationErrors))
 	if errors != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
@@ -165,7 +170,8 @@ func (h *UserHandler) Update(c UserContext) {
 		return
 	}
 
-	errors := dto.ValidateUser(userDto)
+	v := h.validate.Struct(userDto)
+	errors := validate.Format(v.(validator.ValidationErrors))
 	if errors != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
