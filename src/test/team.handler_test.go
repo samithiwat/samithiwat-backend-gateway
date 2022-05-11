@@ -2,6 +2,7 @@ package test
 
 import (
 	"github.com/bxcodec/faker/v3"
+	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/handler"
@@ -89,7 +90,9 @@ func (u *TeamHandlerTest) TestFindAllTeam() {
 	srv.On("FindAll").Return(want, &dto.ResponseErr{})
 	c.On("PaginationQueryParam").Return(nil)
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 	h.FindAll(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -107,7 +110,9 @@ func (u *TeamHandlerTest) TestFindAllInvalidQueryParamTeam() {
 	srv.On("FindAll").Return(nil, nil)
 	c.On("PaginationQueryParam").Return(errors.New("Cannot parse query param"))
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 
 	h.FindAll(c)
 
@@ -123,7 +128,9 @@ func (u *TeamHandlerTest) TestFindAllGrpcErrTeam() {
 	srv.On("FindAll").Return(&proto.TeamPagination{}, u.ServiceDownErr)
 	c.On("PaginationQueryParam").Return(nil)
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 
 	h.FindAll(c)
 
@@ -139,7 +146,9 @@ func (u *TeamHandlerTest) TestFindOneTeam() {
 	srv.On("FindOne", int32(1)).Return(u.Team, &dto.ResponseErr{})
 	c.On("ID").Return(nil)
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 
 	h.FindOne(c)
 
@@ -155,7 +164,9 @@ func (u *TeamHandlerTest) TestFindOneInvalidRequestParamIDTeam() {
 	srv.On("FindOne", int32(1)).Return(&proto.Team{}, &dto.ResponseErr{})
 	c.On("ID").Return(errors.New("Invalid ID"))
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 	h.FindOne(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -170,7 +181,9 @@ func (u *TeamHandlerTest) TestFindOneErrorNotFoundTeam() {
 	srv.On("FindOne", int32(1)).Return(&proto.Team{}, u.NotFoundErr)
 	c.On("ID").Return(nil)
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 
 	h.FindOne(c)
 
@@ -186,7 +199,9 @@ func (u *TeamHandlerTest) TestFindOneGrpcErrTeam() {
 	srv.On("FindOne", int32(1)).Return(&proto.Team{}, u.ServiceDownErr)
 	c.On("ID").Return(nil)
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 
 	h.FindOne(c)
 
@@ -202,7 +217,9 @@ func (u *TeamHandlerTest) TestCreateTeam() {
 	srv.On("Create").Return(u.Team, &dto.ResponseErr{})
 	c.On("Bind").Return(nil)
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 	h.Create(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -220,7 +237,9 @@ func (u *TeamHandlerTest) TestCreateErrorDuplicatedTeam() {
 	srv.On("Create").Return(&proto.Team{}, want)
 	c.On("Bind").Return(nil)
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 	h.Create(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -238,7 +257,9 @@ func (u *TeamHandlerTest) TestCreateInvalidBodyRequest() {
 	srv.On("Create").Return(&proto.Team{}, &dto.ResponseErr{})
 	c.On("Bind").Return(errors.New("Cannot parse body request"))
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 	h.Create(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -253,7 +274,9 @@ func (u *TeamHandlerTest) TestCreateGrpcErrTeam() {
 	srv.On("Create").Return(&proto.Team{}, u.ServiceDownErr)
 	c.On("Bind").Return(nil)
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 
 	h.Create(c)
 
@@ -270,7 +293,9 @@ func (u *TeamHandlerTest) TestUpdateTeam() {
 	c.On("Bind").Return(nil)
 	c.On("ID").Return(nil)
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 
 	h.Update(c)
 
@@ -287,7 +312,9 @@ func (u *TeamHandlerTest) TestUpdateInvalidRequestParamIDTeam() {
 	c.On("ID").Return(errors.New("Invalid ID"))
 	c.On("Bind").Return(nil)
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 
 	h.Update(c)
 
@@ -307,7 +334,9 @@ func (u *TeamHandlerTest) TestUpdateInvalidBodyRequest() {
 	c.On("ID").Return(nil)
 	c.On("Bind").Return(errors.New("Cannot parse team dto"))
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 	h.Create(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -323,7 +352,9 @@ func (u *TeamHandlerTest) TestUpdateErrorNotFoundTeam() {
 	c.On("ID").Return(nil)
 	c.On("Bind").Return(nil)
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 	h.Update(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -339,7 +370,9 @@ func (u *TeamHandlerTest) TestUpdateGrpcErrTeam() {
 	c.On("Bind").Return(nil)
 	c.On("ID").Return(nil)
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 
 	h.Update(c)
 
@@ -355,7 +388,9 @@ func (u *TeamHandlerTest) TestDeleteTeam() {
 	srv.On("Delete", int32(1)).Return(u.Team, &dto.ResponseErr{})
 	c.On("ID").Return(nil)
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 
 	h.Delete(c)
 
@@ -371,7 +406,9 @@ func (u *TeamHandlerTest) TestDeleteInvalidRequestParamIDTeam() {
 	srv.On("Delete", int32(1)).Return(&proto.Team{}, &dto.ResponseErr{})
 	c.On("ID").Return(errors.New("Invalid ID"))
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 
 	h.Delete(c)
 
@@ -387,7 +424,9 @@ func (u *TeamHandlerTest) TestDeleteErrorNotFoundTeam() {
 	srv.On("Delete", int32(1)).Return(&proto.Team{}, u.NotFoundErr)
 	c.On("ID").Return(nil)
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 
 	h.Delete(c)
 
@@ -403,7 +442,9 @@ func (u *TeamHandlerTest) TestDeleteGrpcErrTeam() {
 	srv.On("Delete", int32(1)).Return(&proto.Team{}, u.ServiceDownErr)
 	c.On("ID").Return(nil)
 
-	h := handler.NewTeamHandler(srv)
+	v := validator.New()
+
+	h := handler.NewTeamHandler(srv, v)
 
 	h.Delete(c)
 

@@ -2,6 +2,7 @@ package test
 
 import (
 	"github.com/bxcodec/faker/v3"
+	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/handler"
@@ -89,7 +90,9 @@ func (u *OrganizationHandlerTest) TestFindAllOrganization() {
 	srv.On("FindAll").Return(want, &dto.ResponseErr{})
 	c.On("PaginationQueryParam").Return(nil)
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 	h.FindAll(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -107,7 +110,9 @@ func (u *OrganizationHandlerTest) TestFindAllInvalidQueryParamOrganization() {
 	srv.On("FindAll").Return(nil, nil)
 	c.On("PaginationQueryParam").Return(errors.New("Cannot parse query param"))
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 
 	h.FindAll(c)
 
@@ -123,7 +128,9 @@ func (u *OrganizationHandlerTest) TestFindAllGrpcErrOrganization() {
 	srv.On("FindAll").Return(&proto.OrganizationPagination{}, u.ServiceDownErr)
 	c.On("PaginationQueryParam").Return(nil)
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 
 	h.FindAll(c)
 
@@ -139,7 +146,9 @@ func (u *OrganizationHandlerTest) TestFindOneOrganization() {
 	srv.On("FindOne", int32(1)).Return(u.Organization, &dto.ResponseErr{})
 	c.On("ID").Return(nil)
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 
 	h.FindOne(c)
 
@@ -155,7 +164,9 @@ func (u *OrganizationHandlerTest) TestFindOneInvalidRequestParamIDOrganization()
 	srv.On("FindOne", int32(1)).Return(&proto.Organization{}, &dto.ResponseErr{})
 	c.On("ID").Return(errors.New("Invalid ID"))
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 	h.FindOne(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -170,7 +181,9 @@ func (u *OrganizationHandlerTest) TestFindOneErrorNotFoundOrganization() {
 	srv.On("FindOne", int32(1)).Return(&proto.Organization{}, u.NotFoundErr)
 	c.On("ID").Return(nil)
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 
 	h.FindOne(c)
 
@@ -186,7 +199,9 @@ func (u *OrganizationHandlerTest) TestFindOneGrpcErrOrganization() {
 	srv.On("FindOne", int32(1)).Return(&proto.Organization{}, u.ServiceDownErr)
 	c.On("ID").Return(nil)
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 
 	h.FindOne(c)
 
@@ -202,7 +217,9 @@ func (u *OrganizationHandlerTest) TestCreateOrganization() {
 	srv.On("Create").Return(u.Organization, &dto.ResponseErr{})
 	c.On("Bind").Return(nil)
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 	h.Create(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -220,7 +237,9 @@ func (u *OrganizationHandlerTest) TestCreateErrorDuplicatedOrganization() {
 	srv.On("Create").Return(&proto.Organization{}, want)
 	c.On("Bind").Return(nil)
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 	h.Create(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -238,7 +257,9 @@ func (u *OrganizationHandlerTest) TestCreateInvalidBodyRequest() {
 	srv.On("Create").Return(&proto.Organization{}, &dto.ResponseErr{})
 	c.On("Bind").Return(errors.New("Cannot parse body request"))
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 	h.Create(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -253,7 +274,9 @@ func (u *OrganizationHandlerTest) TestCreateGrpcErrOrganization() {
 	srv.On("Create").Return(&proto.Organization{}, u.ServiceDownErr)
 	c.On("Bind").Return(nil)
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 
 	h.Create(c)
 
@@ -270,7 +293,9 @@ func (u *OrganizationHandlerTest) TestUpdateOrganization() {
 	c.On("Bind").Return(nil)
 	c.On("ID").Return(nil)
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 
 	h.Update(c)
 
@@ -287,7 +312,9 @@ func (u *OrganizationHandlerTest) TestUpdateInvalidRequestParamIDOrganization() 
 	c.On("ID").Return(errors.New("Invalid ID"))
 	c.On("Bind").Return(nil)
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 
 	h.Update(c)
 
@@ -307,7 +334,9 @@ func (u *OrganizationHandlerTest) TestUpdateInvalidBodyRequest() {
 	c.On("ID").Return(nil)
 	c.On("Bind").Return(errors.New("Cannot parse organization dto"))
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 	h.Create(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -323,7 +352,9 @@ func (u *OrganizationHandlerTest) TestUpdateErrorNotFoundOrganization() {
 	c.On("ID").Return(nil)
 	c.On("Bind").Return(nil)
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 	h.Update(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -339,7 +370,9 @@ func (u *OrganizationHandlerTest) TestUpdateGrpcErrOrganization() {
 	c.On("Bind").Return(nil)
 	c.On("ID").Return(nil)
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 
 	h.Update(c)
 
@@ -355,7 +388,9 @@ func (u *OrganizationHandlerTest) TestDeleteOrganization() {
 	srv.On("Delete", int32(1)).Return(u.Organization, &dto.ResponseErr{})
 	c.On("ID").Return(nil)
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 
 	h.Delete(c)
 
@@ -371,7 +406,9 @@ func (u *OrganizationHandlerTest) TestDeleteInvalidRequestParamIDOrganization() 
 	srv.On("Delete", int32(1)).Return(&proto.Organization{}, &dto.ResponseErr{})
 	c.On("ID").Return(errors.New("Invalid ID"))
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 
 	h.Delete(c)
 
@@ -387,7 +424,9 @@ func (u *OrganizationHandlerTest) TestDeleteErrorNotFoundOrganization() {
 	srv.On("Delete", int32(1)).Return(&proto.Organization{}, u.NotFoundErr)
 	c.On("ID").Return(nil)
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 
 	h.Delete(c)
 
@@ -403,7 +442,9 @@ func (u *OrganizationHandlerTest) TestDeleteGrpcErrOrganization() {
 	srv.On("Delete", int32(1)).Return(&proto.Organization{}, u.ServiceDownErr)
 	c.On("ID").Return(nil)
 
-	h := handler.NewOrganizationHandler(srv)
+	v := validator.New()
+
+	h := handler.NewOrganizationHandler(srv, v)
 
 	h.Delete(c)
 
