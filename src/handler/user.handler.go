@@ -24,10 +24,10 @@ type UserContext interface {
 }
 
 type UserService interface {
-	FindAll(dto.PaginationQueryParams) (*proto.UserPagination, *dto.ResponseErr)
+	FindAll(*dto.PaginationQueryParams) (*proto.UserPagination, *dto.ResponseErr)
 	FindOne(int32) (*proto.User, *dto.ResponseErr)
-	Create(dto.UserDto) (*proto.User, *dto.ResponseErr)
-	Update(int32, dto.UserDto) (*proto.User, *dto.ResponseErr)
+	Create(*dto.UserDto) (*proto.User, *dto.ResponseErr)
+	Update(int32, *dto.UserDto) (*proto.User, *dto.ResponseErr)
 	Delete(int32) (*proto.User, *dto.ResponseErr)
 }
 
@@ -55,7 +55,7 @@ func (h *UserHandler) FindAll(c UserContext) {
 		return
 	}
 
-	users, errRes := h.service.FindAll(query)
+	users, errRes := h.service.FindAll(&query)
 	if users.Items == nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
@@ -131,7 +131,7 @@ func (h *UserHandler) Create(c UserContext) {
 		return
 	}
 
-	user, errRes := h.service.Create(userDto)
+	user, errRes := h.service.Create(&userDto)
 	if user.Id == 0 {
 		c.JSON(errRes.StatusCode, errRes)
 		return
@@ -185,7 +185,7 @@ func (h *UserHandler) Update(c UserContext) {
 		return
 	}
 
-	user, errRes := h.service.Update(id, userDto)
+	user, errRes := h.service.Update(id, &userDto)
 	if user.Id == 0 {
 		c.JSON(errRes.StatusCode, errRes)
 		return

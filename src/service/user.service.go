@@ -18,7 +18,7 @@ func NewUserService(client proto.UserServiceClient) *UserService {
 	}
 }
 
-func (s *UserService) FindAll(query dto.PaginationQueryParams) (result *proto.UserPagination, err *dto.ResponseErr) {
+func (s *UserService) FindAll(query *dto.PaginationQueryParams) (result *proto.UserPagination, err *dto.ResponseErr) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
