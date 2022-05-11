@@ -56,9 +56,14 @@ func main() {
 		log.Fatal("Cannot connect to user service: ", err.Error())
 	}
 
+	v, err := validator.NewValidator()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
 	userClient := proto.NewUserServiceClient(userConn)
 	userSrv := service.NewUserService(userClient)
-	userHandler := handler.NewUserHandler(userSrv, validator.Validate)
+	userHandler := handler.NewUserHandler(userSrv, v)
 
 	orgConn, err := grpc.Dial(conf.Service.Organization, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -67,11 +72,11 @@ func main() {
 
 	teamClient := proto.NewTeamServiceClient(orgConn)
 	teamSrv := service.NewTeamService(teamClient)
-	teamHandler := handler.NewTeamHandler(teamSrv, validator.Validate)
+	teamHandler := handler.NewTeamHandler(teamSrv, v)
 
 	orgClient := proto.NewOrganizationServiceClient(orgConn)
 	orgSrv := service.NewOrganizationService(orgClient)
-	orgHandler := handler.NewOrganizationHandler(orgSrv, validator.Validate)
+	orgHandler := handler.NewOrganizationHandler(orgSrv, v)
 
 	r := router.NewFiberRouter()
 

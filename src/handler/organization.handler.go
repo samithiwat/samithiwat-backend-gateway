@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"github.com/go-playground/validator/v10"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	validate "github.com/samithiwat/samithiwat-backend-gateway/src/validator"
@@ -10,10 +9,10 @@ import (
 
 type OrganizationHandler struct {
 	service  OrganizationService
-	validate *validator.Validate
+	validate *validate.DtoValidator
 }
 
-func NewOrganizationHandler(service OrganizationService, validate *validator.Validate) *OrganizationHandler {
+func NewOrganizationHandler(service OrganizationService, validate *validate.DtoValidator) *OrganizationHandler {
 	return &OrganizationHandler{
 		service:  service,
 		validate: validate,
@@ -125,11 +124,11 @@ func (h *OrganizationHandler) Create(c OrganizationContext) {
 		return
 	}
 
-	if errors := h.validate.Struct(organizationDto); errors != nil {
+	if errors := h.validate.Validate(organizationDto); errors != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
 			Message:    "Invalid body request",
-			Data:       validate.Format(errors.(validator.ValidationErrors)),
+			Data:       errors,
 		})
 		return
 	}
@@ -168,11 +167,11 @@ func (h *OrganizationHandler) Update(c OrganizationContext) {
 		return
 	}
 
-	if errors := h.validate.Struct(organizationDto); errors != nil {
+	if errors := h.validate.Validate(organizationDto); errors != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
 			Message:    "Invalid body request",
-			Data:       validate.Format(errors.(validator.ValidationErrors)),
+			Data:       errors,
 		})
 		return
 	}
