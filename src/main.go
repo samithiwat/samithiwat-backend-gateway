@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/config"
 	_ "github.com/samithiwat/samithiwat-backend-gateway/src/docs"
+	"github.com/samithiwat/samithiwat-backend-gateway/src/handler"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/router"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/service"
+	"github.com/samithiwat/samithiwat-backend-gateway/src/validator"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
@@ -54,8 +56,14 @@ func main() {
 		log.Fatal("Cannot connect to user service: ", err.Error())
 	}
 
+	v, err := validator.NewValidator()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
 	userClient := proto.NewUserServiceClient(userConn)
 	userSrv := service.NewUserService(userClient)
+	userHandler := handler.NewUserHandler(userSrv, v)
 
 	orgConn, err := grpc.Dial(conf.Service.Organization, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -64,29 +72,31 @@ func main() {
 
 	teamClient := proto.NewTeamServiceClient(orgConn)
 	teamSrv := service.NewTeamService(teamClient)
+	teamHandler := handler.NewTeamHandler(teamSrv, v)
 
 	orgClient := proto.NewOrganizationServiceClient(orgConn)
 	orgSrv := service.NewOrganizationService(orgClient)
+	orgHandler := handler.NewOrganizationHandler(orgSrv, v)
 
 	r := router.NewFiberRouter()
 
-	r.GetUser("/user", userSrv.FindAll)
-	r.GetUser("/user/:id", userSrv.FindOne)
-	r.CreateUser("user", userSrv.Create)
-	r.PatchUser("/user/:id", userSrv.Update)
-	r.DeleteUser("user/:id", userSrv.Delete)
+	r.GetUser("/user", userHandler.FindAll)
+	r.GetUser("/user/:id", userHandler.FindOne)
+	r.CreateUser("user", userHandler.Create)
+	r.PatchUser("/user/:id", userHandler.Update)
+	r.DeleteUser("user/:id", userHandler.Delete)
 
-	r.GetTeam("/team", teamSrv.FindAll)
-	r.GetTeam("/team/:id", teamSrv.FindOne)
-	r.CreateTeam("team", teamSrv.Create)
-	r.PatchTeam("/team/:id", teamSrv.Update)
-	r.DeleteTeam("team/:id", teamSrv.Delete)
+	r.GetTeam("/team", teamHandler.FindAll)
+	r.GetTeam("/team/:id", teamHandler.FindOne)
+	r.CreateTeam("team", teamHandler.Create)
+	r.PatchTeam("/team/:id", teamHandler.Update)
+	r.DeleteTeam("team/:id", teamHandler.Delete)
 
-	r.GetOrganization("/organization", orgSrv.FindAll)
-	r.GetOrganization("/organization/:id", orgSrv.FindOne)
-	r.CreateOrganization("organization", orgSrv.Create)
-	r.PatchOrganization("/organization/:id", orgSrv.Update)
-	r.DeleteOrganization("organization/:id", orgSrv.Delete)
+	r.GetOrganization("/organization", orgHandler.FindAll)
+	r.GetOrganization("/organization/:id", orgHandler.FindOne)
+	r.CreateOrganization("organization", orgHandler.Create)
+	r.PatchOrganization("/organization/:id", orgHandler.Update)
+	r.DeleteOrganization("organization/:id", orgHandler.Delete)
 
 	go func() {
 		if err := r.Listen(fmt.Sprintf(":%v", conf.App.Port)); err != nil && err != http.ErrServerClosed {

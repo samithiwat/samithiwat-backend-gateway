@@ -1,20 +1,73 @@
 package test
 
 import (
+	"github.com/bxcodec/faker/v3"
+	"github.com/pkg/errors"
+	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/service"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/test/mock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 	"net/http"
 	"testing"
 )
 
-func TestFindAllOrganization(t *testing.T) {
-	mock.InitializeMockOrganization()
+type OrganizationServiceTest struct {
+	suite.Suite
+	Organization   *proto.Organization
+	Organizations  []*proto.Organization
+	NotFoundErr    *dto.ResponseErr
+	ServiceDownErr *dto.ResponseErr
+}
 
-	assert := assert.New(t)
+func TestOrganizationService(t *testing.T) {
+	suite.Run(t, new(OrganizationServiceTest))
+}
+
+func (s *OrganizationServiceTest) SetupTest() {
+	s.Organization = &proto.Organization{
+		Id:          1,
+		Name:        faker.Word(),
+		Description: faker.Sentence(),
+	}
+
+	Organization2 := &proto.Organization{
+		Id:          2,
+		Name:        faker.Word(),
+		Description: faker.Sentence(),
+	}
+
+	Organization3 := &proto.Organization{
+		Id:          3,
+		Name:        faker.Word(),
+		Description: faker.Sentence(),
+	}
+
+	Organization4 := &proto.Organization{
+		Id:          4,
+		Name:        faker.Word(),
+		Description: faker.Sentence(),
+	}
+
+	s.Organizations = append(s.Organizations, s.Organization, Organization2, Organization3, Organization4)
+
+	s.ServiceDownErr = &dto.ResponseErr{
+		StatusCode: http.StatusServiceUnavailable,
+		Message:    "Service is down",
+		Data:       nil,
+	}
+
+	s.NotFoundErr = &dto.ResponseErr{
+		StatusCode: http.StatusNotFound,
+		Message:    "Not found organization",
+		Data:       nil,
+	}
+}
+
+func (s *OrganizationServiceTest) TestFindAllOrganizationService() {
 	want := &proto.OrganizationPagination{
-		Items: mock.Organizations,
+		Items: s.Organizations,
 		Meta: &proto.PaginationMetadata{
 			TotalItem:    4,
 			ItemCount:    4,
@@ -24,303 +77,244 @@ func TestFindAllOrganization(t *testing.T) {
 		},
 	}
 
-	srv := service.NewOrganizationService(&mock.OrganizationMockClient{})
+	client := new(mock.OrganizationClientMock)
 
-	c := &mock.OrganizationMockContext{}
+	client.On("FindAll").Return(&proto.OrganizationPaginationResponse{
+		StatusCode: http.StatusOK,
+		Errors:     nil,
+		Data:       want,
+	}, nil)
 
-	srv.FindAll(c)
+	srv := service.NewOrganizationService(client)
 
-	assert.Equal(want, c.V)
+	organizations, err := srv.FindAll(&dto.PaginationQueryParams{Limit: 10, Page: 1})
+
+	assert.Nil(s.T(), err, "Must not got any error")
+	assert.Equal(s.T(), want, organizations)
 }
 
-func TestFindAllInvalidQueryParamOrganization(t *testing.T) {
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": http.StatusBadRequest,
-		"Message":    "Invalid query param",
+func (s *OrganizationServiceTest) TestFindAllGrpcErrOrganizationService() {
+	want := s.ServiceDownErr
+
+	client := new(mock.OrganizationClientMock)
+
+	client.On("FindAll").Return(&proto.OrganizationPaginationResponse{}, errors.New("Service is down"))
+
+	srv := service.NewOrganizationService(client)
+
+	_, err := srv.FindAll(&dto.PaginationQueryParams{Limit: 10, Page: 1})
+
+	assert.Equal(s.T(), want, err)
+}
+
+func (s *OrganizationServiceTest) TestFindOneOrganizationService() {
+	want := s.Organization
+
+	client := new(mock.OrganizationClientMock)
+
+	client.On("FindOne").Return(&proto.OrganizationResponse{
+		StatusCode: http.StatusOK,
+		Errors:     nil,
+		Data:       s.Organization,
+	}, nil)
+
+	srv := service.NewOrganizationService(client)
+
+	organization, err := srv.FindOne(1)
+
+	assert.Nil(s.T(), err, "Must not got any error")
+	assert.Equal(s.T(), want, organization)
+}
+
+func (s *OrganizationServiceTest) TestFindOneNotFoundOrganizationService() {
+	want := s.NotFoundErr
+
+	client := new(mock.OrganizationClientMock)
+
+	client.On("FindOne").Return(&proto.OrganizationResponse{
+		StatusCode: http.StatusNotFound,
+		Errors:     []string{"Not found organization"},
+		Data:       nil,
+	}, nil)
+
+	srv := service.NewOrganizationService(client)
+
+	organization, err := srv.FindOne(1)
+
+	assert.Nil(s.T(), organization)
+	assert.Equal(s.T(), want, err)
+}
+
+func (s *OrganizationServiceTest) TestFindOneGrpcErrOrganizationService() {
+	want := s.ServiceDownErr
+
+	client := new(mock.OrganizationClientMock)
+
+	client.On("FindOne").Return(&proto.OrganizationResponse{}, errors.New("Service is down"))
+
+	srv := service.NewOrganizationService(client)
+
+	_, err := srv.FindOne(1)
+
+	assert.Equal(s.T(), want, err)
+}
+
+func (s *OrganizationServiceTest) TestCreateOrganizationService() {
+	want := s.Organization
+
+	client := new(mock.OrganizationClientMock)
+
+	client.On("Create").Return(&proto.OrganizationResponse{
+		StatusCode: http.StatusCreated,
+		Errors:     nil,
+		Data:       s.Organization,
+	}, nil)
+
+	srv := service.NewOrganizationService(client)
+
+	organization, err := srv.Create(&dto.OrganizationDto{})
+
+	assert.Nil(s.T(), err, "Must not got any error")
+	assert.Equal(s.T(), want, organization)
+}
+
+func (s *OrganizationServiceTest) TestCreateDuplicatedOrganizationService() {
+	want := &dto.ResponseErr{
+		StatusCode: http.StatusUnprocessableEntity,
+		Message:    "Duplicated email or organizationname",
+		Data:       nil,
 	}
 
-	srv := service.NewOrganizationService(&mock.OrganizationMockClient{})
+	client := new(mock.OrganizationClientMock)
 
-	c := &mock.OrganizationMockErrContext{}
+	client.On("Create").Return(&proto.OrganizationResponse{
+		StatusCode: http.StatusUnprocessableEntity,
+		Errors:     []string{"Duplicated email or organizationname"},
+		Data:       nil,
+	}, nil)
 
-	srv.FindAll(c)
+	srv := service.NewOrganizationService(client)
 
-	assert.Equal(want, c.V)
+	organization, err := srv.Create(&dto.OrganizationDto{})
+
+	assert.Nil(s.T(), organization)
+	assert.Equal(s.T(), want, err)
 }
 
-func TestFindAllGrpcErrOrganization(t *testing.T) {
-	mock.InitializeMockOrganization()
+func (s *OrganizationServiceTest) TestCreateGrpcErrOrganizationService() {
+	want := s.ServiceDownErr
 
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": http.StatusServiceUnavailable,
-		"Message":    "Service is down",
-	}
+	client := new(mock.OrganizationClientMock)
 
-	srv := service.NewOrganizationService(&mock.OrganizationMockErrGrpcClient{})
+	client.On("Create").Return(&proto.OrganizationResponse{}, errors.New("Service is down"))
 
-	c := &mock.OrganizationMockContext{}
+	srv := service.NewOrganizationService(client)
 
-	srv.FindAll(c)
+	_, err := srv.Create(&dto.OrganizationDto{})
 
-	assert.Equal(want, c.V)
+	assert.Equal(s.T(), want, err)
 }
 
-func TestFindOneOrganization(t *testing.T) {
-	mock.InitializeMockOrganization()
+func (s *OrganizationServiceTest) TestUpdateOrganizationService() {
+	want := s.Organization
 
-	assert := assert.New(t)
-	want := &mock.Organization1
+	client := new(mock.OrganizationClientMock)
 
-	srv := service.NewOrganizationService(&mock.OrganizationMockClient{})
+	client.On("Update").Return(&proto.OrganizationResponse{
+		StatusCode: http.StatusOK,
+		Errors:     nil,
+		Data:       s.Organization,
+	}, nil)
 
-	c := &mock.OrganizationMockContext{}
+	srv := service.NewOrganizationService(client)
 
-	srv.FindOne(c)
+	organization, err := srv.Update(1, &dto.OrganizationDto{})
 
-	assert.Equal(want, c.V)
+	assert.Nil(s.T(), err, "Must not got any error")
+	assert.Equal(s.T(), want, organization)
 }
 
-func TestFindOneInvalidRequestParamIDOrganization(t *testing.T) {
-	mock.InitializeMockOrganization()
+func (s *OrganizationServiceTest) TestUpdateNotFoundOrganizationService() {
+	want := s.NotFoundErr
 
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": http.StatusBadRequest,
-		"Message":    "Invalid id",
-	}
+	client := new(mock.OrganizationClientMock)
 
-	srv := service.NewOrganizationService(&mock.OrganizationMockClient{})
+	client.On("Update").Return(&proto.OrganizationResponse{
+		StatusCode: http.StatusNotFound,
+		Errors:     []string{"Not found organization"},
+		Data:       nil,
+	}, nil)
 
-	c := &mock.OrganizationMockErrContext{}
+	srv := service.NewOrganizationService(client)
 
-	srv.FindOne(c)
+	organization, err := srv.Update(1, &dto.OrganizationDto{})
 
-	assert.Equal(want, c.V)
+	assert.Nil(s.T(), organization)
+	assert.Equal(s.T(), want, err)
 }
 
-func TestFindOneErrorNotFoundOrganization(t *testing.T) {
-	mock.InitializeMockOrganization()
+func (s *OrganizationServiceTest) TestUpdateGrpcErrOrganizationService() {
+	want := s.ServiceDownErr
 
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": int32(http.StatusNotFound),
-		"Message":    []string{"Not found organization"},
-	}
+	client := new(mock.OrganizationClientMock)
 
-	srv := service.NewOrganizationService(&mock.OrganizationMockErrClient{})
+	client.On("Update").Return(&proto.OrganizationResponse{}, errors.New("Service is down"))
 
-	c := &mock.OrganizationMockContext{}
+	srv := service.NewOrganizationService(client)
 
-	srv.FindOne(c)
+	_, err := srv.Update(1, &dto.OrganizationDto{})
 
-	assert.Equal(want, c.V)
+	assert.Equal(s.T(), want, err)
 }
 
-func TestFindOneGrpcErrOrganization(t *testing.T) {
-	mock.InitializeMockOrganization()
+func (s *OrganizationServiceTest) TestDeleteOrganizationService() {
+	want := s.Organization
 
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": http.StatusServiceUnavailable,
-		"Message":    "Service is down",
-	}
+	client := new(mock.OrganizationClientMock)
 
-	srv := service.NewOrganizationService(&mock.OrganizationMockErrGrpcClient{})
+	client.On("Delete").Return(&proto.OrganizationResponse{
+		StatusCode: http.StatusOK,
+		Errors:     nil,
+		Data:       s.Organization,
+	}, nil)
 
-	c := &mock.OrganizationMockContext{}
+	srv := service.NewOrganizationService(client)
 
-	srv.FindOne(c)
+	organization, err := srv.Delete(1)
 
-	assert.Equal(want, c.V)
+	assert.Nil(s.T(), err, "Must not got any error")
+	assert.Equal(s.T(), want, organization)
 }
 
-func TestCreateOrganization(t *testing.T) {
-	mock.InitializeMockOrganization()
+func (s *OrganizationServiceTest) TestDeleteNotFoundOrganizationService() {
+	want := s.NotFoundErr
 
-	assert := assert.New(t)
-	want := &mock.Organization1
+	client := new(mock.OrganizationClientMock)
 
-	srv := service.NewOrganizationService(&mock.OrganizationMockClient{})
+	client.On("Delete").Return(&proto.OrganizationResponse{
+		StatusCode: http.StatusNotFound,
+		Errors:     []string{"Not found organization"},
+		Data:       nil,
+	}, nil)
 
-	c := &mock.OrganizationMockContext{}
+	srv := service.NewOrganizationService(client)
 
-	srv.Create(c)
+	organization, err := srv.Delete(1)
 
-	assert.Equal(want, c.V)
+	assert.Nil(s.T(), organization)
+	assert.Equal(s.T(), want, err)
 }
 
-func TestCreateErrorDuplicatedOrganization(t *testing.T) {
-	mock.InitializeMockOrganization()
+func (s *OrganizationServiceTest) TestDeleteGrpcErrOrganizationService() {
+	want := s.ServiceDownErr
 
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": int32(http.StatusUnprocessableEntity),
-		"Message":    []string{"Duplicated organization name"},
-	}
+	client := new(mock.OrganizationClientMock)
 
-	srv := service.NewOrganizationService(&mock.OrganizationMockErrClient{})
+	client.On("Delete").Return(&proto.OrganizationResponse{}, errors.New("Service is down"))
 
-	c := &mock.OrganizationMockContext{}
+	srv := service.NewOrganizationService(client)
 
-	srv.Create(c)
+	_, err := srv.Delete(1)
 
-	assert.Equal(want, c.V)
-}
-
-func TestCreateGrpcErrOrganization(t *testing.T) {
-	mock.InitializeMockOrganization()
-
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": http.StatusServiceUnavailable,
-		"Message":    "Service is down",
-	}
-
-	srv := service.NewOrganizationService(&mock.OrganizationMockErrGrpcClient{})
-
-	c := &mock.OrganizationMockContext{}
-
-	srv.Create(c)
-
-	assert.Equal(want, c.V)
-}
-
-func TestUpdateOrganization(t *testing.T) {
-	mock.InitializeMockOrganization()
-
-	assert := assert.New(t)
-	want := &mock.Organization1
-
-	srv := service.NewOrganizationService(&mock.OrganizationMockClient{})
-
-	c := &mock.OrganizationMockContext{}
-
-	srv.Update(c)
-
-	assert.Equal(want, c.V)
-}
-
-func TestUpdateInvalidRequestParamIDOrganization(t *testing.T) {
-	mock.InitializeMockOrganization()
-
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": http.StatusBadRequest,
-		"Message":    "Invalid id",
-	}
-
-	srv := service.NewOrganizationService(&mock.OrganizationMockClient{})
-
-	c := &mock.OrganizationMockErrContext{}
-
-	srv.FindOne(c)
-
-	assert.Equal(want, c.V)
-}
-
-func TestUpdateErrorNotFoundOrganization(t *testing.T) {
-	mock.InitializeMockOrganization()
-
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": int32(http.StatusNotFound),
-		"Message":    []string{"Not found organization"},
-	}
-
-	srv := service.NewOrganizationService(&mock.OrganizationMockErrClient{})
-
-	c := &mock.OrganizationMockContext{}
-
-	srv.Update(c)
-
-	assert.Equal(want, c.V)
-}
-
-func TestUpdateGrpcErrOrganization(t *testing.T) {
-	mock.InitializeMockOrganization()
-
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": http.StatusServiceUnavailable,
-		"Message":    "Service is down",
-	}
-
-	srv := service.NewOrganizationService(&mock.OrganizationMockErrGrpcClient{})
-
-	c := &mock.OrganizationMockContext{}
-
-	srv.Update(c)
-
-	assert.Equal(want, c.V)
-}
-
-func TestDeleteOrganization(t *testing.T) {
-	mock.InitializeMockOrganization()
-
-	assert := assert.New(t)
-	want := &mock.Organization1
-
-	srv := service.NewOrganizationService(&mock.OrganizationMockClient{})
-
-	c := &mock.OrganizationMockContext{}
-
-	srv.Delete(c)
-
-	assert.Equal(want, c.V)
-}
-
-func TestDeleteInvalidRequestParamIDOrganization(t *testing.T) {
-	mock.InitializeMockOrganization()
-
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": http.StatusBadRequest,
-		"Message":    "Invalid id",
-	}
-
-	srv := service.NewOrganizationService(&mock.OrganizationMockClient{})
-
-	c := &mock.OrganizationMockErrContext{}
-
-	srv.FindOne(c)
-
-	assert.Equal(want, c.V)
-}
-
-func TestDeleteErrorNotFoundOrganization(t *testing.T) {
-	mock.InitializeMockOrganization()
-
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": int32(http.StatusNotFound),
-		"Message":    []string{"Not found organization"},
-	}
-
-	srv := service.NewOrganizationService(&mock.OrganizationMockErrClient{})
-
-	c := &mock.OrganizationMockContext{}
-
-	srv.Delete(c)
-
-	assert.Equal(want, c.V)
-}
-
-func TestDeleteGrpcErrOrganization(t *testing.T) {
-	mock.InitializeMockOrganization()
-
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": http.StatusServiceUnavailable,
-		"Message":    "Service is down",
-	}
-
-	srv := service.NewOrganizationService(&mock.OrganizationMockErrGrpcClient{})
-
-	c := &mock.OrganizationMockContext{}
-
-	srv.Delete(c)
-
-	assert.Equal(want, c.V)
+	assert.Equal(s.T(), want, err)
 }

@@ -57,13 +57,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid query param",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "503": {
                         "description": "Service is down",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     }
                 }
@@ -101,19 +101,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid ID",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "404": {
                         "description": "Not found organization",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "503": {
                         "description": "Service is down",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     }
                 }
@@ -151,19 +151,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid ID",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "404": {
                         "description": "Not found organization",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "503": {
                         "description": "Service is down",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     }
                 }
@@ -199,19 +199,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid ID",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "404": {
                         "description": "Not found organization",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "503": {
                         "description": "Service is down",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     }
                 }
@@ -256,19 +256,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid ID",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "404": {
                         "description": "Not found organization",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "503": {
                         "description": "Service is down",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     }
                 }
@@ -311,13 +311,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid query param",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "503": {
                         "description": "Service is down",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     }
                 }
@@ -355,19 +355,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid ID",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "404": {
                         "description": "Not found team",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "503": {
                         "description": "Service is down",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     }
                 }
@@ -405,19 +405,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid ID",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "404": {
                         "description": "Not found team",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "503": {
                         "description": "Service is down",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     }
                 }
@@ -453,19 +453,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid ID",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "404": {
                         "description": "Not found team",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "503": {
                         "description": "Service is down",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     }
                 }
@@ -510,19 +510,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Invalid ID",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "404": {
                         "description": "Not found team",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "503": {
                         "description": "Service is down",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     }
                 }
@@ -563,15 +563,15 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid query param",
+                        "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "503": {
-                        "description": "Service is down",
+                        "description": "Service Unavailable",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     }
                 }
@@ -595,7 +595,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/proto.User"
+                            "$ref": "#/definitions/dto.UserDto"
                         }
                     }
                 ],
@@ -607,21 +607,21 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid ID",
+                        "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "404": {
-                        "description": "Not found user",
+                        "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "503": {
-                        "description": "Service is down",
+                        "description": "Service Unavailable",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     }
                 }
@@ -657,21 +657,21 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid ID",
+                        "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "404": {
                         "description": "Not found user",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "503": {
-                        "description": "Service is down",
+                        "description": "Service Unavailable",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     }
                 }
@@ -705,21 +705,21 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid ID",
+                        "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "404": {
-                        "description": "Not found user",
+                        "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "503": {
-                        "description": "Service is down",
+                        "description": "Service Unavailable",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     }
                 }
@@ -762,21 +762,21 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid ID",
+                        "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "404": {
-                        "description": "Not found user",
+                        "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     },
                     "503": {
-                        "description": "Service is down",
+                        "description": "Service Unavailable",
                         "schema": {
-                            "$ref": "#/definitions/model.ResponseErr"
+                            "$ref": "#/definitions/dto.ResponseErr"
                         }
                     }
                 }
@@ -784,14 +784,33 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "model.ResponseErr": {
+        "dto.ResponseErr": {
             "type": "object",
             "properties": {
+                "data": {},
                 "message": {
                     "type": "string"
                 },
                 "status_code": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.UserDto": {
+            "type": "object",
+            "required": [
+                "firstname",
+                "lastname"
+            ],
+            "properties": {
+                "firstname": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
                 }
             }
         },

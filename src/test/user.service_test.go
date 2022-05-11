@@ -1,20 +1,77 @@
 package test
 
 import (
+	"github.com/bxcodec/faker/v3"
+	"github.com/pkg/errors"
+	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/service"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/test/mock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 	"net/http"
 	"testing"
 )
 
-func TestFindAllUser(t *testing.T) {
-	mock.InitializeMockUser()
+type UserServiceTest struct {
+	suite.Suite
+	User           *proto.User
+	Users          []*proto.User
+	NotFoundErr    *dto.ResponseErr
+	ServiceDownErr *dto.ResponseErr
+}
 
-	assert := assert.New(t)
+func TestUserService(t *testing.T) {
+	suite.Run(t, new(UserServiceTest))
+}
+
+func (s *UserServiceTest) SetupTest() {
+	s.User = &proto.User{
+		Id:        1,
+		Firstname: faker.FirstName(),
+		Lastname:  faker.LastName(),
+		ImageUrl:  faker.URL(),
+	}
+
+	User2 := &proto.User{
+		Id:        2,
+		Firstname: faker.FirstName(),
+		Lastname:  faker.LastName(),
+		ImageUrl:  faker.URL(),
+	}
+
+	User3 := &proto.User{
+		Id:        3,
+		Firstname: faker.FirstName(),
+		Lastname:  faker.LastName(),
+		ImageUrl:  faker.URL(),
+	}
+
+	User4 := &proto.User{
+		Id:        4,
+		Firstname: faker.FirstName(),
+		Lastname:  faker.LastName(),
+		ImageUrl:  faker.URL(),
+	}
+
+	s.Users = append(s.Users, s.User, User2, User3, User4)
+
+	s.ServiceDownErr = &dto.ResponseErr{
+		StatusCode: http.StatusServiceUnavailable,
+		Message:    "Service is down",
+		Data:       nil,
+	}
+
+	s.NotFoundErr = &dto.ResponseErr{
+		StatusCode: http.StatusNotFound,
+		Message:    "Not found user",
+		Data:       nil,
+	}
+}
+
+func (s *UserServiceTest) TestFindAllUserService() {
 	want := &proto.UserPagination{
-		Items: mock.Users,
+		Items: s.Users,
 		Meta: &proto.PaginationMetadata{
 			TotalItem:    4,
 			ItemCount:    4,
@@ -24,303 +81,244 @@ func TestFindAllUser(t *testing.T) {
 		},
 	}
 
-	srv := service.NewUserService(&mock.UserMockClient{})
+	client := new(mock.UserClientMock)
 
-	c := &mock.UserMockContext{}
+	client.On("FindAll").Return(&proto.UserPaginationResponse{
+		StatusCode: http.StatusOK,
+		Errors:     nil,
+		Data:       want,
+	}, nil)
 
-	srv.FindAll(c)
+	srv := service.NewUserService(client)
 
-	assert.Equal(want, c.V)
+	users, err := srv.FindAll(&dto.PaginationQueryParams{Limit: 10, Page: 1})
+
+	assert.Nil(s.T(), err, "Must not got any error")
+	assert.Equal(s.T(), want, users)
 }
 
-func TestFindAllInvalidQueryParamUser(t *testing.T) {
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": http.StatusBadRequest,
-		"Message":    "Invalid query param",
+func (s *UserServiceTest) TestFindAllGrpcErrUserService() {
+	want := s.ServiceDownErr
+
+	client := new(mock.UserClientMock)
+
+	client.On("FindAll").Return(&proto.UserPaginationResponse{}, errors.New("Service is down"))
+
+	srv := service.NewUserService(client)
+
+	_, err := srv.FindAll(&dto.PaginationQueryParams{Limit: 10, Page: 1})
+
+	assert.Equal(s.T(), want, err)
+}
+
+func (s *UserServiceTest) TestFindOneUserService() {
+	want := s.User
+
+	client := new(mock.UserClientMock)
+
+	client.On("FindOne").Return(&proto.UserResponse{
+		StatusCode: http.StatusOK,
+		Errors:     nil,
+		Data:       s.User,
+	}, nil)
+
+	srv := service.NewUserService(client)
+
+	user, err := srv.FindOne(1)
+
+	assert.Nil(s.T(), err, "Must not got any error")
+	assert.Equal(s.T(), want, user)
+}
+
+func (s *UserServiceTest) TestFindOneNotFoundUserService() {
+	want := s.NotFoundErr
+
+	client := new(mock.UserClientMock)
+
+	client.On("FindOne").Return(&proto.UserResponse{
+		StatusCode: http.StatusNotFound,
+		Errors:     []string{"Not found user"},
+		Data:       nil,
+	}, nil)
+
+	srv := service.NewUserService(client)
+
+	user, err := srv.FindOne(1)
+
+	assert.Nil(s.T(), user)
+	assert.Equal(s.T(), want, err)
+}
+
+func (s *UserServiceTest) TestFindOneGrpcErrUserService() {
+	want := s.ServiceDownErr
+
+	client := new(mock.UserClientMock)
+
+	client.On("FindOne").Return(&proto.UserResponse{}, errors.New("Service is down"))
+
+	srv := service.NewUserService(client)
+
+	_, err := srv.FindOne(1)
+
+	assert.Equal(s.T(), want, err)
+}
+
+func (s *UserServiceTest) TestCreateUserService() {
+	want := s.User
+
+	client := new(mock.UserClientMock)
+
+	client.On("Create").Return(&proto.UserResponse{
+		StatusCode: http.StatusCreated,
+		Errors:     nil,
+		Data:       s.User,
+	}, nil)
+
+	srv := service.NewUserService(client)
+
+	user, err := srv.Create(&dto.UserDto{})
+
+	assert.Nil(s.T(), err, "Must not got any error")
+	assert.Equal(s.T(), want, user)
+}
+
+func (s *UserServiceTest) TestCreateDuplicatedUserService() {
+	want := &dto.ResponseErr{
+		StatusCode: http.StatusUnprocessableEntity,
+		Message:    "Duplicated email or username",
+		Data:       nil,
 	}
 
-	srv := service.NewUserService(&mock.UserMockClient{})
+	client := new(mock.UserClientMock)
 
-	c := &mock.UserMockErrContext{}
+	client.On("Create").Return(&proto.UserResponse{
+		StatusCode: http.StatusUnprocessableEntity,
+		Errors:     []string{"Duplicated email or username"},
+		Data:       nil,
+	}, nil)
 
-	srv.FindAll(c)
+	srv := service.NewUserService(client)
 
-	assert.Equal(want, c.V)
+	user, err := srv.Create(&dto.UserDto{})
+
+	assert.Nil(s.T(), user)
+	assert.Equal(s.T(), want, err)
 }
 
-func TestFindAllGrpcErrUser(t *testing.T) {
-	mock.InitializeMockUser()
+func (s *UserServiceTest) TestCreateGrpcErrUserService() {
+	want := s.ServiceDownErr
 
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": http.StatusServiceUnavailable,
-		"Message":    "Service is down",
-	}
+	client := new(mock.UserClientMock)
 
-	srv := service.NewUserService(&mock.UserMockErrGrpcClient{})
+	client.On("Create").Return(&proto.UserResponse{}, errors.New("Service is down"))
 
-	c := &mock.UserMockContext{}
+	srv := service.NewUserService(client)
 
-	srv.FindAll(c)
+	_, err := srv.Create(&dto.UserDto{})
 
-	assert.Equal(want, c.V)
+	assert.Equal(s.T(), want, err)
 }
 
-func TestFindOneUser(t *testing.T) {
-	mock.InitializeMockUser()
+func (s *UserServiceTest) TestUpdateUserService() {
+	want := s.User
 
-	assert := assert.New(t)
-	want := &mock.User1
+	client := new(mock.UserClientMock)
 
-	srv := service.NewUserService(&mock.UserMockClient{})
+	client.On("Update").Return(&proto.UserResponse{
+		StatusCode: http.StatusOK,
+		Errors:     nil,
+		Data:       s.User,
+	}, nil)
 
-	c := &mock.UserMockContext{}
+	srv := service.NewUserService(client)
 
-	srv.FindOne(c)
+	user, err := srv.Update(1, &dto.UserDto{})
 
-	assert.Equal(want, c.V)
+	assert.Nil(s.T(), err, "Must not got any error")
+	assert.Equal(s.T(), want, user)
 }
 
-func TestFindOneInvalidRequestParamIDUser(t *testing.T) {
-	mock.InitializeMockUser()
+func (s *UserServiceTest) TestUpdateNotFoundUserService() {
+	want := s.NotFoundErr
 
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": http.StatusBadRequest,
-		"Message":    "Invalid id",
-	}
+	client := new(mock.UserClientMock)
 
-	srv := service.NewUserService(&mock.UserMockClient{})
+	client.On("Update").Return(&proto.UserResponse{
+		StatusCode: http.StatusNotFound,
+		Errors:     []string{"Not found user"},
+		Data:       nil,
+	}, nil)
 
-	c := &mock.UserMockErrContext{}
+	srv := service.NewUserService(client)
 
-	srv.FindOne(c)
+	user, err := srv.Update(1, &dto.UserDto{})
 
-	assert.Equal(want, c.V)
+	assert.Nil(s.T(), user)
+	assert.Equal(s.T(), want, err)
 }
 
-func TestFindOneErrorNotFoundUser(t *testing.T) {
-	mock.InitializeMockUser()
+func (s *UserServiceTest) TestUpdateGrpcErrUserService() {
+	want := s.ServiceDownErr
 
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": int32(http.StatusNotFound),
-		"Message":    []string{"Not found user"},
-	}
+	client := new(mock.UserClientMock)
 
-	srv := service.NewUserService(&mock.UserMockErrClient{})
+	client.On("Update").Return(&proto.UserResponse{}, errors.New("Service is down"))
 
-	c := &mock.UserMockContext{}
+	srv := service.NewUserService(client)
 
-	srv.FindOne(c)
+	_, err := srv.Update(1, &dto.UserDto{})
 
-	assert.Equal(want, c.V)
+	assert.Equal(s.T(), want, err)
 }
 
-func TestFindOneGrpcErrUser(t *testing.T) {
-	mock.InitializeMockUser()
+func (s *UserServiceTest) TestDeleteUserService() {
+	want := s.User
 
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": http.StatusServiceUnavailable,
-		"Message":    "Service is down",
-	}
+	client := new(mock.UserClientMock)
 
-	srv := service.NewUserService(&mock.UserMockErrGrpcClient{})
+	client.On("Delete").Return(&proto.UserResponse{
+		StatusCode: http.StatusOK,
+		Errors:     nil,
+		Data:       s.User,
+	}, nil)
 
-	c := &mock.UserMockContext{}
+	srv := service.NewUserService(client)
 
-	srv.FindOne(c)
+	user, err := srv.Delete(1)
 
-	assert.Equal(want, c.V)
+	assert.Nil(s.T(), err, "Must not got any error")
+	assert.Equal(s.T(), want, user)
 }
 
-func TestCreateUser(t *testing.T) {
-	mock.InitializeMockUser()
+func (s *UserServiceTest) TestDeleteNotFoundUserService() {
+	want := s.NotFoundErr
 
-	assert := assert.New(t)
-	want := &mock.User1
+	client := new(mock.UserClientMock)
 
-	srv := service.NewUserService(&mock.UserMockClient{})
+	client.On("Delete").Return(&proto.UserResponse{
+		StatusCode: http.StatusNotFound,
+		Errors:     []string{"Not found user"},
+		Data:       nil,
+	}, nil)
 
-	c := &mock.UserMockContext{}
+	srv := service.NewUserService(client)
 
-	srv.Create(c)
+	user, err := srv.Delete(1)
 
-	assert.Equal(want, c.V)
+	assert.Nil(s.T(), user)
+	assert.Equal(s.T(), want, err)
 }
 
-func TestCreateErrorDuplicatedUser(t *testing.T) {
-	mock.InitializeMockUser()
+func (s *UserServiceTest) TestDeleteGrpcErrUserService() {
+	want := s.ServiceDownErr
 
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": int32(http.StatusUnprocessableEntity),
-		"Message":    []string{"Duplicated username or email"},
-	}
+	client := new(mock.UserClientMock)
 
-	srv := service.NewUserService(&mock.UserMockErrClient{})
+	client.On("Delete").Return(&proto.UserResponse{}, errors.New("Service is down"))
 
-	c := &mock.UserMockContext{}
+	srv := service.NewUserService(client)
 
-	srv.Create(c)
+	_, err := srv.Delete(1)
 
-	assert.Equal(want, c.V)
-}
-
-func TestCreateGrpcErrUser(t *testing.T) {
-	mock.InitializeMockUser()
-
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": http.StatusServiceUnavailable,
-		"Message":    "Service is down",
-	}
-
-	srv := service.NewUserService(&mock.UserMockErrGrpcClient{})
-
-	c := &mock.UserMockContext{}
-
-	srv.Create(c)
-
-	assert.Equal(want, c.V)
-}
-
-func TestUpdateUser(t *testing.T) {
-	mock.InitializeMockUser()
-
-	assert := assert.New(t)
-	want := &mock.User1
-
-	srv := service.NewUserService(&mock.UserMockClient{})
-
-	c := &mock.UserMockContext{}
-
-	srv.Update(c)
-
-	assert.Equal(want, c.V)
-}
-
-func TestUpdateInvalidRequestParamIDUser(t *testing.T) {
-	mock.InitializeMockUser()
-
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": http.StatusBadRequest,
-		"Message":    "Invalid id",
-	}
-
-	srv := service.NewUserService(&mock.UserMockClient{})
-
-	c := &mock.UserMockErrContext{}
-
-	srv.Update(c)
-
-	assert.Equal(want, c.V)
-}
-
-func TestUpdateErrorNotFoundUser(t *testing.T) {
-	mock.InitializeMockUser()
-
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": int32(http.StatusNotFound),
-		"Message":    []string{"Not found user"},
-	}
-
-	srv := service.NewUserService(&mock.UserMockErrClient{})
-
-	c := &mock.UserMockContext{}
-
-	srv.Update(c)
-
-	assert.Equal(want, c.V)
-}
-
-func TestUpdateGrpcErrUser(t *testing.T) {
-	mock.InitializeMockUser()
-
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": http.StatusServiceUnavailable,
-		"Message":    "Service is down",
-	}
-
-	srv := service.NewUserService(&mock.UserMockErrGrpcClient{})
-
-	c := &mock.UserMockContext{}
-
-	srv.Update(c)
-
-	assert.Equal(want, c.V)
-}
-
-func TestDeleteUser(t *testing.T) {
-	mock.InitializeMockUser()
-
-	assert := assert.New(t)
-	want := &mock.User1
-
-	srv := service.NewUserService(&mock.UserMockClient{})
-
-	c := &mock.UserMockContext{}
-
-	srv.Delete(c)
-
-	assert.Equal(want, c.V)
-}
-
-func TestDeleteInvalidRequestParamIDUser(t *testing.T) {
-	mock.InitializeMockUser()
-
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": http.StatusBadRequest,
-		"Message":    "Invalid id",
-	}
-
-	srv := service.NewUserService(&mock.UserMockClient{})
-
-	c := &mock.UserMockErrContext{}
-
-	srv.Delete(c)
-
-	assert.Equal(want, c.V)
-}
-
-func TestDeleteErrorNotFoundUser(t *testing.T) {
-	mock.InitializeMockUser()
-
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": int32(http.StatusNotFound),
-		"Message":    []string{"Not found user"},
-	}
-
-	srv := service.NewUserService(&mock.UserMockErrClient{})
-
-	c := &mock.UserMockContext{}
-
-	srv.Delete(c)
-
-	assert.Equal(want, c.V)
-}
-
-func TestDeleteGrpcErrUser(t *testing.T) {
-	mock.InitializeMockUser()
-
-	assert := assert.New(t)
-	want := map[string]interface{}{
-		"StatusCode": http.StatusServiceUnavailable,
-		"Message":    "Service is down",
-	}
-
-	srv := service.NewUserService(&mock.UserMockErrGrpcClient{})
-
-	c := &mock.UserMockContext{}
-
-	srv.Delete(c)
-
-	assert.Equal(want, c.V)
+	assert.Equal(s.T(), want, err)
 }
