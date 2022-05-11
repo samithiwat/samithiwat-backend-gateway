@@ -16,6 +16,7 @@ message User{
   uint32 id = 1;
   string firstname = 2;
   string lastname = 3;
+  string displayName = 4;
   string imageUrl = 5;
   Location address = 6;
   Contact contact = 7;
@@ -84,4 +85,13 @@ message Role {
   string description = 3;
   repeated Permission permissions = 4;
   repeated User users  = 5;
+}
+
+message Register{
+  string username = 1;
+  string email = 2;
+  string password = 3;
+  string firstname = 4;
+  string lastname = 5;
+  string imageUrl = 6;
 }
