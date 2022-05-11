@@ -66,6 +66,7 @@ func main() {
 
 	teamClient := proto.NewTeamServiceClient(orgConn)
 	teamSrv := service.NewTeamService(teamClient)
+	teamHandler := handler.NewTeamHandler(teamSrv)
 
 	orgClient := proto.NewOrganizationServiceClient(orgConn)
 	orgSrv := service.NewOrganizationService(orgClient)
@@ -78,11 +79,11 @@ func main() {
 	r.PatchUser("/user/:id", userHandler.Update)
 	r.DeleteUser("user/:id", userHandler.Delete)
 
-	r.GetTeam("/team", teamSrv.FindAll)
-	r.GetTeam("/team/:id", teamSrv.FindOne)
-	r.CreateTeam("team", teamSrv.Create)
-	r.PatchTeam("/team/:id", teamSrv.Update)
-	r.DeleteTeam("team/:id", teamSrv.Delete)
+	r.GetTeam("/team", teamHandler.FindAll)
+	r.GetTeam("/team/:id", teamHandler.FindOne)
+	r.CreateTeam("team", teamHandler.Create)
+	r.PatchTeam("/team/:id", teamHandler.Update)
+	r.DeleteTeam("team/:id", teamHandler.Delete)
 
 	r.GetOrganization("/organization", orgSrv.FindAll)
 	r.GetOrganization("/organization/:id", orgSrv.FindOne)
