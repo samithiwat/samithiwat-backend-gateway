@@ -3,216 +3,114 @@ package mock
 import (
 	"context"
 	"github.com/bxcodec/faker/v3"
-	"github.com/pkg/errors"
-	"github.com/samithiwat/samithiwat-backend-gateway/src/model"
+	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
+	"github.com/stretchr/testify/mock"
 	"google.golang.org/grpc"
-	"net/http"
 )
 
-var Team1 proto.Team
-var Team2 proto.Team
-var Team3 proto.Team
-var Team4 proto.Team
-var Teams []*proto.Team
-
-type TeamMockClient struct {
-}
-
-func (u TeamMockClient) FindAll(ctx context.Context, in *proto.FindAllTeamRequest, opts ...grpc.CallOption) (*proto.TeamPaginationResponse, error) {
-	return &proto.TeamPaginationResponse{
-		StatusCode: http.StatusOK,
-		Errors:     nil,
-		Data: &proto.TeamPagination{
-			Items: Teams,
-			Meta: &proto.PaginationMetadata{
-				TotalItem:    4,
-				ItemCount:    4,
-				ItemsPerPage: 10,
-				TotalPage:    1,
-				CurrentPage:  1,
-			},
-		},
-	}, nil
-}
-
-func (u TeamMockClient) FindOne(ctx context.Context, in *proto.FindOneTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
-	return &proto.TeamResponse{
-		StatusCode: http.StatusOK,
-		Errors:     nil,
-		Data:       &Team1,
-	}, nil
-}
-
-func (u TeamMockClient) FindMulti(ctx context.Context, in *proto.FindMultiTeamRequest, opts ...grpc.CallOption) (*proto.TeamListResponse, error) {
-	return nil, nil
-}
-
-func (u TeamMockClient) Create(ctx context.Context, in *proto.CreateTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
-	return &proto.TeamResponse{
-		StatusCode: http.StatusCreated,
-		Errors:     nil,
-		Data:       &Team1,
-	}, nil
-}
-
-func (u TeamMockClient) Update(ctx context.Context, in *proto.UpdateTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
-	return &proto.TeamResponse{
-		StatusCode: http.StatusOK,
-		Errors:     nil,
-		Data:       &Team1,
-	}, nil
-}
-
-func (u TeamMockClient) Delete(ctx context.Context, in *proto.DeleteTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
-	return &proto.TeamResponse{
-		StatusCode: http.StatusOK,
-		Errors:     nil,
-		Data:       &Team1,
-	}, nil
-}
-
-type TeamMockErrClient struct {
-}
-
-func (u TeamMockErrClient) FindAll(ctx context.Context, in *proto.FindAllTeamRequest, opts ...grpc.CallOption) (*proto.TeamPaginationResponse, error) {
-	return nil, nil
-}
-
-func (u TeamMockErrClient) FindOne(ctx context.Context, in *proto.FindOneTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
-	return &proto.TeamResponse{
-		StatusCode: http.StatusNotFound,
-		Errors:     []string{"Not found team"},
-		Data:       nil,
-	}, nil
-}
-
-func (u TeamMockErrClient) FindMulti(ctx context.Context, in *proto.FindMultiTeamRequest, opts ...grpc.CallOption) (*proto.TeamListResponse, error) {
-	return nil, nil
-}
-
-func (u TeamMockErrClient) Create(ctx context.Context, in *proto.CreateTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
-	return &proto.TeamResponse{
-		StatusCode: http.StatusUnprocessableEntity,
-		Errors:     []string{"Duplicated team name"},
-		Data:       nil,
-	}, nil
-}
-
-func (u TeamMockErrClient) Update(ctx context.Context, in *proto.UpdateTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
-	return &proto.TeamResponse{
-		StatusCode: http.StatusNotFound,
-		Errors:     []string{"Not found team"},
-		Data:       nil,
-	}, nil
-}
-
-func (u TeamMockErrClient) Delete(ctx context.Context, in *proto.DeleteTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
-	return &proto.TeamResponse{
-		StatusCode: http.StatusNotFound,
-		Errors:     []string{"Not found team"},
-		Data:       nil,
-	}, nil
-}
-
-type TeamMockErrGrpcClient struct {
-}
-
-func (u TeamMockErrGrpcClient) FindAll(ctx context.Context, in *proto.FindAllTeamRequest, opts ...grpc.CallOption) (*proto.TeamPaginationResponse, error) {
-	return nil, errors.New("Service is down")
-}
-
-func (u TeamMockErrGrpcClient) FindOne(ctx context.Context, in *proto.FindOneTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
-	return nil, errors.New("Service is down")
-}
-
-func (u TeamMockErrGrpcClient) FindMulti(ctx context.Context, in *proto.FindMultiTeamRequest, opts ...grpc.CallOption) (*proto.TeamListResponse, error) {
-	return nil, nil
-}
-
-func (u TeamMockErrGrpcClient) Create(ctx context.Context, in *proto.CreateTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
-	return nil, errors.New("Service is down")
-}
-
-func (u TeamMockErrGrpcClient) Update(ctx context.Context, in *proto.UpdateTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
-	return nil, errors.New("Service is down")
-}
-
-func (u TeamMockErrGrpcClient) Delete(ctx context.Context, in *proto.DeleteTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
-	return nil, errors.New("Service is down")
-}
-
-type TeamMockContext struct {
+type TeamContextMock struct {
+	mock.Mock
 	V interface{}
 }
 
-func (TeamMockContext) Bind(v interface{}) error {
-	*v.(*proto.Team) = Team1
-	return nil
+func (c *TeamContextMock) Bind(v interface{}) error {
+	*v.(*dto.TeamDto) = dto.TeamDto{
+		Name:        faker.Word(),
+		Description: faker.Sentence(),
+	}
+
+	args := c.Called()
+
+	return args.Error(0)
 }
 
-func (c *TeamMockContext) JSON(_ int, v interface{}) {
+func (c *TeamContextMock) JSON(_ int, v interface{}) {
 	c.V = v
 }
 
-func (TeamMockContext) ID(id *int32) error {
+func (c *TeamContextMock) ID(id *int32) error {
 	*id = 1
-	return nil
+
+	args := c.Called()
+
+	return args.Error(0)
 }
 
-func (TeamMockContext) PaginationQueryParam(query *model.PaginationQueryParams) error {
-	*query = model.PaginationQueryParams{
-		Page:  1,
-		Limit: 10,
-	}
-	return nil
+func (c *TeamContextMock) PaginationQueryParam(*dto.PaginationQueryParams) error {
+	args := c.Called()
+
+	return args.Error(0)
 }
 
-type TeamMockErrContext struct {
-	V interface{}
+type TeamServiceMock struct {
+	mock.Mock
 }
 
-func (TeamMockErrContext) Bind(v interface{}) error {
-	*v.(*proto.Team) = Team1
-	return nil
+func (s *TeamServiceMock) FindAll(dto.PaginationQueryParams) (*proto.TeamPagination, *dto.ResponseErr) {
+	args := s.Called()
+
+	return args.Get(0).(*proto.TeamPagination), args.Get(1).(*dto.ResponseErr)
 }
 
-func (c *TeamMockErrContext) JSON(_ int, v interface{}) {
-	c.V = v
+func (s *TeamServiceMock) FindOne(id int32) (*proto.Team, *dto.ResponseErr) {
+	args := s.Called(id)
+
+	return args.Get(0).(*proto.Team), args.Get(1).(*dto.ResponseErr)
 }
 
-func (TeamMockErrContext) ID(*int32) error {
-	return errors.New("Invalid ID")
+func (s *TeamServiceMock) Create(dto.TeamDto) (*proto.Team, *dto.ResponseErr) {
+	args := s.Called()
+
+	return args.Get(0).(*proto.Team), args.Get(1).(*dto.ResponseErr)
 }
 
-func (TeamMockErrContext) PaginationQueryParam(*model.PaginationQueryParams) error {
-	return errors.New("Invalid Query Param")
+func (s *TeamServiceMock) Update(id int32, _ dto.TeamDto) (*proto.Team, *dto.ResponseErr) {
+	args := s.Called(id)
+
+	return args.Get(0).(*proto.Team), args.Get(1).(*dto.ResponseErr)
 }
 
-func InitializeMockTeam() {
-	Team1 = proto.Team{
-		Id:          1,
-		Name:        faker.Word(),
-		Description: faker.Sentence(),
-	}
+func (s *TeamServiceMock) Delete(id int32) (*proto.Team, *dto.ResponseErr) {
+	args := s.Called(id)
 
-	Team2 = proto.Team{
-		Id:          2,
-		Name:        faker.Word(),
-		Description: faker.Sentence(),
-	}
+	return args.Get(0).(*proto.Team), args.Get(1).(*dto.ResponseErr)
+}
 
-	Team3 = proto.Team{
-		Id:          3,
-		Name:        faker.Word(),
-		Description: faker.Sentence(),
-	}
+type TeamClientMock struct {
+	mock.Mock
+}
 
-	Team4 = proto.Team{
-		Id:          4,
-		Name:        faker.Word(),
-		Description: faker.Sentence(),
-	}
+func (c TeamClientMock) FindAll(ctx context.Context, in *proto.FindAllTeamRequest, opts ...grpc.CallOption) (*proto.TeamPaginationResponse, error) {
+	args := c.Called()
 
-	Teams = append(Teams, &Team1, &Team2, &Team3, &Team4)
+	return args.Get(0).(*proto.TeamPaginationResponse), args.Error(1)
+}
+
+func (c TeamClientMock) FindOne(ctx context.Context, in *proto.FindOneTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
+	args := c.Called()
+
+	return args.Get(0).(*proto.TeamResponse), args.Error(1)
+}
+
+func (c TeamClientMock) FindMulti(ctx context.Context, in *proto.FindMultiTeamRequest, opts ...grpc.CallOption) (*proto.TeamListResponse, error) {
+	return nil, nil
+}
+
+func (c TeamClientMock) Create(ctx context.Context, in *proto.CreateTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
+	args := c.Called()
+
+	return args.Get(0).(*proto.TeamResponse), args.Error(1)
+}
+
+func (c TeamClientMock) Update(ctx context.Context, in *proto.UpdateTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
+	args := c.Called()
+
+	return args.Get(0).(*proto.TeamResponse), args.Error(1)
+}
+
+func (c TeamClientMock) Delete(ctx context.Context, in *proto.DeleteTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
+	args := c.Called()
+
+	return args.Get(0).(*proto.TeamResponse), args.Error(1)
 }
