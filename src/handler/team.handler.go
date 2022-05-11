@@ -1,18 +1,22 @@
 package handler
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
+	validate "github.com/samithiwat/samithiwat-backend-gateway/src/validator"
 	"net/http"
 )
 
 type TeamHandler struct {
-	service TeamService
+	service  TeamService
+	validate *validator.Validate
 }
 
-func NewTeamHandler(service TeamService) *TeamHandler {
+func NewTeamHandler(service TeamService, validate *validator.Validate) *TeamHandler {
 	return &TeamHandler{
-		service: service,
+		service:  service,
+		validate: validate,
 	}
 }
 
@@ -121,15 +125,16 @@ func (h *TeamHandler) Create(c TeamContext) {
 		return
 	}
 
-	//errors := dto.ValidateTeam(teamDto)
-	//if errors != nil {
-	//	c.JSON(http.StatusBadRequest, &dto.ResponseErr{
-	//		StatusCode: http.StatusBadRequest,
-	//		Message:    "Invalid body request",
-	//		Data:       errors,
-	//	})
-	//	return
-	//}
+	v := h.validate.Struct(teamDto)
+	errors := validate.Format(v.(validator.ValidationErrors))
+	if errors != nil {
+		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid body request",
+			Data:       errors,
+		})
+		return
+	}
 
 	team, errRes := h.service.Create(&teamDto)
 	if team.Id == 0 {
@@ -165,15 +170,16 @@ func (h *TeamHandler) Update(c TeamContext) {
 		return
 	}
 
-	//errors := dto.ValidateTeam(teamDto)
-	//if errors != nil {
-	//	c.JSON(http.StatusBadRequest, &dto.ResponseErr{
-	//		StatusCode: http.StatusBadRequest,
-	//		Message:    "Invalid body request",
-	//		Data:       errors,
-	//	})
-	//	return
-	//}
+	v := h.validate.Struct(teamDto)
+	errors := validate.Format(v.(validator.ValidationErrors))
+	if errors != nil {
+		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid body request",
+			Data:       errors,
+		})
+		return
+	}
 
 	var id int32
 	err = c.ID(&id)

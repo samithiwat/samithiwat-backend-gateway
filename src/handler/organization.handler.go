@@ -1,18 +1,22 @@
 package handler
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
+	validate "github.com/samithiwat/samithiwat-backend-gateway/src/validator"
 	"net/http"
 )
 
 type OrganizationHandler struct {
-	service OrganizationService
+	service  OrganizationService
+	validate *validator.Validate
 }
 
-func NewOrganizationHandler(service OrganizationService) *OrganizationHandler {
+func NewOrganizationHandler(service OrganizationService, validate *validator.Validate) *OrganizationHandler {
 	return &OrganizationHandler{
-		service: service,
+		service:  service,
+		validate: validate,
 	}
 }
 
@@ -121,15 +125,16 @@ func (h *OrganizationHandler) Create(c OrganizationContext) {
 		return
 	}
 
-	//errors := dto.ValidateOrganization(organizationDto)
-	//if errors != nil {
-	//	c.JSON(http.StatusBadRequest, &dto.ResponseErr{
-	//		StatusCode: http.StatusBadRequest,
-	//		Message:    "Invalid body request",
-	//		Data:       errors,
-	//	})
-	//	return
-	//}
+	v := h.validate.Struct(organizationDto)
+	errors := validate.Format(v.(validator.ValidationErrors))
+	if errors != nil {
+		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid body request",
+			Data:       errors,
+		})
+		return
+	}
 
 	organization, errRes := h.service.Create(&organizationDto)
 	if organization.Id == 0 {
@@ -165,15 +170,16 @@ func (h *OrganizationHandler) Update(c OrganizationContext) {
 		return
 	}
 
-	//errors := dto.ValidateOrganization(organizationDto)
-	//if errors != nil {
-	//	c.JSON(http.StatusBadRequest, &dto.ResponseErr{
-	//		StatusCode: http.StatusBadRequest,
-	//		Message:    "Invalid body request",
-	//		Data:       errors,
-	//	})
-	//	return
-	//}
+	v := h.validate.Struct(organizationDto)
+	errors := validate.Format(v.(validator.ValidationErrors))
+	if errors != nil {
+		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid body request",
+			Data:       errors,
+		})
+		return
+	}
 
 	var id int32
 	err = c.ID(&id)
