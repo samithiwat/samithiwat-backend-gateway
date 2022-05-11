@@ -70,6 +70,7 @@ func main() {
 
 	orgClient := proto.NewOrganizationServiceClient(orgConn)
 	orgSrv := service.NewOrganizationService(orgClient)
+	orgHandler := handler.NewOrganizationHandler(orgSrv)
 
 	r := router.NewFiberRouter()
 
@@ -85,11 +86,11 @@ func main() {
 	r.PatchTeam("/team/:id", teamHandler.Update)
 	r.DeleteTeam("team/:id", teamHandler.Delete)
 
-	r.GetOrganization("/organization", orgSrv.FindAll)
-	r.GetOrganization("/organization/:id", orgSrv.FindOne)
-	r.CreateOrganization("organization", orgSrv.Create)
-	r.PatchOrganization("/organization/:id", orgSrv.Update)
-	r.DeleteOrganization("organization/:id", orgSrv.Delete)
+	r.GetOrganization("/organization", orgHandler.FindAll)
+	r.GetOrganization("/organization/:id", orgHandler.FindOne)
+	r.CreateOrganization("organization", orgHandler.Create)
+	r.PatchOrganization("/organization/:id", orgHandler.Update)
+	r.DeleteOrganization("organization/:id", orgHandler.Delete)
 
 	go func() {
 		if err := r.Listen(fmt.Sprintf(":%v", conf.App.Port)); err != nil && err != http.ErrServerClosed {
