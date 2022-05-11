@@ -59,7 +59,7 @@ func (h *OrganizationHandler) FindAll(c OrganizationContext) {
 	}
 
 	organizations, errRes := h.service.FindAll(&query)
-	if organizations.Items == nil {
+	if organizations.Meta == nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
