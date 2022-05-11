@@ -16,6 +16,7 @@ type ResponseErr struct {
 }
 
 type BadReqErrResponse struct {
+	Message     string      `json:"message"`
 	FailedField string      `json:"failed_field"`
 	Tag         string      `json:"tag"`
 	Value       interface{} `json:"value"`
