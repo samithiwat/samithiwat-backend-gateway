@@ -91,7 +91,7 @@ func (s *UserServiceTest) TestFindAllUserService() {
 
 	srv := service.NewUserService(client)
 
-	users, err := srv.FindAll(dto.PaginationQueryParams{Limit: 10, Page: 1})
+	users, err := srv.FindAll(&dto.PaginationQueryParams{Limit: 10, Page: 1})
 
 	assert.Nil(s.T(), err, "Must not got any error")
 	assert.Equal(s.T(), want, users)
@@ -106,7 +106,7 @@ func (s *UserServiceTest) TestFindAllGrpcErrUserService() {
 
 	srv := service.NewUserService(client)
 
-	_, err := srv.FindAll(dto.PaginationQueryParams{Limit: 10, Page: 1})
+	_, err := srv.FindAll(&dto.PaginationQueryParams{Limit: 10, Page: 1})
 
 	assert.Equal(s.T(), want, err)
 }

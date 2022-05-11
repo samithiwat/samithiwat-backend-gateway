@@ -60,7 +60,7 @@ func (s *TeamServiceTest) SetupTest() {
 
 	s.NotFoundErr = &dto.ResponseErr{
 		StatusCode: http.StatusNotFound,
-		Message:    "Not found user",
+		Message:    "Not found team",
 		Data:       nil,
 	}
 }
@@ -87,10 +87,10 @@ func (s *TeamServiceTest) TestFindAllTeamService() {
 
 	srv := service.NewTeamService(client)
 
-	users, err := srv.FindAll(dto.PaginationQueryParams{Limit: 10, Page: 1})
+	teams, err := srv.FindAll(&dto.PaginationQueryParams{Limit: 10, Page: 1})
 
 	assert.Nil(s.T(), err, "Must not got any error")
-	assert.Equal(s.T(), want, users)
+	assert.Equal(s.T(), want, teams)
 }
 
 func (s *TeamServiceTest) TestFindAllGrpcErrTeamService() {
@@ -102,7 +102,7 @@ func (s *TeamServiceTest) TestFindAllGrpcErrTeamService() {
 
 	srv := service.NewTeamService(client)
 
-	_, err := srv.FindAll(dto.PaginationQueryParams{Limit: 10, Page: 1})
+	_, err := srv.FindAll(&dto.PaginationQueryParams{Limit: 10, Page: 1})
 
 	assert.Equal(s.T(), want, err)
 }
@@ -120,10 +120,10 @@ func (s *TeamServiceTest) TestFindOneTeamService() {
 
 	srv := service.NewTeamService(client)
 
-	user, err := srv.FindOne(1)
+	team, err := srv.FindOne(1)
 
 	assert.Nil(s.T(), err, "Must not got any error")
-	assert.Equal(s.T(), want, user)
+	assert.Equal(s.T(), want, team)
 }
 
 func (s *TeamServiceTest) TestFindOneNotFoundTeamService() {
@@ -133,15 +133,15 @@ func (s *TeamServiceTest) TestFindOneNotFoundTeamService() {
 
 	client.On("FindOne").Return(&proto.TeamResponse{
 		StatusCode: http.StatusNotFound,
-		Errors:     []string{"Not found user"},
+		Errors:     []string{"Not found team"},
 		Data:       nil,
 	}, nil)
 
 	srv := service.NewTeamService(client)
 
-	user, err := srv.FindOne(1)
+	team, err := srv.FindOne(1)
 
-	assert.Nil(s.T(), user)
+	assert.Nil(s.T(), team)
 	assert.Equal(s.T(), want, err)
 }
 
@@ -172,16 +172,16 @@ func (s *TeamServiceTest) TestCreateTeamService() {
 
 	srv := service.NewTeamService(client)
 
-	user, err := srv.Create(&dto.TeamDto{})
+	team, err := srv.Create(&dto.TeamDto{})
 
 	assert.Nil(s.T(), err, "Must not got any error")
-	assert.Equal(s.T(), want, user)
+	assert.Equal(s.T(), want, team)
 }
 
 func (s *TeamServiceTest) TestCreateDuplicatedTeamService() {
 	want := &dto.ResponseErr{
 		StatusCode: http.StatusUnprocessableEntity,
-		Message:    "Duplicated email or username",
+		Message:    "Duplicated email or teamname",
 		Data:       nil,
 	}
 
@@ -189,15 +189,15 @@ func (s *TeamServiceTest) TestCreateDuplicatedTeamService() {
 
 	client.On("Create").Return(&proto.TeamResponse{
 		StatusCode: http.StatusUnprocessableEntity,
-		Errors:     []string{"Duplicated email or username"},
+		Errors:     []string{"Duplicated email or teamname"},
 		Data:       nil,
 	}, nil)
 
 	srv := service.NewTeamService(client)
 
-	user, err := srv.Create(&dto.TeamDto{})
+	team, err := srv.Create(&dto.TeamDto{})
 
-	assert.Nil(s.T(), user)
+	assert.Nil(s.T(), team)
 	assert.Equal(s.T(), want, err)
 }
 
@@ -228,10 +228,10 @@ func (s *TeamServiceTest) TestUpdateTeamService() {
 
 	srv := service.NewTeamService(client)
 
-	user, err := srv.Update(1, &dto.TeamDto{})
+	team, err := srv.Update(1, &dto.TeamDto{})
 
 	assert.Nil(s.T(), err, "Must not got any error")
-	assert.Equal(s.T(), want, user)
+	assert.Equal(s.T(), want, team)
 }
 
 func (s *TeamServiceTest) TestUpdateNotFoundTeamService() {
@@ -241,15 +241,15 @@ func (s *TeamServiceTest) TestUpdateNotFoundTeamService() {
 
 	client.On("Update").Return(&proto.TeamResponse{
 		StatusCode: http.StatusNotFound,
-		Errors:     []string{"Not found user"},
+		Errors:     []string{"Not found team"},
 		Data:       nil,
 	}, nil)
 
 	srv := service.NewTeamService(client)
 
-	user, err := srv.Update(1, &dto.TeamDto{})
+	team, err := srv.Update(1, &dto.TeamDto{})
 
-	assert.Nil(s.T(), user)
+	assert.Nil(s.T(), team)
 	assert.Equal(s.T(), want, err)
 }
 
@@ -280,10 +280,10 @@ func (s *TeamServiceTest) TestDeleteTeamService() {
 
 	srv := service.NewTeamService(client)
 
-	user, err := srv.Delete(1)
+	team, err := srv.Delete(1)
 
 	assert.Nil(s.T(), err, "Must not got any error")
-	assert.Equal(s.T(), want, user)
+	assert.Equal(s.T(), want, team)
 }
 
 func (s *TeamServiceTest) TestDeleteNotFoundTeamService() {
@@ -293,15 +293,15 @@ func (s *TeamServiceTest) TestDeleteNotFoundTeamService() {
 
 	client.On("Delete").Return(&proto.TeamResponse{
 		StatusCode: http.StatusNotFound,
-		Errors:     []string{"Not found user"},
+		Errors:     []string{"Not found team"},
 		Data:       nil,
 	}, nil)
 
 	srv := service.NewTeamService(client)
 
-	user, err := srv.Delete(1)
+	team, err := srv.Delete(1)
 
-	assert.Nil(s.T(), user)
+	assert.Nil(s.T(), team)
 	assert.Equal(s.T(), want, err)
 }
 
