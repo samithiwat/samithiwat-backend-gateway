@@ -125,13 +125,11 @@ func (h *UserHandler) Create(c UserContext) {
 		return
 	}
 
-	v := h.validate.Struct(userDto)
-	errors := validate.Format(v.(validator.ValidationErrors))
-	if errors != nil {
+	if errors := h.validate.Struct(userDto); errors != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
 			Message:    "Invalid body request",
-			Data:       errors,
+			Data:       validate.Format(errors.(validator.ValidationErrors)),
 		})
 		return
 	}
@@ -170,13 +168,11 @@ func (h *UserHandler) Update(c UserContext) {
 		return
 	}
 
-	v := h.validate.Struct(userDto)
-	errors := validate.Format(v.(validator.ValidationErrors))
-	if errors != nil {
+	if errors := h.validate.Struct(userDto); errors != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
 			Message:    "Invalid body request",
-			Data:       errors,
+			Data:       validate.Format(errors.(validator.ValidationErrors)),
 		})
 		return
 	}

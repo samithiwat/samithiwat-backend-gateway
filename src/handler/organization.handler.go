@@ -125,13 +125,11 @@ func (h *OrganizationHandler) Create(c OrganizationContext) {
 		return
 	}
 
-	v := h.validate.Struct(organizationDto)
-	errors := validate.Format(v.(validator.ValidationErrors))
-	if errors != nil {
+	if errors := h.validate.Struct(organizationDto); errors != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
 			Message:    "Invalid body request",
-			Data:       errors,
+			Data:       validate.Format(errors.(validator.ValidationErrors)),
 		})
 		return
 	}
@@ -170,13 +168,11 @@ func (h *OrganizationHandler) Update(c OrganizationContext) {
 		return
 	}
 
-	v := h.validate.Struct(organizationDto)
-	errors := validate.Format(v.(validator.ValidationErrors))
-	if errors != nil {
+	if errors := h.validate.Struct(organizationDto); errors != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
 			Message:    "Invalid body request",
-			Data:       errors,
+			Data:       validate.Format(errors.(validator.ValidationErrors)),
 		})
 		return
 	}
