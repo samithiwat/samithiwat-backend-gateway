@@ -9,6 +9,7 @@ import (
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/router"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/service"
+	"github.com/samithiwat/samithiwat-backend-gateway/src/validator"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
@@ -57,7 +58,7 @@ func main() {
 
 	userClient := proto.NewUserServiceClient(userConn)
 	userSrv := service.NewUserService(userClient)
-	userHandler := handler.NewUserHandler(userSrv)
+	userHandler := handler.NewUserHandler(userSrv, validator.Validate)
 
 	orgConn, err := grpc.Dial(conf.Service.Organization, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -66,11 +67,11 @@ func main() {
 
 	teamClient := proto.NewTeamServiceClient(orgConn)
 	teamSrv := service.NewTeamService(teamClient)
-	teamHandler := handler.NewTeamHandler(teamSrv)
+	teamHandler := handler.NewTeamHandler(teamSrv, validator.Validate)
 
 	orgClient := proto.NewOrganizationServiceClient(orgConn)
 	orgSrv := service.NewOrganizationService(orgClient)
-	orgHandler := handler.NewOrganizationHandler(orgSrv)
+	orgHandler := handler.NewOrganizationHandler(orgSrv, validator.Validate)
 
 	r := router.NewFiberRouter()
 
