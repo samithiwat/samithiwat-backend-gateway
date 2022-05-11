@@ -13,7 +13,7 @@ type UserServiceMock struct {
 	mock.Mock
 }
 
-func (m *UserServiceMock) FindAll(params dto.PaginationQueryParams) (*proto.UserPagination, *dto.ResponseErr) {
+func (m *UserServiceMock) FindAll(params *dto.PaginationQueryParams) (*proto.UserPagination, *dto.ResponseErr) {
 	args := m.Called()
 
 	return args.Get(0).(*proto.UserPagination), args.Get(1).(*dto.ResponseErr)
@@ -25,13 +25,13 @@ func (m *UserServiceMock) FindOne(id int32) (*proto.User, *dto.ResponseErr) {
 	return args.Get(0).(*proto.User), args.Get(1).(*dto.ResponseErr)
 }
 
-func (m *UserServiceMock) Create(user dto.UserDto) (*proto.User, *dto.ResponseErr) {
+func (m *UserServiceMock) Create(user *dto.UserDto) (*proto.User, *dto.ResponseErr) {
 	args := m.Called()
 
 	return args.Get(0).(*proto.User), args.Get(1).(*dto.ResponseErr)
 }
 
-func (m *UserServiceMock) Update(id int32, user dto.UserDto) (*proto.User, *dto.ResponseErr) {
+func (m *UserServiceMock) Update(id int32, user *dto.UserDto) (*proto.User, *dto.ResponseErr) {
 	args := m.Called(id)
 
 	return args.Get(0).(*proto.User), args.Get(1).(*dto.ResponseErr)

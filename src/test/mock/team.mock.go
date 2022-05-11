@@ -47,7 +47,7 @@ type TeamServiceMock struct {
 	mock.Mock
 }
 
-func (s *TeamServiceMock) FindAll(dto.PaginationQueryParams) (*proto.TeamPagination, *dto.ResponseErr) {
+func (s *TeamServiceMock) FindAll(*dto.PaginationQueryParams) (*proto.TeamPagination, *dto.ResponseErr) {
 	args := s.Called()
 
 	return args.Get(0).(*proto.TeamPagination), args.Get(1).(*dto.ResponseErr)
@@ -59,13 +59,13 @@ func (s *TeamServiceMock) FindOne(id int32) (*proto.Team, *dto.ResponseErr) {
 	return args.Get(0).(*proto.Team), args.Get(1).(*dto.ResponseErr)
 }
 
-func (s *TeamServiceMock) Create(dto.TeamDto) (*proto.Team, *dto.ResponseErr) {
+func (s *TeamServiceMock) Create(*dto.TeamDto) (*proto.Team, *dto.ResponseErr) {
 	args := s.Called()
 
 	return args.Get(0).(*proto.Team), args.Get(1).(*dto.ResponseErr)
 }
 
-func (s *TeamServiceMock) Update(id int32, _ dto.TeamDto) (*proto.Team, *dto.ResponseErr) {
+func (s *TeamServiceMock) Update(id int32, _ *dto.TeamDto) (*proto.Team, *dto.ResponseErr) {
 	args := s.Called(id)
 
 	return args.Get(0).(*proto.Team), args.Get(1).(*dto.ResponseErr)
