@@ -585,7 +585,7 @@
                 "summary": "Create the user",
                 "parameters": [
                     {
-                        "description": "user dto",
+                        "description": "User DTO",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -794,10 +794,14 @@
         "dto.UserDto": {
             "type": "object",
             "required": [
+                "display_name",
                 "firstname",
                 "lastname"
             ],
             "properties": {
+                "display_name": {
+                    "type": "string"
+                },
                 "firstname": {
                     "type": "string"
                 },
@@ -1005,6 +1009,9 @@
                 },
                 "contact": {
                     "$ref": "#/definitions/proto.Contact"
+                },
+                "displayName": {
+                    "type": "string"
                 },
                 "firstname": {
                     "type": "string"

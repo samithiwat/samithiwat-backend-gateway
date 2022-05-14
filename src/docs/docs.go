@@ -590,7 +590,7 @@ const docTemplate = `{
                 "summary": "Create the user",
                 "parameters": [
                     {
-                        "description": "user dto",
+                        "description": "User DTO",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -799,10 +799,14 @@ const docTemplate = `{
         "dto.UserDto": {
             "type": "object",
             "required": [
+                "display_name",
                 "firstname",
                 "lastname"
             ],
             "properties": {
+                "display_name": {
+                    "type": "string"
+                },
                 "firstname": {
                     "type": "string"
                 },
@@ -1010,6 +1014,9 @@ const docTemplate = `{
                 },
                 "contact": {
                     "$ref": "#/definitions/proto.Contact"
+                },
+                "displayName": {
+                    "type": "string"
                 },
                 "firstname": {
                     "type": "string"

@@ -104,7 +104,7 @@ func (h *UserHandler) FindOne(c UserContext) {
 // Create is a function that create the user
 // @Summary Create the user
 // @Description Return the user dto if successfully
-// @Param user body dto.UserDto true "user dto"
+// @Param user body dto.UserDto true "User DTO"
 // @Tags user
 // @Accept json
 // @Produce json
