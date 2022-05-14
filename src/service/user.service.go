@@ -159,8 +159,9 @@ func (s *UserService) Delete(id int32) (result *proto.User, err *dto.ResponseErr
 
 func (UserService) DtoToRaw(userDto *dto.UserDto) *proto.User {
 	return &proto.User{
-		Firstname: userDto.Firstname,
-		Lastname:  userDto.Lastname,
-		ImageUrl:  userDto.ImageUrl,
+		Firstname:   userDto.Firstname,
+		Lastname:    userDto.Lastname,
+		ImageUrl:    userDto.ImageUrl,
+		DisplayName: userDto.DisplayName,
 	}
 }
