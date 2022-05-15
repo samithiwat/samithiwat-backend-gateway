@@ -55,6 +55,17 @@ func NewValidator() (*DtoValidator, error) {
 		return t
 	})
 
+	_ = v.RegisterTranslation("password", trans, func(ut ut.Translator) error {
+		return ut.Add("password", "{0} is not strong enough (must be at lease 8 characters)", true) // see universal-translator for details
+	}, func(ut ut.Translator, fe validator.FieldError) string {
+		t, _ := ut.T("password", fe.Field())
+		return t
+	})
+
+	_ = v.RegisterValidation("password", func(fl validator.FieldLevel) bool {
+		return len(fl.Field().String()) >= 8
+	})
+
 	return &DtoValidator{
 		v:     v,
 		trans: trans,
