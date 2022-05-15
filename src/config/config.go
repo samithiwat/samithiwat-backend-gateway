@@ -6,6 +6,7 @@ import (
 )
 
 type Service struct {
+	Auth         string `mapstructure:"auth"`
 	User         string `mapstructure:"user"`
 	Organization string `mapstructure:"organization"`
 }
