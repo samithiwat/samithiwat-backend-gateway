@@ -92,7 +92,7 @@ func (h *OrganizationHandler) FindOne(c OrganizationContext) {
 	}
 
 	organization, errRes := h.service.FindOne(id)
-	if organization.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
@@ -104,7 +104,7 @@ func (h *OrganizationHandler) FindOne(c OrganizationContext) {
 // Create is a function that create the organization
 // @Summary Create the organization
 // @Description Return the organization dto if successfully
-// @Param organization body proto.Organization true "organization dto"
+// @Param organization body dto.OrganizationDto true "organization dto"
 // @Tags organization
 // @Accept json
 // @Produce json
@@ -134,7 +134,7 @@ func (h *OrganizationHandler) Create(c OrganizationContext) {
 	}
 
 	organization, errRes := h.service.Create(&organizationDto)
-	if organization.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
@@ -147,7 +147,7 @@ func (h *OrganizationHandler) Create(c OrganizationContext) {
 // @Summary Update the existing organization
 // @Description Return the organization dto if successfully
 // @Param id path int true "id"
-// @Param organization body proto.Organization true "organization dto"
+// @Param organization body dto.OrganizationDto true "organization dto"
 // @Tags organization
 // @Accept json
 // @Produce json
@@ -187,7 +187,7 @@ func (h *OrganizationHandler) Update(c OrganizationContext) {
 	}
 
 	organization, errRes := h.service.Update(id, &organizationDto)
-	if organization.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
@@ -220,7 +220,7 @@ func (h *OrganizationHandler) Delete(c OrganizationContext) {
 	}
 
 	organization, errRes := h.service.Delete(id)
-	if organization.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}

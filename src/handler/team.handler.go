@@ -92,7 +92,7 @@ func (h *TeamHandler) FindOne(c TeamContext) {
 	}
 
 	team, errRes := h.service.FindOne(id)
-	if team.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
@@ -104,7 +104,7 @@ func (h *TeamHandler) FindOne(c TeamContext) {
 // Create is a function that create the team
 // @Summary Create the team
 // @Description Return the team dto if successfully
-// @Param team body proto.Team true "team dto"
+// @Param team body dto.TeamDto true "team dto"
 // @Tags team
 // @Accept json
 // @Produce json
@@ -134,7 +134,7 @@ func (h *TeamHandler) Create(c TeamContext) {
 	}
 
 	team, errRes := h.service.Create(&teamDto)
-	if team.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
@@ -147,7 +147,7 @@ func (h *TeamHandler) Create(c TeamContext) {
 // @Summary Update the existing team
 // @Description Return the team dto if successfully
 // @Param id path int true "id"
-// @Param team body proto.Team true "team dto"
+// @Param team body dto.TeamDto true "team dto"
 // @Tags team
 // @Accept json
 // @Produce json
@@ -187,7 +187,7 @@ func (h *TeamHandler) Update(c TeamContext) {
 	}
 
 	team, errRes := h.service.Update(id, &teamDto)
-	if team.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
@@ -220,7 +220,7 @@ func (h *TeamHandler) Delete(c TeamContext) {
 	}
 
 	team, errRes := h.service.Delete(id)
-	if team.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}

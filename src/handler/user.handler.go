@@ -92,7 +92,7 @@ func (h *UserHandler) FindOne(c UserContext) {
 	}
 
 	user, errRes := h.service.FindOne(id)
-	if user.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
@@ -134,7 +134,7 @@ func (h *UserHandler) Create(c UserContext) {
 	}
 
 	user, errRes := h.service.Create(&userDto)
-	if user.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
@@ -147,7 +147,7 @@ func (h *UserHandler) Create(c UserContext) {
 // @Summary Update the existing user
 // @Description Return the user dto if successfully
 // @Param id path int true "id"
-// @Param user body proto.User true "user dto"
+// @Param user body dto.UserDto true "user dto"
 // @Tags user
 // @Accept json
 // @Produce json
@@ -187,7 +187,7 @@ func (h *UserHandler) Update(c UserContext) {
 	}
 
 	user, errRes := h.service.Update(id, &userDto)
-	if user.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
@@ -220,7 +220,7 @@ func (h *UserHandler) Delete(c UserContext) {
 	}
 
 	user, errRes := h.service.Delete(id)
-	if user.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
