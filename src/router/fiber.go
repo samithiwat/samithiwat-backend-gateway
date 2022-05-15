@@ -10,6 +10,10 @@ import (
 
 type FiberRouter struct {
 	*fiber.App
+	auth fiber.Router
+	user fiber.Router
+	team fiber.Router
+	org  fiber.Router
 }
 
 func NewFiberRouter() *FiberRouter {
@@ -20,7 +24,12 @@ func NewFiberRouter() *FiberRouter {
 
 	r.Get("/docs/*", swagger.HandlerDefault)
 
-	return &FiberRouter{r}
+	auth := r.Group("/auth")
+	user := r.Group("/user")
+	team := r.Group("/team")
+	org := r.Group("/organization")
+
+	return &FiberRouter{r, auth, user, team, org}
 }
 
 type FiberCtx struct {
