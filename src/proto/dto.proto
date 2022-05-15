@@ -87,11 +87,28 @@ message Role {
   repeated User users  = 5;
 }
 
+message Credential{
+  string accessToken = 1;
+  string refreshToken = 2;
+  int32 expiresIn = 3;
+}
+
 message Register{
-  string username = 1;
-  string email = 2;
-  string password = 3;
-  string firstname = 4;
-  string lastname = 5;
+  string email = 1;
+  string password = 2;
+  string firstname = 3;
+  string lastname = 4;
+  string displayName = 5;
   string imageUrl = 6;
+}
+
+message Login{
+  string email = 1;
+  string password = 2;
+}
+
+message ChangePassword{
+  uint32 userId = 1;
+  string oldPassword = 2;
+  string newPassword = 3;
 }
