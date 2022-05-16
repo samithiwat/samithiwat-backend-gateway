@@ -154,7 +154,7 @@ func (u *UserHandlerTest) TestFindAllGrpcErrUser() {
 		Query:   u.Query,
 	}
 
-	srv.On("FindAll", u.Query).Return(&proto.UserPagination{}, u.ServiceDownErr)
+	srv.On("FindAll", u.Query).Return(nil, u.ServiceDownErr)
 	c.On("PaginationQueryParam", &dto.PaginationQueryParams{}).Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -200,7 +200,7 @@ func (u *UserHandlerTest) TestFindOneInvalidRequestParamIDUser() {
 		Query:   u.Query,
 	}
 
-	srv.On("FindOne", int32(1)).Return(&proto.User{}, nil)
+	srv.On("FindOne", int32(1)).Return(nil, nil)
 	c.On("ID", int32(0)).Return(errors.New("Invalid ID"))
 
 	v, _ := validator.NewValidator()
@@ -222,7 +222,7 @@ func (u *UserHandlerTest) TestFindOneErrorNotFoundUser() {
 		Query:   u.Query,
 	}
 
-	srv.On("FindOne", int32(1)).Return(&proto.User{}, u.NotFoundErr)
+	srv.On("FindOne", int32(1)).Return(nil, u.NotFoundErr)
 	c.On("ID", int32(0)).Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -245,7 +245,7 @@ func (u *UserHandlerTest) TestFindOneGrpcErrUser() {
 		Query:   u.Query,
 	}
 
-	srv.On("FindOne", int32(1)).Return(&proto.User{}, u.ServiceDownErr)
+	srv.On("FindOne", int32(1)).Return(nil, u.ServiceDownErr)
 	c.On("ID", int32(0)).Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -293,7 +293,7 @@ func (u *UserHandlerTest) TestCreateErrorDuplicatedUser() {
 		Query:   u.Query,
 	}
 
-	srv.On("Create", u.UserDto).Return(&proto.User{}, want)
+	srv.On("Create", u.UserDto).Return(nil, want)
 	c.On("Bind", &dto.UserDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -318,7 +318,7 @@ func (u *UserHandlerTest) TestCreateInvalidBodyRequest() {
 		Query:   u.Query,
 	}
 
-	srv.On("Create", u.UserDto).Return(&proto.User{}, nil)
+	srv.On("Create", u.UserDto).Return(nil, nil)
 	c.On("Bind", &dto.UserDto{}).Return(errors.New("Cannot parse body request"))
 
 	v, _ := validator.NewValidator()
@@ -340,7 +340,7 @@ func (u *UserHandlerTest) TestCreateGrpcErrUser() {
 		Query:   u.Query,
 	}
 
-	srv.On("Create", u.UserDto).Return(&proto.User{}, u.ServiceDownErr)
+	srv.On("Create", u.UserDto).Return(nil, u.ServiceDownErr)
 	c.On("Bind", &dto.UserDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -387,7 +387,7 @@ func (u *UserHandlerTest) TestUpdateInvalidRequestParamIDUser() {
 		Query:   u.Query,
 	}
 
-	srv.On("Update", int32(1), u.UserDto).Return(&proto.User{}, nil)
+	srv.On("Update", int32(1), u.UserDto).Return(nil, nil)
 	c.On("ID", int32(0)).Return(errors.New("Invalid ID"))
 	c.On("Bind", &dto.UserDto{}).Return(nil)
 
@@ -414,7 +414,7 @@ func (u *UserHandlerTest) TestUpdateInvalidBodyRequest() {
 		Query:   u.Query,
 	}
 
-	srv.On("Update", int32(1), u.UserDto).Return(&proto.User{}, nil)
+	srv.On("Update", int32(1), u.UserDto).Return(nil, nil)
 	c.On("ID", int32(0)).Return(nil)
 	c.On("Bind", &dto.UserDto{}).Return(errors.New("Cannot parse user dto"))
 
@@ -437,7 +437,7 @@ func (u *UserHandlerTest) TestUpdateErrorNotFoundUser() {
 		Query:   u.Query,
 	}
 
-	srv.On("Update", int32(1), u.UserDto).Return(&proto.User{}, u.NotFoundErr)
+	srv.On("Update", int32(1), u.UserDto).Return(nil, u.NotFoundErr)
 	c.On("ID", int32(0)).Return(nil)
 	c.On("Bind", &dto.UserDto{}).Return(nil)
 
@@ -460,7 +460,7 @@ func (u *UserHandlerTest) TestUpdateGrpcErrUser() {
 		Query:   u.Query,
 	}
 
-	srv.On("Update", int32(1), u.UserDto).Return(&proto.User{}, u.ServiceDownErr)
+	srv.On("Update", int32(1), u.UserDto).Return(nil, u.ServiceDownErr)
 	c.On("Bind", &dto.UserDto{}).Return(nil)
 	c.On("ID", int32(0)).Return(nil)
 
@@ -507,7 +507,7 @@ func (u *UserHandlerTest) TestDeleteInvalidRequestParamIDUser() {
 		Query:   u.Query,
 	}
 
-	srv.On("Delete", int32(1)).Return(&proto.User{}, nil)
+	srv.On("Delete", int32(1)).Return(nil, nil)
 	c.On("ID", int32(0)).Return(errors.New("Invalid ID"))
 
 	v, _ := validator.NewValidator()
@@ -530,7 +530,7 @@ func (u *UserHandlerTest) TestDeleteErrorNotFoundUser() {
 		Query:   u.Query,
 	}
 
-	srv.On("Delete", int32(1)).Return(&proto.User{}, u.NotFoundErr)
+	srv.On("Delete", int32(1)).Return(nil, u.NotFoundErr)
 	c.On("ID", int32(0)).Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -553,7 +553,7 @@ func (u *UserHandlerTest) TestDeleteGrpcErrUser() {
 		Query:   u.Query,
 	}
 
-	srv.On("Delete", int32(1)).Return(&proto.User{}, u.ServiceDownErr)
+	srv.On("Delete", int32(1)).Return(nil, u.ServiceDownErr)
 	c.On("ID", int32(0)).Return(nil)
 
 	v, _ := validator.NewValidator()

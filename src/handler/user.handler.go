@@ -59,7 +59,7 @@ func (h *UserHandler) FindAll(c UserContext) {
 	}
 
 	users, errRes := h.service.FindAll(&query)
-	if users.Meta == nil {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}

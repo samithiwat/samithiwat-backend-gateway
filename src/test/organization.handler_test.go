@@ -145,7 +145,7 @@ func (u *OrganizationHandlerTest) TestFindAllGrpcErrOrganization() {
 		Query:           u.Query,
 	}
 
-	srv.On("FindAll", u.Query).Return(&proto.OrganizationPagination{}, u.ServiceDownErr)
+	srv.On("FindAll", u.Query).Return(nil, u.ServiceDownErr)
 	c.On("PaginationQueryParam", &dto.PaginationQueryParams{}).Return(nil)
 
 	v, _ := validator.NewValidator()

@@ -145,7 +145,7 @@ func (u *TeamHandlerTest) TestFindAllGrpcErrTeam() {
 		Query:   u.Query,
 	}
 
-	srv.On("FindAll", u.Query).Return(&proto.TeamPagination{}, u.ServiceDownErr)
+	srv.On("FindAll", u.Query).Return(nil, u.ServiceDownErr)
 	c.On("PaginationQueryParam", &dto.PaginationQueryParams{}).Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -191,7 +191,7 @@ func (u *TeamHandlerTest) TestFindOneInvalidRequestParamIDTeam() {
 		Query:   u.Query,
 	}
 
-	srv.On("FindOne", int32(1)).Return(&proto.Team{}, nil)
+	srv.On("FindOne", int32(1)).Return(nil, nil)
 	c.On("ID").Return(errors.New("Invalid ID"))
 
 	v, _ := validator.NewValidator()
@@ -213,7 +213,7 @@ func (u *TeamHandlerTest) TestFindOneErrorNotFoundTeam() {
 		Query:   u.Query,
 	}
 
-	srv.On("FindOne", int32(1)).Return(&proto.Team{}, u.NotFoundErr)
+	srv.On("FindOne", int32(1)).Return(nil, u.NotFoundErr)
 	c.On("ID").Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -236,7 +236,7 @@ func (u *TeamHandlerTest) TestFindOneGrpcErrTeam() {
 		Query:   u.Query,
 	}
 
-	srv.On("FindOne", int32(1)).Return(&proto.Team{}, u.ServiceDownErr)
+	srv.On("FindOne", int32(1)).Return(nil, u.ServiceDownErr)
 	c.On("ID").Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -284,7 +284,7 @@ func (u *TeamHandlerTest) TestCreateErrorDuplicatedTeam() {
 		Query:   u.Query,
 	}
 
-	srv.On("Create", u.TeamDto).Return(&proto.Team{}, want)
+	srv.On("Create", u.TeamDto).Return(nil, want)
 	c.On("Bind", &dto.TeamDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -309,7 +309,7 @@ func (u *TeamHandlerTest) TestCreateInvalidBodyRequest() {
 		Query:   u.Query,
 	}
 
-	srv.On("Create", u.TeamDto).Return(&proto.Team{}, nil)
+	srv.On("Create", u.TeamDto).Return(nil, nil)
 	c.On("Bind", &dto.TeamDto{}).Return(errors.New("Cannot parse body request"))
 
 	v, _ := validator.NewValidator()
@@ -331,7 +331,7 @@ func (u *TeamHandlerTest) TestCreateGrpcErrTeam() {
 		Query:   u.Query,
 	}
 
-	srv.On("Create", u.TeamDto).Return(&proto.Team{}, u.ServiceDownErr)
+	srv.On("Create", u.TeamDto).Return(nil, u.ServiceDownErr)
 	c.On("Bind", &dto.TeamDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -378,7 +378,7 @@ func (u *TeamHandlerTest) TestUpdateInvalidRequestParamIDTeam() {
 		Query:   u.Query,
 	}
 
-	srv.On("Update", int32(1), u.TeamDto).Return(&proto.Team{}, nil)
+	srv.On("Update", int32(1), u.TeamDto).Return(nil, nil)
 	c.On("ID").Return(errors.New("Invalid ID"))
 	c.On("Bind", &dto.TeamDto{}).Return(nil)
 
@@ -405,7 +405,7 @@ func (u *TeamHandlerTest) TestUpdateInvalidBodyRequest() {
 		Query:   u.Query,
 	}
 
-	srv.On("Update", int32(1), u.TeamDto).Return(&proto.Team{}, nil)
+	srv.On("Update", int32(1), u.TeamDto).Return(nil, nil)
 	c.On("ID").Return(nil)
 	c.On("Bind", &dto.TeamDto{}).Return(errors.New("Cannot parse team dto"))
 
@@ -428,7 +428,7 @@ func (u *TeamHandlerTest) TestUpdateErrorNotFoundTeam() {
 		Query:   u.Query,
 	}
 
-	srv.On("Update", int32(1), u.TeamDto).Return(&proto.Team{}, u.NotFoundErr)
+	srv.On("Update", int32(1), u.TeamDto).Return(nil, u.NotFoundErr)
 	c.On("ID").Return(nil)
 	c.On("Bind", &dto.TeamDto{}).Return(nil)
 
@@ -451,7 +451,7 @@ func (u *TeamHandlerTest) TestUpdateGrpcErrTeam() {
 		Query:   u.Query,
 	}
 
-	srv.On("Update", int32(1), u.TeamDto).Return(&proto.Team{}, u.ServiceDownErr)
+	srv.On("Update", int32(1), u.TeamDto).Return(nil, u.ServiceDownErr)
 	c.On("Bind", &dto.TeamDto{}).Return(nil)
 	c.On("ID").Return(nil)
 
@@ -498,7 +498,7 @@ func (u *TeamHandlerTest) TestDeleteInvalidRequestParamIDTeam() {
 		Query:   u.Query,
 	}
 
-	srv.On("Delete", int32(1)).Return(&proto.Team{}, nil)
+	srv.On("Delete", int32(1)).Return(nil, nil)
 	c.On("ID").Return(errors.New("Invalid ID"))
 
 	v, _ := validator.NewValidator()
@@ -521,7 +521,7 @@ func (u *TeamHandlerTest) TestDeleteErrorNotFoundTeam() {
 		Query:   u.Query,
 	}
 
-	srv.On("Delete", int32(1)).Return(&proto.Team{}, u.NotFoundErr)
+	srv.On("Delete", int32(1)).Return(nil, u.NotFoundErr)
 	c.On("ID").Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -544,7 +544,7 @@ func (u *TeamHandlerTest) TestDeleteGrpcErrTeam() {
 		Query:   u.Query,
 	}
 
-	srv.On("Delete", int32(1)).Return(&proto.Team{}, u.ServiceDownErr)
+	srv.On("Delete", int32(1)).Return(nil, u.ServiceDownErr)
 	c.On("ID").Return(nil)
 
 	v, _ := validator.NewValidator()

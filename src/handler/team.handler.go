@@ -59,7 +59,7 @@ func (h *TeamHandler) FindAll(c TeamContext) {
 	}
 
 	teams, errRes := h.service.FindAll(&query)
-	if teams.Meta == nil {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
