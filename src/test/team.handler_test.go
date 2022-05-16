@@ -169,7 +169,7 @@ func (u *TeamHandlerTest) TestFindOneTeam() {
 	}
 
 	srv.On("FindOne", int32(1)).Return(u.Team, nil)
-	c.On("ID").Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -192,7 +192,7 @@ func (u *TeamHandlerTest) TestFindOneInvalidRequestParamIDTeam() {
 	}
 
 	srv.On("FindOne", int32(1)).Return(nil, nil)
-	c.On("ID").Return(errors.New("Invalid ID"))
+	c.On("ID").Return(-1, errors.New("Invalid ID"))
 
 	v, _ := validator.NewValidator()
 
@@ -214,7 +214,7 @@ func (u *TeamHandlerTest) TestFindOneErrorNotFoundTeam() {
 	}
 
 	srv.On("FindOne", int32(1)).Return(nil, u.NotFoundErr)
-	c.On("ID").Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -237,7 +237,7 @@ func (u *TeamHandlerTest) TestFindOneGrpcErrTeam() {
 	}
 
 	srv.On("FindOne", int32(1)).Return(nil, u.ServiceDownErr)
-	c.On("ID").Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -356,7 +356,7 @@ func (u *TeamHandlerTest) TestUpdateTeam() {
 
 	srv.On("Update", int32(1), u.TeamDto).Return(u.Team, nil)
 	c.On("Bind", &dto.TeamDto{}).Return(nil)
-	c.On("ID").Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -379,7 +379,7 @@ func (u *TeamHandlerTest) TestUpdateInvalidRequestParamIDTeam() {
 	}
 
 	srv.On("Update", int32(1), u.TeamDto).Return(nil, nil)
-	c.On("ID").Return(errors.New("Invalid ID"))
+	c.On("ID").Return(-1, errors.New("Invalid ID"))
 	c.On("Bind", &dto.TeamDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -406,7 +406,7 @@ func (u *TeamHandlerTest) TestUpdateInvalidBodyRequest() {
 	}
 
 	srv.On("Update", int32(1), u.TeamDto).Return(nil, nil)
-	c.On("ID").Return(nil)
+	c.On("ID").Return(1, nil)
 	c.On("Bind", &dto.TeamDto{}).Return(errors.New("Cannot parse team dto"))
 
 	v, _ := validator.NewValidator()
@@ -429,7 +429,7 @@ func (u *TeamHandlerTest) TestUpdateErrorNotFoundTeam() {
 	}
 
 	srv.On("Update", int32(1), u.TeamDto).Return(nil, u.NotFoundErr)
-	c.On("ID").Return(nil)
+	c.On("ID").Return(1, nil)
 	c.On("Bind", &dto.TeamDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -453,7 +453,7 @@ func (u *TeamHandlerTest) TestUpdateGrpcErrTeam() {
 
 	srv.On("Update", int32(1), u.TeamDto).Return(nil, u.ServiceDownErr)
 	c.On("Bind", &dto.TeamDto{}).Return(nil)
-	c.On("ID").Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -476,7 +476,7 @@ func (u *TeamHandlerTest) TestDeleteTeam() {
 	}
 
 	srv.On("Delete", int32(1)).Return(u.Team, nil)
-	c.On("ID").Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -499,7 +499,7 @@ func (u *TeamHandlerTest) TestDeleteInvalidRequestParamIDTeam() {
 	}
 
 	srv.On("Delete", int32(1)).Return(nil, nil)
-	c.On("ID").Return(errors.New("Invalid ID"))
+	c.On("ID").Return(-1, errors.New("Invalid ID"))
 
 	v, _ := validator.NewValidator()
 
@@ -522,7 +522,7 @@ func (u *TeamHandlerTest) TestDeleteErrorNotFoundTeam() {
 	}
 
 	srv.On("Delete", int32(1)).Return(nil, u.NotFoundErr)
-	c.On("ID").Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -545,7 +545,7 @@ func (u *TeamHandlerTest) TestDeleteGrpcErrTeam() {
 	}
 
 	srv.On("Delete", int32(1)).Return(nil, u.ServiceDownErr)
-	c.On("ID").Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 

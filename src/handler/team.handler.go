@@ -22,7 +22,7 @@ func NewTeamHandler(service TeamService, validate *validate.DtoValidator) *TeamH
 type TeamContext interface {
 	Bind(interface{}) error
 	JSON(int, interface{})
-	ID(*int32) error
+	ID() (int32, error)
 	PaginationQueryParam(*dto.PaginationQueryParams) error
 }
 
@@ -81,8 +81,7 @@ func (h *TeamHandler) FindAll(c TeamContext) {
 // @Failure 503 {object} dto.ResponseErr "Service is down"
 // @Router /team/{id} [get]
 func (h *TeamHandler) FindOne(c TeamContext) {
-	var id int32
-	err := c.ID(&id)
+	id, err := c.ID()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
@@ -176,8 +175,7 @@ func (h *TeamHandler) Update(c TeamContext) {
 		return
 	}
 
-	var id int32
-	err = c.ID(&id)
+	id, err := c.ID()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
@@ -209,8 +207,7 @@ func (h *TeamHandler) Update(c TeamContext) {
 // @Failure 503 {object} dto.ResponseErr "Service is down"
 // @Router /team/{id} [delete]
 func (h *TeamHandler) Delete(c TeamContext) {
-	var id int32
-	err := c.ID(&id)
+	id, err := c.ID()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,

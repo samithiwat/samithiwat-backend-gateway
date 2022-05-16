@@ -178,7 +178,7 @@ func (u *UserHandlerTest) TestFindOneUser() {
 	}
 
 	srv.On("FindOne", int32(1)).Return(u.User, nil)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -201,7 +201,7 @@ func (u *UserHandlerTest) TestFindOneInvalidRequestParamIDUser() {
 	}
 
 	srv.On("FindOne", int32(1)).Return(nil, nil)
-	c.On("ID", int32(0)).Return(errors.New("Invalid ID"))
+	c.On("ID").Return(-1, errors.New("Invalid ID"))
 
 	v, _ := validator.NewValidator()
 
@@ -223,7 +223,7 @@ func (u *UserHandlerTest) TestFindOneErrorNotFoundUser() {
 	}
 
 	srv.On("FindOne", int32(1)).Return(nil, u.NotFoundErr)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -246,7 +246,7 @@ func (u *UserHandlerTest) TestFindOneGrpcErrUser() {
 	}
 
 	srv.On("FindOne", int32(1)).Return(nil, u.ServiceDownErr)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -365,7 +365,7 @@ func (u *UserHandlerTest) TestUpdateUser() {
 
 	srv.On("Update", int32(1), u.UserDto).Return(u.User, nil)
 	c.On("Bind", &dto.UserDto{}).Return(nil)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -388,7 +388,7 @@ func (u *UserHandlerTest) TestUpdateInvalidRequestParamIDUser() {
 	}
 
 	srv.On("Update", int32(1), u.UserDto).Return(nil, nil)
-	c.On("ID", int32(0)).Return(errors.New("Invalid ID"))
+	c.On("ID").Return(-1, errors.New("Invalid ID"))
 	c.On("Bind", &dto.UserDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -415,7 +415,7 @@ func (u *UserHandlerTest) TestUpdateInvalidBodyRequest() {
 	}
 
 	srv.On("Update", int32(1), u.UserDto).Return(nil, nil)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 	c.On("Bind", &dto.UserDto{}).Return(errors.New("Cannot parse user dto"))
 
 	v, _ := validator.NewValidator()
@@ -438,7 +438,7 @@ func (u *UserHandlerTest) TestUpdateErrorNotFoundUser() {
 	}
 
 	srv.On("Update", int32(1), u.UserDto).Return(nil, u.NotFoundErr)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 	c.On("Bind", &dto.UserDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -462,7 +462,7 @@ func (u *UserHandlerTest) TestUpdateGrpcErrUser() {
 
 	srv.On("Update", int32(1), u.UserDto).Return(nil, u.ServiceDownErr)
 	c.On("Bind", &dto.UserDto{}).Return(nil)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -485,7 +485,7 @@ func (u *UserHandlerTest) TestDeleteUser() {
 	}
 
 	srv.On("Delete", int32(1)).Return(u.User, nil)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -508,7 +508,7 @@ func (u *UserHandlerTest) TestDeleteInvalidRequestParamIDUser() {
 	}
 
 	srv.On("Delete", int32(1)).Return(nil, nil)
-	c.On("ID", int32(0)).Return(errors.New("Invalid ID"))
+	c.On("ID").Return(-1, errors.New("Invalid ID"))
 
 	v, _ := validator.NewValidator()
 
@@ -531,7 +531,7 @@ func (u *UserHandlerTest) TestDeleteErrorNotFoundUser() {
 	}
 
 	srv.On("Delete", int32(1)).Return(nil, u.NotFoundErr)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -554,7 +554,7 @@ func (u *UserHandlerTest) TestDeleteGrpcErrUser() {
 	}
 
 	srv.On("Delete", int32(1)).Return(nil, u.ServiceDownErr)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 

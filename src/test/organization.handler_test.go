@@ -169,7 +169,7 @@ func (u *OrganizationHandlerTest) TestFindOneOrganization() {
 	}
 
 	srv.On("FindOne", int32(1)).Return(u.Organization, nil)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -192,7 +192,7 @@ func (u *OrganizationHandlerTest) TestFindOneInvalidRequestParamIDOrganization()
 	}
 
 	srv.On("FindOne", int32(1)).Return(&proto.Organization{}, nil)
-	c.On("ID", int32(0)).Return(errors.New("Invalid ID"))
+	c.On("ID").Return(-1, errors.New("Invalid ID"))
 
 	v, _ := validator.NewValidator()
 
@@ -214,7 +214,7 @@ func (u *OrganizationHandlerTest) TestFindOneErrorNotFoundOrganization() {
 	}
 
 	srv.On("FindOne", int32(1)).Return(&proto.Organization{}, u.NotFoundErr)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -237,7 +237,7 @@ func (u *OrganizationHandlerTest) TestFindOneGrpcErrOrganization() {
 	}
 
 	srv.On("FindOne", int32(1)).Return(&proto.Organization{}, u.ServiceDownErr)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -356,7 +356,7 @@ func (u *OrganizationHandlerTest) TestUpdateOrganization() {
 
 	srv.On("Update", int32(1), u.OrganizationDto).Return(u.Organization, nil)
 	c.On("Bind", &dto.OrganizationDto{}).Return(nil)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -379,7 +379,7 @@ func (u *OrganizationHandlerTest) TestUpdateInvalidRequestParamIDOrganization() 
 	}
 
 	srv.On("Update", int32(1), u.OrganizationDto).Return(&proto.Organization{}, nil)
-	c.On("ID", int32(0)).Return(errors.New("Invalid ID"))
+	c.On("ID").Return(-1, errors.New("Invalid ID"))
 	c.On("Bind", &dto.OrganizationDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -406,7 +406,7 @@ func (u *OrganizationHandlerTest) TestUpdateInvalidBodyRequest() {
 	}
 
 	srv.On("Update", int32(1), u.OrganizationDto).Return(&proto.Organization{}, nil)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 	c.On("Bind", &dto.OrganizationDto{}).Return(errors.New("Cannot parse organization dto"))
 
 	v, _ := validator.NewValidator()
@@ -429,7 +429,7 @@ func (u *OrganizationHandlerTest) TestUpdateErrorNotFoundOrganization() {
 	}
 
 	srv.On("Update", int32(1), u.OrganizationDto).Return(&proto.Organization{}, u.NotFoundErr)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 	c.On("Bind", &dto.OrganizationDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
@@ -453,7 +453,7 @@ func (u *OrganizationHandlerTest) TestUpdateGrpcErrOrganization() {
 
 	srv.On("Update", int32(1), u.OrganizationDto).Return(&proto.Organization{}, u.ServiceDownErr)
 	c.On("Bind", &dto.OrganizationDto{}).Return(nil)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -476,7 +476,7 @@ func (u *OrganizationHandlerTest) TestDeleteOrganization() {
 	}
 
 	srv.On("Delete", int32(1)).Return(u.Organization, nil)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -499,7 +499,7 @@ func (u *OrganizationHandlerTest) TestDeleteInvalidRequestParamIDOrganization() 
 	}
 
 	srv.On("Delete", int32(1)).Return(&proto.Organization{}, nil)
-	c.On("ID", int32(0)).Return(errors.New("Invalid ID"))
+	c.On("ID").Return(-1, errors.New("Invalid ID"))
 
 	v, _ := validator.NewValidator()
 
@@ -522,7 +522,7 @@ func (u *OrganizationHandlerTest) TestDeleteErrorNotFoundOrganization() {
 	}
 
 	srv.On("Delete", int32(1)).Return(&proto.Organization{}, u.NotFoundErr)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -545,7 +545,7 @@ func (u *OrganizationHandlerTest) TestDeleteGrpcErrOrganization() {
 	}
 
 	srv.On("Delete", int32(1)).Return(&proto.Organization{}, u.ServiceDownErr)
-	c.On("ID", int32(0)).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 

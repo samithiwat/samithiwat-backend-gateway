@@ -22,7 +22,7 @@ func NewUserHandler(service UserService, validate *validate.DtoValidator) *UserH
 type UserContext interface {
 	Bind(interface{}) error
 	JSON(int, interface{})
-	ID(*int32) error
+	ID() (int32, error)
 	PaginationQueryParam(*dto.PaginationQueryParams) error
 }
 
@@ -81,8 +81,7 @@ func (h *UserHandler) FindAll(c UserContext) {
 // @Failure 503 {object} dto.ResponseErr Service is down
 // @Router /user/{id} [get]
 func (h *UserHandler) FindOne(c UserContext) {
-	var id int32
-	err := c.ID(&id)
+	id, err := c.ID()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
@@ -176,8 +175,7 @@ func (h *UserHandler) Update(c UserContext) {
 		return
 	}
 
-	var id int32
-	err = c.ID(&id)
+	id, err := c.ID()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
@@ -209,8 +207,7 @@ func (h *UserHandler) Update(c UserContext) {
 // @Failure 503 {object} dto.ResponseErr Service is down
 // @Router /user/{id} [delete]
 func (h *UserHandler) Delete(c UserContext) {
-	var id int32
-	err := c.ID(&id)
+	id, err := c.ID()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,

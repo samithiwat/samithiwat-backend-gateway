@@ -22,7 +22,7 @@ func NewOrganizationHandler(service OrganizationService, validate *validate.DtoV
 type OrganizationContext interface {
 	Bind(interface{}) error
 	JSON(int, interface{})
-	ID(*int32) error
+	ID() (int32, error)
 	PaginationQueryParam(*dto.PaginationQueryParams) error
 }
 
@@ -81,8 +81,8 @@ func (h *OrganizationHandler) FindAll(c OrganizationContext) {
 // @Failure 503 {object} dto.ResponseErr "Service is down"
 // @Router /organization/{id} [get]
 func (h *OrganizationHandler) FindOne(c OrganizationContext) {
-	var id int32
-	err := c.ID(&id)
+
+	id, err := c.ID()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
@@ -176,8 +176,7 @@ func (h *OrganizationHandler) Update(c OrganizationContext) {
 		return
 	}
 
-	var id int32
-	err = c.ID(&id)
+	id, err := c.ID()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
@@ -209,8 +208,8 @@ func (h *OrganizationHandler) Update(c OrganizationContext) {
 // @Failure 503 {object} dto.ResponseErr "Service is down"
 // @Router /organization/{id} [delete]
 func (h *OrganizationHandler) Delete(c OrganizationContext) {
-	var id int32
-	err := c.ID(&id)
+
+	id, err := c.ID()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,

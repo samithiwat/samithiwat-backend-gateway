@@ -29,12 +29,10 @@ func (c *OrganizationContextMock) JSON(_ int, v interface{}) {
 	c.V = v
 }
 
-func (c *OrganizationContextMock) ID(id *int32) error {
-	args := c.Called(*id)
+func (c *OrganizationContextMock) ID() (int32, error) {
+	args := c.Called()
 
-	*id = 1
-
-	return args.Error(0)
+	return int32(args.Int(0)), args.Error(1)
 }
 
 func (c *OrganizationContextMock) PaginationQueryParam(query *dto.PaginationQueryParams) error {

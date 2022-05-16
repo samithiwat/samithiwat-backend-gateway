@@ -161,12 +161,10 @@ func (c *UserContextMock) JSON(_ int, v interface{}) {
 	c.V = v
 }
 
-func (c *UserContextMock) ID(id *int32) error {
-	args := c.Called(*id)
+func (c *UserContextMock) ID() (int32, error) {
+	args := c.Called()
 
-	*id = 1
-
-	return args.Error(0)
+	return int32(args.Int(0)), args.Error(1)
 }
 
 func (c *UserContextMock) PaginationQueryParam(query *dto.PaginationQueryParams) error {
