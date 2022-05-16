@@ -32,6 +32,13 @@ func NewFiberRouter() *FiberRouter {
 	return &FiberRouter{r, auth, user, team, org}
 }
 
+func (r *FiberRouter) UseMiddleware(m func(ctx *FiberCtx)) {
+	r.App.Use(func(c *fiber.Ctx) error {
+		m(NewFiberCtx(c))
+		return nil
+	})
+}
+
 type FiberCtx struct {
 	*fiber.Ctx
 }
@@ -48,15 +55,9 @@ func (c *FiberCtx) JSON(statusCode int, v interface{}) {
 	c.Ctx.Status(statusCode).JSON(v)
 }
 
-func (c *FiberCtx) ID(id *int32) error {
+func (c *FiberCtx) ID() (id int32, err error) {
 	v, err := c.ParamsInt("id")
-	if err != nil {
-		return err
-	}
-
-	*id = int32(v)
-
-	return nil
+	return int32(v), err
 }
 
 func (c *FiberCtx) PaginationQueryParam(query *dto.PaginationQueryParams) error {
