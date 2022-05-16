@@ -16,11 +16,13 @@ import (
 
 type OrganizationHandlerTest struct {
 	suite.Suite
-	Organization   *proto.Organization
-	Organizations  []*proto.Organization
-	NotFoundErr    *dto.ResponseErr
-	ServiceDownErr *dto.ResponseErr
-	InvalidIDErr   *dto.ResponseErr
+	Organization    *proto.Organization
+	Organizations   []*proto.Organization
+	OrganizationDto *dto.OrganizationDto
+	Query           *dto.PaginationQueryParams
+	NotFoundErr     *dto.ResponseErr
+	ServiceDownErr  *dto.ResponseErr
+	InvalidIDErr    *dto.ResponseErr
 }
 
 func TestOrganizationHandler(t *testing.T) {
@@ -54,6 +56,9 @@ func (u *OrganizationHandlerTest) SetupTest() {
 
 	u.Organizations = append(u.Organizations, u.Organization, Organization2, Organization3, Organization4)
 
+	_ = faker.FakeData(&u.OrganizationDto)
+	_ = faker.FakeData(&u.Query)
+
 	u.ServiceDownErr = &dto.ResponseErr{
 		StatusCode: http.StatusServiceUnavailable,
 		Message:    "Service is down",
@@ -85,10 +90,15 @@ func (u *OrganizationHandlerTest) TestFindAllOrganization() {
 	}
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
-	srv.On("FindAll").Return(want, &dto.ResponseErr{})
-	c.On("PaginationQueryParam").Return(nil)
+	srv.On("FindAll", u.Query).Return(want, nil)
+	c.On("PaginationQueryParam", &dto.PaginationQueryParams{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -105,10 +115,15 @@ func (u *OrganizationHandlerTest) TestFindAllInvalidQueryParamOrganization() {
 	}
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
-	srv.On("FindAll").Return(nil, nil)
-	c.On("PaginationQueryParam").Return(errors.New("Cannot parse query param"))
+	srv.On("FindAll", u.Query).Return(nil, nil)
+	c.On("PaginationQueryParam", &dto.PaginationQueryParams{}).Return(errors.New("Cannot parse query param"))
 
 	v, _ := validator.NewValidator()
 
@@ -123,10 +138,15 @@ func (u *OrganizationHandlerTest) TestFindAllGrpcErrOrganization() {
 	want := u.ServiceDownErr
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
-	srv.On("FindAll").Return(&proto.OrganizationPagination{}, u.ServiceDownErr)
-	c.On("PaginationQueryParam").Return(nil)
+	srv.On("FindAll", u.Query).Return(&proto.OrganizationPagination{}, u.ServiceDownErr)
+	c.On("PaginationQueryParam", &dto.PaginationQueryParams{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -141,10 +161,15 @@ func (u *OrganizationHandlerTest) TestFindOneOrganization() {
 	want := u.Organization
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
-	srv.On("FindOne", int32(1)).Return(u.Organization, &dto.ResponseErr{})
-	c.On("ID").Return(nil)
+	srv.On("FindOne", int32(1)).Return(u.Organization, nil)
+	c.On("ID", int32(0)).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -159,10 +184,15 @@ func (u *OrganizationHandlerTest) TestFindOneInvalidRequestParamIDOrganization()
 	want := u.InvalidIDErr
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
-	srv.On("FindOne", int32(1)).Return(&proto.Organization{}, &dto.ResponseErr{})
-	c.On("ID").Return(errors.New("Invalid ID"))
+	srv.On("FindOne", int32(1)).Return(&proto.Organization{}, nil)
+	c.On("ID", int32(0)).Return(errors.New("Invalid ID"))
 
 	v, _ := validator.NewValidator()
 
@@ -176,10 +206,15 @@ func (u *OrganizationHandlerTest) TestFindOneErrorNotFoundOrganization() {
 	want := u.NotFoundErr
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
 	srv.On("FindOne", int32(1)).Return(&proto.Organization{}, u.NotFoundErr)
-	c.On("ID").Return(nil)
+	c.On("ID", int32(0)).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -194,10 +229,15 @@ func (u *OrganizationHandlerTest) TestFindOneGrpcErrOrganization() {
 	want := u.ServiceDownErr
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
 	srv.On("FindOne", int32(1)).Return(&proto.Organization{}, u.ServiceDownErr)
-	c.On("ID").Return(nil)
+	c.On("ID", int32(0)).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -212,10 +252,15 @@ func (u *OrganizationHandlerTest) TestCreateOrganization() {
 	want := u.Organization
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
-	srv.On("Create").Return(u.Organization, &dto.ResponseErr{})
-	c.On("Bind").Return(nil)
+	srv.On("Create", u.OrganizationDto).Return(u.Organization, nil)
+	c.On("Bind", &dto.OrganizationDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -232,10 +277,15 @@ func (u *OrganizationHandlerTest) TestCreateErrorDuplicatedOrganization() {
 	}
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
-	srv.On("Create").Return(&proto.Organization{}, want)
-	c.On("Bind").Return(nil)
+	srv.On("Create", u.OrganizationDto).Return(&proto.Organization{}, want)
+	c.On("Bind", &dto.OrganizationDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -252,10 +302,15 @@ func (u *OrganizationHandlerTest) TestCreateInvalidBodyRequest() {
 	}
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
-	srv.On("Create").Return(&proto.Organization{}, &dto.ResponseErr{})
-	c.On("Bind").Return(errors.New("Cannot parse body request"))
+	srv.On("Create", u.OrganizationDto).Return(&proto.Organization{}, nil)
+	c.On("Bind", &dto.OrganizationDto{}).Return(errors.New("Cannot parse body request"))
 
 	v, _ := validator.NewValidator()
 
@@ -269,10 +324,15 @@ func (u *OrganizationHandlerTest) TestCreateGrpcErrOrganization() {
 	want := u.ServiceDownErr
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
-	srv.On("Create").Return(&proto.Organization{}, u.ServiceDownErr)
-	c.On("Bind").Return(nil)
+	srv.On("Create", u.OrganizationDto).Return(&proto.Organization{}, u.ServiceDownErr)
+	c.On("Bind", &dto.OrganizationDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -287,11 +347,16 @@ func (u *OrganizationHandlerTest) TestUpdateOrganization() {
 	want := u.Organization
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
-	srv.On("Update", int32(1)).Return(u.Organization, &dto.ResponseErr{})
-	c.On("Bind").Return(nil)
-	c.On("ID").Return(nil)
+	srv.On("Update", int32(1), u.OrganizationDto).Return(u.Organization, nil)
+	c.On("Bind", &dto.OrganizationDto{}).Return(nil)
+	c.On("ID", int32(0)).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -306,11 +371,16 @@ func (u *OrganizationHandlerTest) TestUpdateInvalidRequestParamIDOrganization() 
 	want := u.InvalidIDErr
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
-	srv.On("Update", int32(1)).Return(&proto.Organization{}, &dto.ResponseErr{})
-	c.On("ID").Return(errors.New("Invalid ID"))
-	c.On("Bind").Return(nil)
+	srv.On("Update", int32(1), u.OrganizationDto).Return(&proto.Organization{}, nil)
+	c.On("ID", int32(0)).Return(errors.New("Invalid ID"))
+	c.On("Bind", &dto.OrganizationDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -328,11 +398,16 @@ func (u *OrganizationHandlerTest) TestUpdateInvalidBodyRequest() {
 	}
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
-	srv.On("Update", int32(1)).Return(&proto.Organization{}, &dto.ResponseErr{})
-	c.On("ID").Return(nil)
-	c.On("Bind").Return(errors.New("Cannot parse organization dto"))
+	srv.On("Update", int32(1), u.OrganizationDto).Return(&proto.Organization{}, nil)
+	c.On("ID", int32(0)).Return(nil)
+	c.On("Bind", &dto.OrganizationDto{}).Return(errors.New("Cannot parse organization dto"))
 
 	v, _ := validator.NewValidator()
 
@@ -346,11 +421,16 @@ func (u *OrganizationHandlerTest) TestUpdateErrorNotFoundOrganization() {
 	want := u.NotFoundErr
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
-	srv.On("Update", int32(1)).Return(&proto.Organization{}, u.NotFoundErr)
-	c.On("ID").Return(nil)
-	c.On("Bind").Return(nil)
+	srv.On("Update", int32(1), u.OrganizationDto).Return(&proto.Organization{}, u.NotFoundErr)
+	c.On("ID", int32(0)).Return(nil)
+	c.On("Bind", &dto.OrganizationDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -364,11 +444,16 @@ func (u *OrganizationHandlerTest) TestUpdateGrpcErrOrganization() {
 	want := u.ServiceDownErr
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
-	srv.On("Update", int32(1)).Return(&proto.Organization{}, u.ServiceDownErr)
-	c.On("Bind").Return(nil)
-	c.On("ID").Return(nil)
+	srv.On("Update", int32(1), u.OrganizationDto).Return(&proto.Organization{}, u.ServiceDownErr)
+	c.On("Bind", &dto.OrganizationDto{}).Return(nil)
+	c.On("ID", int32(0)).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -383,10 +468,15 @@ func (u *OrganizationHandlerTest) TestDeleteOrganization() {
 	want := u.Organization
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
-	srv.On("Delete", int32(1)).Return(u.Organization, &dto.ResponseErr{})
-	c.On("ID").Return(nil)
+	srv.On("Delete", int32(1)).Return(u.Organization, nil)
+	c.On("ID", int32(0)).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -401,10 +491,15 @@ func (u *OrganizationHandlerTest) TestDeleteInvalidRequestParamIDOrganization() 
 	want := u.InvalidIDErr
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
-	srv.On("Delete", int32(1)).Return(&proto.Organization{}, &dto.ResponseErr{})
-	c.On("ID").Return(errors.New("Invalid ID"))
+	srv.On("Delete", int32(1)).Return(&proto.Organization{}, nil)
+	c.On("ID", int32(0)).Return(errors.New("Invalid ID"))
 
 	v, _ := validator.NewValidator()
 
@@ -419,10 +514,15 @@ func (u *OrganizationHandlerTest) TestDeleteErrorNotFoundOrganization() {
 	want := u.NotFoundErr
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
 	srv.On("Delete", int32(1)).Return(&proto.Organization{}, u.NotFoundErr)
-	c.On("ID").Return(nil)
+	c.On("ID", int32(0)).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -437,10 +537,15 @@ func (u *OrganizationHandlerTest) TestDeleteGrpcErrOrganization() {
 	want := u.ServiceDownErr
 
 	srv := new(mock.OrganizationServiceMock)
-	c := new(mock.OrganizationContextMock)
+	c := &mock.OrganizationContextMock{
+		Organization:    u.Organization,
+		Organizations:   u.Organizations,
+		OrganizationDto: u.OrganizationDto,
+		Query:           u.Query,
+	}
 
 	srv.On("Delete", int32(1)).Return(&proto.Organization{}, u.ServiceDownErr)
-	c.On("ID").Return(nil)
+	c.On("ID", int32(0)).Return(nil)
 
 	v, _ := validator.NewValidator()
 
