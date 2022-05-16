@@ -86,38 +86,58 @@ type UserClientMock struct {
 	mock.Mock
 }
 
-func (m *UserClientMock) FindAll(ctx context.Context, in *proto.FindAllUserRequest, opts ...grpc.CallOption) (*proto.UserPaginationResponse, error) {
+func (m *UserClientMock) FindAll(ctx context.Context, in *proto.FindAllUserRequest, opts ...grpc.CallOption) (res *proto.UserPaginationResponse, err error) {
 	args := m.Called(in)
+
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.UserPaginationResponse)
+	}
 
 	return args.Get(0).(*proto.UserPaginationResponse), args.Error(1)
 }
 
-func (m *UserClientMock) FindOne(ctx context.Context, in *proto.FindOneUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
+func (m *UserClientMock) FindOne(ctx context.Context, in *proto.FindOneUserRequest, opts ...grpc.CallOption) (res *proto.UserResponse, err error) {
 	args := m.Called(in)
 
-	return args.Get(0).(*proto.UserResponse), args.Error(1)
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.UserResponse)
+	}
+
+	return res, args.Error(1)
 }
 
 func (m *UserClientMock) FindMulti(ctx context.Context, in *proto.FindMultiUserRequest, opts ...grpc.CallOption) (*proto.UserListResponse, error) {
 	return nil, nil
 }
 
-func (m *UserClientMock) Create(ctx context.Context, in *proto.CreateUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
+func (m *UserClientMock) Create(ctx context.Context, in *proto.CreateUserRequest, opts ...grpc.CallOption) (res *proto.UserResponse, err error) {
 	args := m.Called(*in.User)
 
-	return args.Get(0).(*proto.UserResponse), args.Error(1)
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.UserResponse)
+	}
+
+	return res, args.Error(1)
 }
 
-func (m *UserClientMock) Update(ctx context.Context, in *proto.UpdateUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
+func (m *UserClientMock) Update(ctx context.Context, in *proto.UpdateUserRequest, opts ...grpc.CallOption) (res *proto.UserResponse, err error) {
 	args := m.Called(*in.User)
 
-	return args.Get(0).(*proto.UserResponse), args.Error(1)
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.UserResponse)
+	}
+
+	return res, args.Error(1)
 }
 
-func (m *UserClientMock) Delete(ctx context.Context, in *proto.DeleteUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
+func (m *UserClientMock) Delete(ctx context.Context, in *proto.DeleteUserRequest, opts ...grpc.CallOption) (res *proto.UserResponse, err error) {
 	args := m.Called(in)
 
-	return args.Get(0).(*proto.UserResponse), args.Error(1)
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.UserResponse)
+	}
+
+	return res, args.Error(1)
 }
 
 type UserContextMock struct {
