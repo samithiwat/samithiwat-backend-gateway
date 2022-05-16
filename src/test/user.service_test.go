@@ -19,6 +19,7 @@ type UserServiceTest struct {
 	UserReq        *proto.User
 	Users          []*proto.User
 	UserDto        *dto.UserDto
+	Query          *dto.PaginationQueryParams
 	NotFoundErr    *dto.ResponseErr
 	ServiceDownErr *dto.ResponseErr
 }
@@ -72,6 +73,8 @@ func (s *UserServiceTest) SetupTest() {
 		ImageUrl:    s.User.ImageUrl,
 	}
 
+	_ = faker.FakeData(&s.Query)
+
 	s.ServiceDownErr = &dto.ResponseErr{
 		StatusCode: http.StatusServiceUnavailable,
 		Message:    "Service is down",
@@ -97,14 +100,11 @@ func (s *UserServiceTest) TestFindAllUserService() {
 		},
 	}
 
-	req := &dto.PaginationQueryParams{}
-	_ = faker.FakeData(&req)
-
 	client := new(mock.UserClientMock)
 
 	client.On("FindAll", &proto.FindAllUserRequest{
-		Limit: req.Limit,
-		Page:  req.Page,
+		Limit: s.Query.Limit,
+		Page:  s.Query.Page,
 	}).Return(&proto.UserPaginationResponse{
 		StatusCode: http.StatusOK,
 		Errors:     nil,
@@ -113,7 +113,7 @@ func (s *UserServiceTest) TestFindAllUserService() {
 
 	srv := service.NewUserService(client)
 
-	users, err := srv.FindAll(req)
+	users, err := srv.FindAll(s.Query)
 
 	assert.Nil(s.T(), err, "Must not got any error")
 	assert.Equal(s.T(), want, users)
@@ -122,19 +122,16 @@ func (s *UserServiceTest) TestFindAllUserService() {
 func (s *UserServiceTest) TestFindAllGrpcErrUserService() {
 	want := s.ServiceDownErr
 
-	req := &dto.PaginationQueryParams{}
-	_ = faker.FakeData(&req)
-
 	client := new(mock.UserClientMock)
 
 	client.On("FindAll", &proto.FindAllUserRequest{
-		Limit: req.Limit,
-		Page:  req.Page,
+		Limit: s.Query.Limit,
+		Page:  s.Query.Page,
 	}).Return(&proto.UserPaginationResponse{}, errors.New("Service is down"))
 
 	srv := service.NewUserService(client)
 
-	_, err := srv.FindAll(req)
+	_, err := srv.FindAll(s.Query)
 
 	assert.Equal(s.T(), want, err)
 }
