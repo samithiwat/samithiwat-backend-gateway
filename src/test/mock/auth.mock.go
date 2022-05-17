@@ -57,7 +57,7 @@ func (c *AuthContextMock) Token() string {
 	return args.String(0)
 }
 
-func (c *AuthContextMock) SetHeader(key string, val string) {
+func (c *AuthContextMock) StoreValue(key string, val string) {
 	_ = c.Called(key, val)
 
 	c.Header = map[string]string{key: val}

@@ -17,7 +17,7 @@ type AuthContext interface {
 	Token() string
 	Method() string
 	Path() string
-	SetHeader(string, string)
+	StoreValue(string, string)
 	JSON(int, interface{})
 	Next()
 }
@@ -60,6 +60,6 @@ func (m *AuthGuard) Validate(ctx AuthContext) {
 		return
 	}
 
-	ctx.SetHeader("UserId", strconv.Itoa(int(userId)))
+	ctx.StoreValue("UserId", strconv.Itoa(int(userId)))
 	ctx.Next()
 }

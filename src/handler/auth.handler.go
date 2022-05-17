@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	validate "github.com/samithiwat/samithiwat-backend-gateway/src/validator"
@@ -129,6 +130,7 @@ func (h *AuthHandler) Login(c AuthContext) {
 // @Success 204
 // @Failure 401 {object} dto.ResponseErr "Invalid token"
 // @Failure 503 {object} dto.ResponseErr "Service is down"
+// @Security     AuthToken
 // @Router /auth/logout [get]
 func (h *AuthHandler) Logout(c AuthContext) {
 	userId := c.UserID()
@@ -155,6 +157,7 @@ func (h *AuthHandler) Logout(c AuthContext) {
 // @Failure 401 {object} dto.ResponseErr "Invalid access token"
 // @Failure 403 {object} dto.ResponseErr "Insufficiency permission"
 // @Failure 503 {object} dto.ResponseErr "Service is down"
+// @Security     AuthToken
 // @Router /auth/change-password [post]
 func (h *AuthHandler) ChangePassword(c AuthContext) {
 	changePassword := dto.ChangePassword{}
@@ -186,8 +189,6 @@ func (h *AuthHandler) ChangePassword(c AuthContext) {
 	return
 }
 
-// TODO: Implement token receiver from request header
-
 // Validate is a function check the user token and return user dto
 // @Summary Check user status and user info
 // @Description Return the user dto if successfully
@@ -197,9 +198,12 @@ func (h *AuthHandler) ChangePassword(c AuthContext) {
 // @Success 201 {object} proto.User
 // @Failure 401 {object} dto.ResponseErr "Invalid token"
 // @Failure 503 {object} dto.ResponseErr "Service is down"
+// @Security     AuthToken
 // @Router /auth/me [get]
 func (h *AuthHandler) Validate(c AuthContext) {
 	id := c.UserID()
+
+	fmt.Println(id)
 
 	res, errRes := h.userSrv.FindOne(id)
 	if errRes != nil {

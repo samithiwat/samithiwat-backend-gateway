@@ -67,9 +67,9 @@ func (c *FiberCtx) ID() (id int32, err error) {
 }
 
 func (c *FiberCtx) UserID() int32 {
-	id := c.Ctx.Get("UserId")
+	id := c.Ctx.Locals("UserId")
 
-	result, err := strconv.Atoi(id)
+	result, err := strconv.Atoi(id.(string))
 	if err != nil {
 		result = -1
 	}
@@ -97,8 +97,8 @@ func (c *FiberCtx) Path() string {
 	return c.Ctx.Path()
 }
 
-func (c *FiberCtx) SetHeader(k string, v string) {
-	c.Ctx.Set(k, v)
+func (c *FiberCtx) StoreValue(k string, v string) {
+	c.Locals(k, v)
 }
 
 func (c *FiberCtx) Next() {
