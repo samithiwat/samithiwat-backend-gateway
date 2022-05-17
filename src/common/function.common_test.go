@@ -40,17 +40,17 @@ func (u *UtilTest) TestIsExistedFalse() {
 }
 
 func (u *UtilTest) TestFormatPathWithID() {
-	want := "/user/:id"
+	want := "POST /user/:id"
 
-	path := FormatPathID("/user/1", 1)
+	path := FormatPath("POST", "/user/1", 1)
 
 	assert.Equal(u.T(), want, path)
 }
 
 func (u *UtilTest) TestFormatPathWithoutID() {
-	want := "/user"
+	want := "POST /user"
 
-	path := FormatPathID("/user", 0)
+	path := FormatPath("POST", "/user", 0)
 
 	assert.Equal(u.T(), want, path)
 }

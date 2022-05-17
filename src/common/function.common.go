@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -14,12 +15,12 @@ func IsExisted(e map[string]struct{}, key string) bool {
 	return false
 }
 
-func FormatPathID(path string, id int32) string {
+func FormatPath(method string, path string, id int32) string {
 	if id > 0 {
 		path = strings.Replace(path, strconv.Itoa(int(id)), ":id", 1)
 	}
 
-	return path
+	return fmt.Sprintf("%v %v", method, path)
 }
 
 func FindIntFromStr(s string) []int32 {
