@@ -89,6 +89,10 @@ func (c *FiberCtx) Token() string {
 	return c.Ctx.Get(fiber.HeaderAuthorization, "")
 }
 
+func (c *FiberCtx) Method() string {
+	return c.Ctx.Method()
+}
+
 func (c *FiberCtx) Path() string {
 	return c.Ctx.Path()
 }
