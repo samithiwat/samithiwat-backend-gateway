@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/samithiwat/samithiwat-backend-gateway/src/common"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/handler"
 	"net/http"
@@ -8,24 +9,41 @@ import (
 )
 
 type AuthGuard struct {
-	service handler.AuthService
+	service  handler.AuthService
+	excludes map[string]struct{}
 }
 
 type AuthContext interface {
-	GetToken() string
+	Token() string
+	Path() string
 	SetHeader(string, string)
 	JSON(int, interface{})
 	Next()
 }
 
-func NewAuthGuard(s handler.AuthService) *AuthGuard {
-	return &AuthGuard{
-		service: s,
+func NewAuthGuard(s handler.AuthService, e map[string]struct{}) AuthGuard {
+	return AuthGuard{
+		service:  s,
+		excludes: e,
 	}
 }
 
 func (m *AuthGuard) Validate(ctx AuthContext) {
-	token := ctx.GetToken()
+	path := ctx.Path()
+
+	var id int32
+	ids := common.FindIntFromStr(path)
+	if len(ids) > 0 {
+		id = ids[0]
+	}
+
+	path = common.FormatPathID(path, id)
+	if common.IsExisted(m.excludes, path) {
+		ctx.Next()
+		return
+	}
+
+	token := ctx.Token()
 	if token == "" {
 		ctx.JSON(http.StatusUnauthorized, &dto.ResponseErr{
 			StatusCode: http.StatusUnauthorized,

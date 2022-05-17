@@ -15,6 +15,7 @@ import (
 
 type AuthGuardTest struct {
 	suite.Suite
+	ExcludePath     map[string]struct{}
 	UserId          int32
 	Token           string
 	UnauthorizedErr *dto.ResponseErr
@@ -40,23 +41,26 @@ func (u *AuthGuardTest) SetupTest() {
 
 	u.Token = faker.Word()
 	u.UserId = int32(rand.Intn(100))
+
+	u.ExcludePath = map[string]struct{}{
+		"/exclude":     {},
+		"/exclude/:id": {},
+	}
 }
 
 func (u *AuthGuardTest) TestValidateSuccess() {
 	want := u.UserId
 
 	srv := new(mock.AuthServiceMock)
-	c := &mock.AuthContextMock{
-		Token:  u.Token,
-		UserId: u.UserId,
-	}
+	c := new(mock.AuthContextMock)
 
-	c.On("GetToken").Return(u.Token)
+	c.On("Path").Return("/auth")
+	c.On("Token").Return(u.Token)
 	srv.On("Validate", u.Token).Return(int(u.UserId), nil)
 	c.On("SetHeader", "UserId", strconv.Itoa(int(u.UserId)))
 	c.On("Next")
 
-	h := middleware.NewAuthGuard(srv)
+	h := middleware.NewAuthGuard(srv, u.ExcludePath)
 	h.Validate(c)
 
 	id, err := strconv.Atoi(c.Header["UserId"])
@@ -66,19 +70,47 @@ func (u *AuthGuardTest) TestValidateSuccess() {
 	c.AssertNumberOfCalls(u.T(), "Next", 1)
 }
 
+func (u *AuthGuardTest) TestValidateSkippedFromExcludePath() {
+	srv := new(mock.AuthServiceMock)
+	c := new(mock.AuthContextMock)
+
+	c.On("Path").Return("/exclude")
+	c.On("Token").Return("")
+	c.On("Next")
+
+	h := middleware.NewAuthGuard(srv, u.ExcludePath)
+	h.Validate(c)
+
+	c.AssertNumberOfCalls(u.T(), "Next", 1)
+	c.AssertNumberOfCalls(u.T(), "Token", 0)
+}
+
+func (u *AuthGuardTest) TestValidateSkippedFromExcludePathWithID() {
+	srv := new(mock.AuthServiceMock)
+	c := new(mock.AuthContextMock)
+
+	c.On("Path").Return("/exclude/1")
+	c.On("Token").Return("")
+	c.On("Next")
+
+	h := middleware.NewAuthGuard(srv, u.ExcludePath)
+	h.Validate(c)
+
+	c.AssertNumberOfCalls(u.T(), "Next", 1)
+	c.AssertNumberOfCalls(u.T(), "Token", 0)
+}
+
 func (u *AuthGuardTest) TestValidateFailed() {
 	want := u.UnauthorizedErr
 
 	srv := new(mock.AuthServiceMock)
-	c := &mock.AuthContextMock{
-		Token:  u.Token,
-		UserId: u.UserId,
-	}
+	c := new(mock.AuthContextMock)
 
-	c.On("GetToken").Return(u.Token)
+	c.On("Path").Return("/auth")
+	c.On("Token").Return(u.Token)
 	srv.On("Validate", u.Token).Return(-1, u.UnauthorizedErr)
 
-	h := middleware.NewAuthGuard(srv)
+	h := middleware.NewAuthGuard(srv, u.ExcludePath)
 	h.Validate(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -88,15 +120,13 @@ func (u *AuthGuardTest) TestValidateTokenNotIncluded() {
 	want := u.UnauthorizedErr
 
 	srv := new(mock.AuthServiceMock)
-	c := &mock.AuthContextMock{
-		Token:  u.Token,
-		UserId: u.UserId,
-	}
+	c := new(mock.AuthContextMock)
 
-	c.On("GetToken").Return("")
+	c.On("Path").Return("/auth")
+	c.On("Token").Return("")
 	srv.On("Validate")
 
-	h := middleware.NewAuthGuard(srv)
+	h := middleware.NewAuthGuard(srv, u.ExcludePath)
 	h.Validate(c)
 
 	assert.Equal(u.T(), want, c.V)
@@ -108,15 +138,13 @@ func (u *AuthGuardTest) TestValidateTokenGrpcErr() {
 	want := u.ServiceDownErr
 
 	srv := new(mock.AuthServiceMock)
-	c := &mock.AuthContextMock{
-		Token:  u.Token,
-		UserId: u.UserId,
-	}
+	c := new(mock.AuthContextMock)
 
-	c.On("GetToken").Return(u.Token)
+	c.On("Path").Return("/auth")
+	c.On("Token").Return(u.Token)
 	srv.On("Validate", u.Token).Return(-1, u.ServiceDownErr)
 
-	h := middleware.NewAuthGuard(srv)
+	h := middleware.NewAuthGuard(srv, u.ExcludePath)
 	h.Validate(c)
 
 	assert.Equal(u.T(), want, c.V)
