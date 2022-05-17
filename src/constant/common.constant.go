@@ -1,7 +1,10 @@
 package constant
 
 var AuthExcludePath = map[string]struct{}{
-	"/auth/register": {},
-	"/auth/login":    {},
-	"/user/:id":      {},
+	"POST /auth/register":   {},
+	"POST /auth/login":      {},
+	"GET /user/:id":         {},
+	"GET /organization":     {},
+	"GET /organization/:id": {},
+	"GET /team/:id":         {},
 }
