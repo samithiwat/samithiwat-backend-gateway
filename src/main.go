@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/config"
+	"github.com/samithiwat/samithiwat-backend-gateway/src/constant"
 	_ "github.com/samithiwat/samithiwat-backend-gateway/src/docs"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/handler"
+	"github.com/samithiwat/samithiwat-backend-gateway/src/middleware"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/router"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/service"
@@ -31,10 +33,13 @@ import (
 
 // @schemes https http
 
-// @securityDefinitions.apikey  Auth Token
+// @securityDefinitions.apikey  AuthToken
 // @in                          header
 // @name                        Authorization
 // @description					Description for what is this security definition being used
+
+// @tag.name auth
+// @tag.description.markdown
 
 // @tag.name user
 // @tag.description.markdown
@@ -51,14 +56,14 @@ func main() {
 		log.Fatal("Cannot load config", err.Error())
 	}
 
-	userConn, err := grpc.Dial(conf.Service.User, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatal("Cannot connect to user service: ", err.Error())
-	}
-
 	v, err := validator.NewValidator()
 	if err != nil {
 		log.Fatal(err.Error())
+	}
+
+	userConn, err := grpc.Dial(conf.Service.User, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatal("Cannot connect to user service: ", err.Error())
 	}
 
 	userClient := proto.NewUserServiceClient(userConn)
@@ -78,25 +83,43 @@ func main() {
 	orgSrv := service.NewOrganizationService(orgClient)
 	orgHandler := handler.NewOrganizationHandler(orgSrv, v)
 
-	r := router.NewFiberRouter()
+	authConn, err := grpc.Dial(conf.Service.Auth, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatal("Cannot connect to auth service: ", err.Error())
+	}
 
-	r.GetUser("/user", userHandler.FindAll)
-	r.GetUser("/user/:id", userHandler.FindOne)
-	r.CreateUser("user", userHandler.Create)
-	r.PatchUser("/user/:id", userHandler.Update)
-	r.DeleteUser("user/:id", userHandler.Delete)
+	authClient := proto.NewAuthServiceClient(authConn)
+	authSrv := service.NewAuthService(authClient)
+	authHandler := handler.NewAuthHandler(authSrv, userSrv, v)
 
-	r.GetTeam("/team", teamHandler.FindAll)
-	r.GetTeam("/team/:id", teamHandler.FindOne)
-	r.CreateTeam("team", teamHandler.Create)
-	r.PatchTeam("/team/:id", teamHandler.Update)
-	r.DeleteTeam("team/:id", teamHandler.Delete)
+	authGuard := middleware.NewAuthGuard(authSrv, constant.AuthExcludePath)
 
-	r.GetOrganization("/organization", orgHandler.FindAll)
-	r.GetOrganization("/organization/:id", orgHandler.FindOne)
-	r.CreateOrganization("organization", orgHandler.Create)
-	r.PatchOrganization("/organization/:id", orgHandler.Update)
-	r.DeleteOrganization("organization/:id", orgHandler.Delete)
+	r := router.NewFiberRouter(authGuard)
+
+	r.PostAuth("/register", authHandler.Register)
+	r.PostAuth("/login", authHandler.Login)
+	r.GetAuth("/logout", authHandler.Logout)
+	r.PostAuth("/change-password", authHandler.ChangePassword)
+	r.GetAuth("/me", authHandler.Validate)
+	r.PostAuth("/token", authHandler.RefreshToken)
+
+	r.GetUser("/", userHandler.FindAll)
+	r.GetUser("/:id", userHandler.FindOne)
+	r.CreateUser("/", userHandler.Create)
+	r.PatchUser("/:id", userHandler.Update)
+	r.DeleteUser("/:id", userHandler.Delete)
+
+	r.GetTeam("/", teamHandler.FindAll)
+	r.GetTeam("/:id", teamHandler.FindOne)
+	r.CreateTeam("/", teamHandler.Create)
+	r.PatchTeam("/:id", teamHandler.Update)
+	r.DeleteTeam("/:id", teamHandler.Delete)
+
+	r.GetOrganization("/", orgHandler.FindAll)
+	r.GetOrganization("/:id", orgHandler.FindOne)
+	r.CreateOrganization("/", orgHandler.Create)
+	r.PatchOrganization("/:id", orgHandler.Update)
+	r.DeleteOrganization("/:id", orgHandler.Delete)
 
 	go func() {
 		if err := r.Listen(fmt.Sprintf(":%v", conf.App.Port)); err != nil && err != http.ErrServerClosed {

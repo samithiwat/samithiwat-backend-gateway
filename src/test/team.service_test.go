@@ -16,7 +16,10 @@ import (
 type TeamServiceTest struct {
 	suite.Suite
 	Team           *proto.Team
+	TeamReq        *proto.Team
 	Teams          []*proto.Team
+	TeamDto        *dto.TeamDto
+	Query          *dto.PaginationQueryParams
 	NotFoundErr    *dto.ResponseErr
 	ServiceDownErr *dto.ResponseErr
 }
@@ -30,6 +33,16 @@ func (s *TeamServiceTest) SetupTest() {
 		Id:          1,
 		Name:        faker.Word(),
 		Description: faker.Sentence(),
+	}
+
+	s.TeamReq = &proto.Team{
+		Name:        s.Team.Name,
+		Description: s.Team.Description,
+	}
+
+	s.TeamDto = &dto.TeamDto{
+		Name:        s.Team.Name,
+		Description: s.Team.Description,
 	}
 
 	Team2 := &proto.Team{
@@ -51,6 +64,8 @@ func (s *TeamServiceTest) SetupTest() {
 	}
 
 	s.Teams = append(s.Teams, s.Team, Team2, Team3, Team4)
+
+	_ = faker.FakeData(&s.Query)
 
 	s.ServiceDownErr = &dto.ResponseErr{
 		StatusCode: http.StatusServiceUnavailable,
@@ -79,7 +94,10 @@ func (s *TeamServiceTest) TestFindAllTeamService() {
 
 	client := new(mock.TeamClientMock)
 
-	client.On("FindAll").Return(&proto.TeamPaginationResponse{
+	client.On("FindAll", &proto.FindAllTeamRequest{
+		Limit: s.Query.Limit,
+		Page:  s.Query.Page,
+	}).Return(&proto.TeamPaginationResponse{
 		StatusCode: http.StatusOK,
 		Errors:     nil,
 		Data:       want,
@@ -87,7 +105,7 @@ func (s *TeamServiceTest) TestFindAllTeamService() {
 
 	srv := service.NewTeamService(client)
 
-	teams, err := srv.FindAll(&dto.PaginationQueryParams{Limit: 10, Page: 1})
+	teams, err := srv.FindAll(s.Query)
 
 	assert.Nil(s.T(), err, "Must not got any error")
 	assert.Equal(s.T(), want, teams)
@@ -98,11 +116,14 @@ func (s *TeamServiceTest) TestFindAllGrpcErrTeamService() {
 
 	client := new(mock.TeamClientMock)
 
-	client.On("FindAll").Return(&proto.TeamPaginationResponse{}, errors.New("Service is down"))
+	client.On("FindAll", &proto.FindAllTeamRequest{
+		Limit: s.Query.Limit,
+		Page:  s.Query.Page,
+	}).Return(nil, errors.New("Service is down"))
 
 	srv := service.NewTeamService(client)
 
-	_, err := srv.FindAll(&dto.PaginationQueryParams{Limit: 10, Page: 1})
+	_, err := srv.FindAll(s.Query)
 
 	assert.Equal(s.T(), want, err)
 }
@@ -110,9 +131,12 @@ func (s *TeamServiceTest) TestFindAllGrpcErrTeamService() {
 func (s *TeamServiceTest) TestFindOneTeamService() {
 	want := s.Team
 
+	var id int32
+	_ = faker.FakeData(&id)
+
 	client := new(mock.TeamClientMock)
 
-	client.On("FindOne").Return(&proto.TeamResponse{
+	client.On("FindOne", &proto.FindOneTeamRequest{Id: id}).Return(&proto.TeamResponse{
 		StatusCode: http.StatusOK,
 		Errors:     nil,
 		Data:       s.Team,
@@ -120,7 +144,7 @@ func (s *TeamServiceTest) TestFindOneTeamService() {
 
 	srv := service.NewTeamService(client)
 
-	team, err := srv.FindOne(1)
+	team, err := srv.FindOne(id)
 
 	assert.Nil(s.T(), err, "Must not got any error")
 	assert.Equal(s.T(), want, team)
@@ -129,9 +153,12 @@ func (s *TeamServiceTest) TestFindOneTeamService() {
 func (s *TeamServiceTest) TestFindOneNotFoundTeamService() {
 	want := s.NotFoundErr
 
+	var id int32
+	_ = faker.FakeData(&id)
+
 	client := new(mock.TeamClientMock)
 
-	client.On("FindOne").Return(&proto.TeamResponse{
+	client.On("FindOne", &proto.FindOneTeamRequest{Id: id}).Return(&proto.TeamResponse{
 		StatusCode: http.StatusNotFound,
 		Errors:     []string{"Not found team"},
 		Data:       nil,
@@ -139,7 +166,7 @@ func (s *TeamServiceTest) TestFindOneNotFoundTeamService() {
 
 	srv := service.NewTeamService(client)
 
-	team, err := srv.FindOne(1)
+	team, err := srv.FindOne(id)
 
 	assert.Nil(s.T(), team)
 	assert.Equal(s.T(), want, err)
@@ -148,13 +175,16 @@ func (s *TeamServiceTest) TestFindOneNotFoundTeamService() {
 func (s *TeamServiceTest) TestFindOneGrpcErrTeamService() {
 	want := s.ServiceDownErr
 
+	var id int32
+	_ = faker.FakeData(&id)
+
 	client := new(mock.TeamClientMock)
 
-	client.On("FindOne").Return(&proto.TeamResponse{}, errors.New("Service is down"))
+	client.On("FindOne", &proto.FindOneTeamRequest{Id: id}).Return(&proto.TeamResponse{}, errors.New("Service is down"))
 
 	srv := service.NewTeamService(client)
 
-	_, err := srv.FindOne(1)
+	_, err := srv.FindOne(id)
 
 	assert.Equal(s.T(), want, err)
 }
@@ -164,7 +194,7 @@ func (s *TeamServiceTest) TestCreateTeamService() {
 
 	client := new(mock.TeamClientMock)
 
-	client.On("Create").Return(&proto.TeamResponse{
+	client.On("Create", *s.TeamReq).Return(&proto.TeamResponse{
 		StatusCode: http.StatusCreated,
 		Errors:     nil,
 		Data:       s.Team,
@@ -172,7 +202,7 @@ func (s *TeamServiceTest) TestCreateTeamService() {
 
 	srv := service.NewTeamService(client)
 
-	team, err := srv.Create(&dto.TeamDto{})
+	team, err := srv.Create(s.TeamDto)
 
 	assert.Nil(s.T(), err, "Must not got any error")
 	assert.Equal(s.T(), want, team)
@@ -187,7 +217,7 @@ func (s *TeamServiceTest) TestCreateDuplicatedTeamService() {
 
 	client := new(mock.TeamClientMock)
 
-	client.On("Create").Return(&proto.TeamResponse{
+	client.On("Create", *s.TeamReq).Return(&proto.TeamResponse{
 		StatusCode: http.StatusUnprocessableEntity,
 		Errors:     []string{"Duplicated email or teamname"},
 		Data:       nil,
@@ -195,7 +225,7 @@ func (s *TeamServiceTest) TestCreateDuplicatedTeamService() {
 
 	srv := service.NewTeamService(client)
 
-	team, err := srv.Create(&dto.TeamDto{})
+	team, err := srv.Create(s.TeamDto)
 
 	assert.Nil(s.T(), team)
 	assert.Equal(s.T(), want, err)
@@ -206,11 +236,11 @@ func (s *TeamServiceTest) TestCreateGrpcErrTeamService() {
 
 	client := new(mock.TeamClientMock)
 
-	client.On("Create").Return(&proto.TeamResponse{}, errors.New("Service is down"))
+	client.On("Create", *s.TeamReq).Return(&proto.TeamResponse{}, errors.New("Service is down"))
 
 	srv := service.NewTeamService(client)
 
-	_, err := srv.Create(&dto.TeamDto{})
+	_, err := srv.Create(s.TeamDto)
 
 	assert.Equal(s.T(), want, err)
 }
@@ -220,7 +250,7 @@ func (s *TeamServiceTest) TestUpdateTeamService() {
 
 	client := new(mock.TeamClientMock)
 
-	client.On("Update").Return(&proto.TeamResponse{
+	client.On("Update", *s.Team).Return(&proto.TeamResponse{
 		StatusCode: http.StatusOK,
 		Errors:     nil,
 		Data:       s.Team,
@@ -228,7 +258,7 @@ func (s *TeamServiceTest) TestUpdateTeamService() {
 
 	srv := service.NewTeamService(client)
 
-	team, err := srv.Update(1, &dto.TeamDto{})
+	team, err := srv.Update(1, s.TeamDto)
 
 	assert.Nil(s.T(), err, "Must not got any error")
 	assert.Equal(s.T(), want, team)
@@ -239,7 +269,7 @@ func (s *TeamServiceTest) TestUpdateNotFoundTeamService() {
 
 	client := new(mock.TeamClientMock)
 
-	client.On("Update").Return(&proto.TeamResponse{
+	client.On("Update", *s.Team).Return(&proto.TeamResponse{
 		StatusCode: http.StatusNotFound,
 		Errors:     []string{"Not found team"},
 		Data:       nil,
@@ -247,7 +277,7 @@ func (s *TeamServiceTest) TestUpdateNotFoundTeamService() {
 
 	srv := service.NewTeamService(client)
 
-	team, err := srv.Update(1, &dto.TeamDto{})
+	team, err := srv.Update(1, s.TeamDto)
 
 	assert.Nil(s.T(), team)
 	assert.Equal(s.T(), want, err)
@@ -258,11 +288,11 @@ func (s *TeamServiceTest) TestUpdateGrpcErrTeamService() {
 
 	client := new(mock.TeamClientMock)
 
-	client.On("Update").Return(&proto.TeamResponse{}, errors.New("Service is down"))
+	client.On("Update", *s.Team).Return(&proto.TeamResponse{}, errors.New("Service is down"))
 
 	srv := service.NewTeamService(client)
 
-	_, err := srv.Update(1, &dto.TeamDto{})
+	_, err := srv.Update(1, s.TeamDto)
 
 	assert.Equal(s.T(), want, err)
 }
@@ -270,9 +300,12 @@ func (s *TeamServiceTest) TestUpdateGrpcErrTeamService() {
 func (s *TeamServiceTest) TestDeleteTeamService() {
 	want := s.Team
 
+	var id int32
+	_ = faker.FakeData(&id)
+
 	client := new(mock.TeamClientMock)
 
-	client.On("Delete").Return(&proto.TeamResponse{
+	client.On("Delete", &proto.DeleteTeamRequest{Id: id}).Return(&proto.TeamResponse{
 		StatusCode: http.StatusOK,
 		Errors:     nil,
 		Data:       s.Team,
@@ -280,7 +313,7 @@ func (s *TeamServiceTest) TestDeleteTeamService() {
 
 	srv := service.NewTeamService(client)
 
-	team, err := srv.Delete(1)
+	team, err := srv.Delete(id)
 
 	assert.Nil(s.T(), err, "Must not got any error")
 	assert.Equal(s.T(), want, team)
@@ -289,9 +322,12 @@ func (s *TeamServiceTest) TestDeleteTeamService() {
 func (s *TeamServiceTest) TestDeleteNotFoundTeamService() {
 	want := s.NotFoundErr
 
+	var id int32
+	_ = faker.FakeData(&id)
+
 	client := new(mock.TeamClientMock)
 
-	client.On("Delete").Return(&proto.TeamResponse{
+	client.On("Delete", &proto.DeleteTeamRequest{Id: id}).Return(&proto.TeamResponse{
 		StatusCode: http.StatusNotFound,
 		Errors:     []string{"Not found team"},
 		Data:       nil,
@@ -299,7 +335,7 @@ func (s *TeamServiceTest) TestDeleteNotFoundTeamService() {
 
 	srv := service.NewTeamService(client)
 
-	team, err := srv.Delete(1)
+	team, err := srv.Delete(id)
 
 	assert.Nil(s.T(), team)
 	assert.Equal(s.T(), want, err)
@@ -308,13 +344,16 @@ func (s *TeamServiceTest) TestDeleteNotFoundTeamService() {
 func (s *TeamServiceTest) TestDeleteGrpcErrTeamService() {
 	want := s.ServiceDownErr
 
+	var id int32
+	_ = faker.FakeData(&id)
+
 	client := new(mock.TeamClientMock)
 
-	client.On("Delete").Return(&proto.TeamResponse{}, errors.New("Service is down"))
+	client.On("Delete", &proto.DeleteTeamRequest{Id: id}).Return(&proto.TeamResponse{}, errors.New("Service is down"))
 
 	srv := service.NewTeamService(client)
 
-	_, err := srv.Delete(1)
+	_, err := srv.Delete(id)
 
 	assert.Equal(s.T(), want, err)
 }

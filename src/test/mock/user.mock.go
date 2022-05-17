@@ -2,7 +2,6 @@ package mock
 
 import (
 	"context"
-	"github.com/bxcodec/faker/v3"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	"github.com/stretchr/testify/mock"
@@ -13,87 +12,147 @@ type UserServiceMock struct {
 	mock.Mock
 }
 
-func (m *UserServiceMock) FindAll(params *dto.PaginationQueryParams) (*proto.UserPagination, *dto.ResponseErr) {
-	args := m.Called()
+func (m *UserServiceMock) FindAll(params *dto.PaginationQueryParams) (res *proto.UserPagination, err *dto.ResponseErr) {
+	args := m.Called(params)
 
-	return args.Get(0).(*proto.UserPagination), args.Get(1).(*dto.ResponseErr)
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.UserPagination)
+	}
+
+	if args.Get(1) != nil {
+		err = args.Get(1).(*dto.ResponseErr)
+	}
+
+	return
 }
 
-func (m *UserServiceMock) FindOne(id int32) (*proto.User, *dto.ResponseErr) {
+func (m *UserServiceMock) FindOne(id int32) (res *proto.User, err *dto.ResponseErr) {
 	args := m.Called(id)
 
-	return args.Get(0).(*proto.User), args.Get(1).(*dto.ResponseErr)
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.User)
+	}
+
+	if args.Get(1) != nil {
+		err = args.Get(1).(*dto.ResponseErr)
+	}
+
+	return
 }
 
-func (m *UserServiceMock) Create(user *dto.UserDto) (*proto.User, *dto.ResponseErr) {
-	args := m.Called()
+func (m *UserServiceMock) Create(user *dto.UserDto) (res *proto.User, err *dto.ResponseErr) {
+	args := m.Called(user)
 
-	return args.Get(0).(*proto.User), args.Get(1).(*dto.ResponseErr)
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.User)
+	}
+
+	if args.Get(1) != nil {
+		err = args.Get(1).(*dto.ResponseErr)
+	}
+
+	return
 }
 
-func (m *UserServiceMock) Update(id int32, user *dto.UserDto) (*proto.User, *dto.ResponseErr) {
+func (m *UserServiceMock) Update(id int32, user *dto.UserDto) (res *proto.User, err *dto.ResponseErr) {
+	args := m.Called(id, user)
+
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.User)
+	}
+
+	if args.Get(1) != nil {
+		err = args.Get(1).(*dto.ResponseErr)
+	}
+
+	return
+}
+
+func (m *UserServiceMock) Delete(id int32) (res *proto.User, err *dto.ResponseErr) {
 	args := m.Called(id)
 
-	return args.Get(0).(*proto.User), args.Get(1).(*dto.ResponseErr)
-}
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.User)
+	}
 
-func (m *UserServiceMock) Delete(id int32) (*proto.User, *dto.ResponseErr) {
-	args := m.Called(id)
+	if args.Get(1) != nil {
+		err = args.Get(1).(*dto.ResponseErr)
+	}
 
-	return args.Get(0).(*proto.User), args.Get(1).(*dto.ResponseErr)
+	return
 }
 
 type UserClientMock struct {
 	mock.Mock
 }
 
-func (m *UserClientMock) FindAll(ctx context.Context, in *proto.FindAllUserRequest, opts ...grpc.CallOption) (*proto.UserPaginationResponse, error) {
-	args := m.Called()
+func (m *UserClientMock) FindAll(ctx context.Context, in *proto.FindAllUserRequest, opts ...grpc.CallOption) (res *proto.UserPaginationResponse, err error) {
+	args := m.Called(in)
+
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.UserPaginationResponse)
+	}
 
 	return args.Get(0).(*proto.UserPaginationResponse), args.Error(1)
 }
 
-func (m *UserClientMock) FindOne(ctx context.Context, in *proto.FindOneUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	args := m.Called()
+func (m *UserClientMock) FindOne(ctx context.Context, in *proto.FindOneUserRequest, opts ...grpc.CallOption) (res *proto.UserResponse, err error) {
+	args := m.Called(in)
 
-	return args.Get(0).(*proto.UserResponse), args.Error(1)
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.UserResponse)
+	}
+
+	return res, args.Error(1)
 }
 
 func (m *UserClientMock) FindMulti(ctx context.Context, in *proto.FindMultiUserRequest, opts ...grpc.CallOption) (*proto.UserListResponse, error) {
 	return nil, nil
 }
 
-func (m *UserClientMock) Create(ctx context.Context, in *proto.CreateUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	args := m.Called()
+func (m *UserClientMock) Create(ctx context.Context, in *proto.CreateUserRequest, opts ...grpc.CallOption) (res *proto.UserResponse, err error) {
+	args := m.Called(*in.User)
 
-	return args.Get(0).(*proto.UserResponse), args.Error(1)
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.UserResponse)
+	}
+
+	return res, args.Error(1)
 }
 
-func (m *UserClientMock) Update(ctx context.Context, in *proto.UpdateUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	args := m.Called()
+func (m *UserClientMock) Update(ctx context.Context, in *proto.UpdateUserRequest, opts ...grpc.CallOption) (res *proto.UserResponse, err error) {
+	args := m.Called(*in.User)
 
-	return args.Get(0).(*proto.UserResponse), args.Error(1)
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.UserResponse)
+	}
+
+	return res, args.Error(1)
 }
 
-func (m *UserClientMock) Delete(ctx context.Context, in *proto.DeleteUserRequest, opts ...grpc.CallOption) (*proto.UserResponse, error) {
-	args := m.Called()
+func (m *UserClientMock) Delete(ctx context.Context, in *proto.DeleteUserRequest, opts ...grpc.CallOption) (res *proto.UserResponse, err error) {
+	args := m.Called(in)
 
-	return args.Get(0).(*proto.UserResponse), args.Error(1)
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.UserResponse)
+	}
+
+	return res, args.Error(1)
 }
 
 type UserContextMock struct {
-	V interface{}
 	mock.Mock
+	V       interface{}
+	User    *proto.User
+	Users   []*proto.User
+	UserDto *dto.UserDto
+	Query   *dto.PaginationQueryParams
 }
 
 func (c *UserContextMock) Bind(v interface{}) error {
-	*v.(*dto.UserDto) = dto.UserDto{
-		Firstname: faker.FirstName(),
-		Lastname:  faker.LastName(),
-		ImageUrl:  faker.URL(),
-	}
+	args := c.Called(v)
 
-	args := c.Called()
+	*v.(*dto.UserDto) = *c.UserDto
 
 	return args.Error(0)
 }
@@ -102,16 +161,16 @@ func (c *UserContextMock) JSON(_ int, v interface{}) {
 	c.V = v
 }
 
-func (c *UserContextMock) ID(id *int32) error {
-	*id = 1
-
+func (c *UserContextMock) ID() (int32, error) {
 	args := c.Called()
 
-	return args.Error(0)
+	return int32(args.Int(0)), args.Error(1)
 }
 
 func (c *UserContextMock) PaginationQueryParam(query *dto.PaginationQueryParams) error {
-	args := c.Called()
+	args := c.Called(query)
+
+	*query = *c.Query
 
 	return args.Error(0)
 }

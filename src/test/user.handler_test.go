@@ -18,6 +18,8 @@ type UserHandlerTest struct {
 	suite.Suite
 	User           *proto.User
 	Users          []*proto.User
+	UserDto        *dto.UserDto
+	Query          *dto.PaginationQueryParams
 	InvalidIDErr   *dto.ResponseErr
 	NotFoundErr    *dto.ResponseErr
 	ServiceDownErr *dto.ResponseErr
@@ -56,7 +58,16 @@ func (u *UserHandlerTest) SetupTest() {
 		ImageUrl:  faker.URL(),
 	}
 
+	u.UserDto = &dto.UserDto{
+		Firstname:   faker.FirstName(),
+		Lastname:    faker.LastName(),
+		DisplayName: faker.Username(),
+		ImageUrl:    faker.URL(),
+	}
+
 	u.Users = append(u.Users, u.User, User2, User3, User4)
+
+	_ = faker.FakeData(&u.Query)
 
 	u.ServiceDownErr = &dto.ResponseErr{
 		StatusCode: http.StatusServiceUnavailable,
@@ -89,10 +100,15 @@ func (u *UserHandlerTest) TestFindAllUser() {
 	}
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("FindAll").Return(want, &dto.ResponseErr{})
-	c.On("PaginationQueryParam").Return(nil)
+	srv.On("FindAll", u.Query).Return(want, nil)
+	c.On("PaginationQueryParam", &dto.PaginationQueryParams{}).Return(nil)
 	v, _ := validator.NewValidator()
 
 	h := handler.NewUserHandler(srv, v)
@@ -108,10 +124,15 @@ func (u *UserHandlerTest) TestFindAllInvalidQueryParamUser() {
 	}
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("FindAll").Return(nil, nil)
-	c.On("PaginationQueryParam").Return(errors.New("Cannot parse query param"))
+	srv.On("FindAll", u.Query).Return(nil, nil)
+	c.On("PaginationQueryParam", &dto.PaginationQueryParams{}).Return(errors.New("Cannot parse query param"))
 
 	v, _ := validator.NewValidator()
 
@@ -126,10 +147,15 @@ func (u *UserHandlerTest) TestFindAllGrpcErrUser() {
 	want := u.ServiceDownErr
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("FindAll").Return(&proto.UserPagination{}, u.ServiceDownErr)
-	c.On("PaginationQueryParam").Return(nil)
+	srv.On("FindAll", u.Query).Return(nil, u.ServiceDownErr)
+	c.On("PaginationQueryParam", &dto.PaginationQueryParams{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -144,10 +170,15 @@ func (u *UserHandlerTest) TestFindOneUser() {
 	want := u.User
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("FindOne", int32(1)).Return(u.User, &dto.ResponseErr{})
-	c.On("ID").Return(nil)
+	srv.On("FindOne", int32(1)).Return(u.User, nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -162,10 +193,15 @@ func (u *UserHandlerTest) TestFindOneInvalidRequestParamIDUser() {
 	want := u.InvalidIDErr
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("FindOne", int32(1)).Return(&proto.User{}, &dto.ResponseErr{})
-	c.On("ID").Return(errors.New("Invalid ID"))
+	srv.On("FindOne", int32(1)).Return(nil, nil)
+	c.On("ID").Return(-1, errors.New("Invalid ID"))
 
 	v, _ := validator.NewValidator()
 
@@ -179,10 +215,15 @@ func (u *UserHandlerTest) TestFindOneErrorNotFoundUser() {
 	want := u.NotFoundErr
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("FindOne", int32(1)).Return(&proto.User{}, u.NotFoundErr)
-	c.On("ID").Return(nil)
+	srv.On("FindOne", int32(1)).Return(nil, u.NotFoundErr)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -197,10 +238,15 @@ func (u *UserHandlerTest) TestFindOneGrpcErrUser() {
 	want := u.ServiceDownErr
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("FindOne", int32(1)).Return(&proto.User{}, u.ServiceDownErr)
-	c.On("ID").Return(nil)
+	srv.On("FindOne", int32(1)).Return(nil, u.ServiceDownErr)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -215,10 +261,15 @@ func (u *UserHandlerTest) TestCreateUser() {
 	want := u.User
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Create").Return(u.User, &dto.ResponseErr{})
-	c.On("Bind").Return(nil)
+	srv.On("Create", u.UserDto).Return(u.User, nil)
+	c.On("Bind", &dto.UserDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -235,10 +286,15 @@ func (u *UserHandlerTest) TestCreateErrorDuplicatedUser() {
 	}
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Create").Return(&proto.User{}, want)
-	c.On("Bind").Return(nil)
+	srv.On("Create", u.UserDto).Return(nil, want)
+	c.On("Bind", &dto.UserDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -255,10 +311,15 @@ func (u *UserHandlerTest) TestCreateInvalidBodyRequest() {
 	}
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Create").Return(&proto.User{}, &dto.ResponseErr{})
-	c.On("Bind").Return(errors.New("Cannot parse body request"))
+	srv.On("Create", u.UserDto).Return(nil, nil)
+	c.On("Bind", &dto.UserDto{}).Return(errors.New("Cannot parse body request"))
 
 	v, _ := validator.NewValidator()
 
@@ -272,10 +333,15 @@ func (u *UserHandlerTest) TestCreateGrpcErrUser() {
 	want := u.ServiceDownErr
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Create").Return(&proto.User{}, u.ServiceDownErr)
-	c.On("Bind").Return(nil)
+	srv.On("Create", u.UserDto).Return(nil, u.ServiceDownErr)
+	c.On("Bind", &dto.UserDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -290,11 +356,16 @@ func (u *UserHandlerTest) TestUpdateUser() {
 	want := u.User
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Update", int32(1)).Return(u.User, &dto.ResponseErr{})
-	c.On("Bind").Return(nil)
-	c.On("ID").Return(nil)
+	srv.On("Update", int32(1), u.UserDto).Return(u.User, nil)
+	c.On("Bind", &dto.UserDto{}).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -309,11 +380,16 @@ func (u *UserHandlerTest) TestUpdateInvalidRequestParamIDUser() {
 	want := u.InvalidIDErr
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Update", int32(1)).Return(&proto.User{}, &dto.ResponseErr{})
-	c.On("ID").Return(errors.New("Invalid ID"))
-	c.On("Bind").Return(nil)
+	srv.On("Update", int32(1), u.UserDto).Return(nil, nil)
+	c.On("ID").Return(-1, errors.New("Invalid ID"))
+	c.On("Bind", &dto.UserDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -331,11 +407,16 @@ func (u *UserHandlerTest) TestUpdateInvalidBodyRequest() {
 	}
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Update", int32(1)).Return(&proto.User{}, &dto.ResponseErr{})
-	c.On("ID").Return(nil)
-	c.On("Bind").Return(errors.New("Cannot parse user dto"))
+	srv.On("Update", int32(1), u.UserDto).Return(nil, nil)
+	c.On("ID").Return(1, nil)
+	c.On("Bind", &dto.UserDto{}).Return(errors.New("Cannot parse user dto"))
 
 	v, _ := validator.NewValidator()
 
@@ -349,11 +430,16 @@ func (u *UserHandlerTest) TestUpdateErrorNotFoundUser() {
 	want := u.NotFoundErr
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Update", int32(1)).Return(&proto.User{}, u.NotFoundErr)
-	c.On("ID").Return(nil)
-	c.On("Bind").Return(nil)
+	srv.On("Update", int32(1), u.UserDto).Return(nil, u.NotFoundErr)
+	c.On("ID").Return(1, nil)
+	c.On("Bind", &dto.UserDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -367,11 +453,16 @@ func (u *UserHandlerTest) TestUpdateGrpcErrUser() {
 	want := u.ServiceDownErr
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Update", int32(1)).Return(&proto.User{}, u.ServiceDownErr)
-	c.On("Bind").Return(nil)
-	c.On("ID").Return(nil)
+	srv.On("Update", int32(1), u.UserDto).Return(nil, u.ServiceDownErr)
+	c.On("Bind", &dto.UserDto{}).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -386,10 +477,15 @@ func (u *UserHandlerTest) TestDeleteUser() {
 	want := u.User
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Delete", int32(1)).Return(u.User, &dto.ResponseErr{})
-	c.On("ID").Return(nil)
+	srv.On("Delete", int32(1)).Return(u.User, nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -404,10 +500,15 @@ func (u *UserHandlerTest) TestDeleteInvalidRequestParamIDUser() {
 	want := u.InvalidIDErr
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Delete", int32(1)).Return(&proto.User{}, &dto.ResponseErr{})
-	c.On("ID").Return(errors.New("Invalid ID"))
+	srv.On("Delete", int32(1)).Return(nil, nil)
+	c.On("ID").Return(-1, errors.New("Invalid ID"))
 
 	v, _ := validator.NewValidator()
 
@@ -422,10 +523,15 @@ func (u *UserHandlerTest) TestDeleteErrorNotFoundUser() {
 	want := u.NotFoundErr
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Delete", int32(1)).Return(&proto.User{}, u.NotFoundErr)
-	c.On("ID").Return(nil)
+	srv.On("Delete", int32(1)).Return(nil, u.NotFoundErr)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -440,10 +546,15 @@ func (u *UserHandlerTest) TestDeleteGrpcErrUser() {
 	want := u.ServiceDownErr
 
 	srv := new(mock.UserServiceMock)
-	c := new(mock.UserContextMock)
+	c := &mock.UserContextMock{
+		User:    u.User,
+		Users:   u.Users,
+		UserDto: u.UserDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Delete", int32(1)).Return(&proto.User{}, u.ServiceDownErr)
-	c.On("ID").Return(nil)
+	srv.On("Delete", int32(1)).Return(nil, u.ServiceDownErr)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 

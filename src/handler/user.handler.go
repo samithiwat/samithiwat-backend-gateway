@@ -22,7 +22,7 @@ func NewUserHandler(service UserService, validate *validate.DtoValidator) *UserH
 type UserContext interface {
 	Bind(interface{}) error
 	JSON(int, interface{})
-	ID(*int32) error
+	ID() (int32, error)
 	PaginationQueryParam(*dto.PaginationQueryParams) error
 }
 
@@ -45,6 +45,7 @@ type UserService interface {
 // @Success 200 {object} proto.User
 // @Failure 400 {object} dto.ResponseErr Invalid query param
 // @Failure 503 {object} dto.ResponseErr Service is down
+// @Security     AuthToken
 // @Router /user [get]
 func (h *UserHandler) FindAll(c UserContext) {
 	query := dto.PaginationQueryParams{}
@@ -59,7 +60,7 @@ func (h *UserHandler) FindAll(c UserContext) {
 	}
 
 	users, errRes := h.service.FindAll(&query)
-	if users.Meta == nil {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
@@ -81,8 +82,7 @@ func (h *UserHandler) FindAll(c UserContext) {
 // @Failure 503 {object} dto.ResponseErr Service is down
 // @Router /user/{id} [get]
 func (h *UserHandler) FindOne(c UserContext) {
-	var id int32
-	err := c.ID(&id)
+	id, err := c.ID()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
@@ -92,7 +92,7 @@ func (h *UserHandler) FindOne(c UserContext) {
 	}
 
 	user, errRes := h.service.FindOne(id)
-	if user.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
@@ -112,6 +112,7 @@ func (h *UserHandler) FindOne(c UserContext) {
 // @Failure 400 {object} dto.ResponseErr Invalid ID
 // @Failure 404 {object} dto.ResponseErr Not found user
 // @Failure 503 {object} dto.ResponseErr Service is down
+// @Security     AuthToken
 // @Router /user [post]
 func (h *UserHandler) Create(c UserContext) {
 	userDto := dto.UserDto{}
@@ -134,7 +135,7 @@ func (h *UserHandler) Create(c UserContext) {
 	}
 
 	user, errRes := h.service.Create(&userDto)
-	if user.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
@@ -147,7 +148,7 @@ func (h *UserHandler) Create(c UserContext) {
 // @Summary Update the existing user
 // @Description Return the user dto if successfully
 // @Param id path int true "id"
-// @Param user body proto.User true "user dto"
+// @Param user body dto.UserDto true "user dto"
 // @Tags user
 // @Accept json
 // @Produce json
@@ -155,6 +156,7 @@ func (h *UserHandler) Create(c UserContext) {
 // @Failure 400 {object} dto.ResponseErr Invalid ID
 // @Failure 404 {object} dto.ResponseErr Not found user
 // @Failure 503 {object} dto.ResponseErr Service is down
+// @Security     AuthToken
 // @Router /user/{id} [patch]
 func (h *UserHandler) Update(c UserContext) {
 	userDto := dto.UserDto{}
@@ -176,8 +178,7 @@ func (h *UserHandler) Update(c UserContext) {
 		return
 	}
 
-	var id int32
-	err = c.ID(&id)
+	id, err := c.ID()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
@@ -187,7 +188,7 @@ func (h *UserHandler) Update(c UserContext) {
 	}
 
 	user, errRes := h.service.Update(id, &userDto)
-	if user.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
@@ -207,10 +208,10 @@ func (h *UserHandler) Update(c UserContext) {
 // @Failure 400 {object} dto.ResponseErr Invalid ID
 // @Failure 404 {object} dto.ResponseErr Not found user
 // @Failure 503 {object} dto.ResponseErr Service is down
+// @Security     AuthToken
 // @Router /user/{id} [delete]
 func (h *UserHandler) Delete(c UserContext) {
-	var id int32
-	err := c.ID(&id)
+	id, err := c.ID()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
@@ -220,7 +221,7 @@ func (h *UserHandler) Delete(c UserContext) {
 	}
 
 	user, errRes := h.service.Delete(id)
-	if user.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}

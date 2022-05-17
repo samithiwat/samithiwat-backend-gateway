@@ -22,7 +22,7 @@ func NewOrganizationHandler(service OrganizationService, validate *validate.DtoV
 type OrganizationContext interface {
 	Bind(interface{}) error
 	JSON(int, interface{})
-	ID(*int32) error
+	ID() (int32, error)
 	PaginationQueryParam(*dto.PaginationQueryParams) error
 }
 
@@ -59,7 +59,7 @@ func (h *OrganizationHandler) FindAll(c OrganizationContext) {
 	}
 
 	organizations, errRes := h.service.FindAll(&query)
-	if organizations.Meta == nil {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
@@ -81,8 +81,8 @@ func (h *OrganizationHandler) FindAll(c OrganizationContext) {
 // @Failure 503 {object} dto.ResponseErr "Service is down"
 // @Router /organization/{id} [get]
 func (h *OrganizationHandler) FindOne(c OrganizationContext) {
-	var id int32
-	err := c.ID(&id)
+
+	id, err := c.ID()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
@@ -92,7 +92,7 @@ func (h *OrganizationHandler) FindOne(c OrganizationContext) {
 	}
 
 	organization, errRes := h.service.FindOne(id)
-	if organization.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
@@ -104,7 +104,7 @@ func (h *OrganizationHandler) FindOne(c OrganizationContext) {
 // Create is a function that create the organization
 // @Summary Create the organization
 // @Description Return the organization dto if successfully
-// @Param organization body proto.Organization true "organization dto"
+// @Param organization body dto.OrganizationDto true "organization dto"
 // @Tags organization
 // @Accept json
 // @Produce json
@@ -112,6 +112,7 @@ func (h *OrganizationHandler) FindOne(c OrganizationContext) {
 // @Failure 400 {object} dto.ResponseErr "Invalid ID"
 // @Failure 404 {object} dto.ResponseErr "Not found organization"
 // @Failure 503 {object} dto.ResponseErr "Service is down"
+// @Security     AuthToken
 // @Router /organization [post]
 func (h *OrganizationHandler) Create(c OrganizationContext) {
 	organizationDto := dto.OrganizationDto{}
@@ -134,7 +135,7 @@ func (h *OrganizationHandler) Create(c OrganizationContext) {
 	}
 
 	organization, errRes := h.service.Create(&organizationDto)
-	if organization.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
@@ -147,7 +148,7 @@ func (h *OrganizationHandler) Create(c OrganizationContext) {
 // @Summary Update the existing organization
 // @Description Return the organization dto if successfully
 // @Param id path int true "id"
-// @Param organization body proto.Organization true "organization dto"
+// @Param organization body dto.OrganizationDto true "organization dto"
 // @Tags organization
 // @Accept json
 // @Produce json
@@ -155,6 +156,7 @@ func (h *OrganizationHandler) Create(c OrganizationContext) {
 // @Failure 400 {object} dto.ResponseErr "Invalid ID"
 // @Failure 404 {object} dto.ResponseErr "Not found organization"
 // @Failure 503 {object} dto.ResponseErr "Service is down"
+// @Security     AuthToken
 // @Router /organization/{id} [patch]
 func (h *OrganizationHandler) Update(c OrganizationContext) {
 	organizationDto := dto.OrganizationDto{}
@@ -176,8 +178,7 @@ func (h *OrganizationHandler) Update(c OrganizationContext) {
 		return
 	}
 
-	var id int32
-	err = c.ID(&id)
+	id, err := c.ID()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
@@ -187,7 +188,7 @@ func (h *OrganizationHandler) Update(c OrganizationContext) {
 	}
 
 	organization, errRes := h.service.Update(id, &organizationDto)
-	if organization.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}
@@ -207,10 +208,11 @@ func (h *OrganizationHandler) Update(c OrganizationContext) {
 // @Failure 400 {object} dto.ResponseErr "Invalid ID"
 // @Failure 404 {object} dto.ResponseErr "Not found organization"
 // @Failure 503 {object} dto.ResponseErr "Service is down"
+// @Security     AuthToken
 // @Router /organization/{id} [delete]
 func (h *OrganizationHandler) Delete(c OrganizationContext) {
-	var id int32
-	err := c.ID(&id)
+
+	id, err := c.ID()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &dto.ResponseErr{
 			StatusCode: http.StatusBadRequest,
@@ -220,7 +222,7 @@ func (h *OrganizationHandler) Delete(c OrganizationContext) {
 	}
 
 	organization, errRes := h.service.Delete(id)
-	if organization.Id == 0 {
+	if errRes != nil {
 		c.JSON(errRes.StatusCode, errRes)
 		return
 	}

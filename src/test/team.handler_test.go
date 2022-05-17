@@ -18,6 +18,8 @@ type TeamHandlerTest struct {
 	suite.Suite
 	Team           *proto.Team
 	Teams          []*proto.Team
+	TeamDto        *dto.TeamDto
+	Query          *dto.PaginationQueryParams
 	NotFoundErr    *dto.ResponseErr
 	ServiceDownErr *dto.ResponseErr
 	InvalidIDErr   *dto.ResponseErr
@@ -52,6 +54,9 @@ func (u *TeamHandlerTest) SetupTest() {
 		Description: faker.Sentence(),
 	}
 
+	_ = faker.FakeData(&u.TeamDto)
+	_ = faker.FakeData(&u.Query)
+
 	u.Teams = append(u.Teams, u.Team, Team2, Team3, Team4)
 
 	u.ServiceDownErr = &dto.ResponseErr{
@@ -85,10 +90,15 @@ func (u *TeamHandlerTest) TestFindAllTeam() {
 	}
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("FindAll").Return(want, &dto.ResponseErr{})
-	c.On("PaginationQueryParam").Return(nil)
+	srv.On("FindAll", u.Query).Return(want, nil)
+	c.On("PaginationQueryParam", &dto.PaginationQueryParams{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -105,10 +115,15 @@ func (u *TeamHandlerTest) TestFindAllInvalidQueryParamTeam() {
 	}
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("FindAll").Return(nil, nil)
-	c.On("PaginationQueryParam").Return(errors.New("Cannot parse query param"))
+	srv.On("FindAll", u.Query).Return(nil, nil)
+	c.On("PaginationQueryParam", &dto.PaginationQueryParams{}).Return(errors.New("Cannot parse query param"))
 
 	v, _ := validator.NewValidator()
 
@@ -123,10 +138,15 @@ func (u *TeamHandlerTest) TestFindAllGrpcErrTeam() {
 	want := u.ServiceDownErr
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("FindAll").Return(&proto.TeamPagination{}, u.ServiceDownErr)
-	c.On("PaginationQueryParam").Return(nil)
+	srv.On("FindAll", u.Query).Return(nil, u.ServiceDownErr)
+	c.On("PaginationQueryParam", &dto.PaginationQueryParams{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -141,10 +161,15 @@ func (u *TeamHandlerTest) TestFindOneTeam() {
 	want := u.Team
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("FindOne", int32(1)).Return(u.Team, &dto.ResponseErr{})
-	c.On("ID").Return(nil)
+	srv.On("FindOne", int32(1)).Return(u.Team, nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -159,10 +184,15 @@ func (u *TeamHandlerTest) TestFindOneInvalidRequestParamIDTeam() {
 	want := u.InvalidIDErr
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("FindOne", int32(1)).Return(&proto.Team{}, &dto.ResponseErr{})
-	c.On("ID").Return(errors.New("Invalid ID"))
+	srv.On("FindOne", int32(1)).Return(nil, nil)
+	c.On("ID").Return(-1, errors.New("Invalid ID"))
 
 	v, _ := validator.NewValidator()
 
@@ -176,10 +206,15 @@ func (u *TeamHandlerTest) TestFindOneErrorNotFoundTeam() {
 	want := u.NotFoundErr
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("FindOne", int32(1)).Return(&proto.Team{}, u.NotFoundErr)
-	c.On("ID").Return(nil)
+	srv.On("FindOne", int32(1)).Return(nil, u.NotFoundErr)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -194,10 +229,15 @@ func (u *TeamHandlerTest) TestFindOneGrpcErrTeam() {
 	want := u.ServiceDownErr
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("FindOne", int32(1)).Return(&proto.Team{}, u.ServiceDownErr)
-	c.On("ID").Return(nil)
+	srv.On("FindOne", int32(1)).Return(nil, u.ServiceDownErr)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -212,10 +252,15 @@ func (u *TeamHandlerTest) TestCreateTeam() {
 	want := u.Team
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Create").Return(u.Team, &dto.ResponseErr{})
-	c.On("Bind").Return(nil)
+	srv.On("Create", u.TeamDto).Return(u.Team, nil)
+	c.On("Bind", &dto.TeamDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -232,10 +277,15 @@ func (u *TeamHandlerTest) TestCreateErrorDuplicatedTeam() {
 	}
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Create").Return(&proto.Team{}, want)
-	c.On("Bind").Return(nil)
+	srv.On("Create", u.TeamDto).Return(nil, want)
+	c.On("Bind", &dto.TeamDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -252,10 +302,15 @@ func (u *TeamHandlerTest) TestCreateInvalidBodyRequest() {
 	}
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Create").Return(&proto.Team{}, &dto.ResponseErr{})
-	c.On("Bind").Return(errors.New("Cannot parse body request"))
+	srv.On("Create", u.TeamDto).Return(nil, nil)
+	c.On("Bind", &dto.TeamDto{}).Return(errors.New("Cannot parse body request"))
 
 	v, _ := validator.NewValidator()
 
@@ -269,10 +324,15 @@ func (u *TeamHandlerTest) TestCreateGrpcErrTeam() {
 	want := u.ServiceDownErr
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Create").Return(&proto.Team{}, u.ServiceDownErr)
-	c.On("Bind").Return(nil)
+	srv.On("Create", u.TeamDto).Return(nil, u.ServiceDownErr)
+	c.On("Bind", &dto.TeamDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -287,11 +347,16 @@ func (u *TeamHandlerTest) TestUpdateTeam() {
 	want := u.Team
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Update", int32(1)).Return(u.Team, &dto.ResponseErr{})
-	c.On("Bind").Return(nil)
-	c.On("ID").Return(nil)
+	srv.On("Update", int32(1), u.TeamDto).Return(u.Team, nil)
+	c.On("Bind", &dto.TeamDto{}).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -306,11 +371,16 @@ func (u *TeamHandlerTest) TestUpdateInvalidRequestParamIDTeam() {
 	want := u.InvalidIDErr
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Update", int32(1)).Return(&proto.Team{}, &dto.ResponseErr{})
-	c.On("ID").Return(errors.New("Invalid ID"))
-	c.On("Bind").Return(nil)
+	srv.On("Update", int32(1), u.TeamDto).Return(nil, nil)
+	c.On("ID").Return(-1, errors.New("Invalid ID"))
+	c.On("Bind", &dto.TeamDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -328,11 +398,16 @@ func (u *TeamHandlerTest) TestUpdateInvalidBodyRequest() {
 	}
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Update", int32(1)).Return(&proto.Team{}, &dto.ResponseErr{})
-	c.On("ID").Return(nil)
-	c.On("Bind").Return(errors.New("Cannot parse team dto"))
+	srv.On("Update", int32(1), u.TeamDto).Return(nil, nil)
+	c.On("ID").Return(1, nil)
+	c.On("Bind", &dto.TeamDto{}).Return(errors.New("Cannot parse team dto"))
 
 	v, _ := validator.NewValidator()
 
@@ -346,11 +421,16 @@ func (u *TeamHandlerTest) TestUpdateErrorNotFoundTeam() {
 	want := u.NotFoundErr
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Update", int32(1)).Return(&proto.Team{}, u.NotFoundErr)
-	c.On("ID").Return(nil)
-	c.On("Bind").Return(nil)
+	srv.On("Update", int32(1), u.TeamDto).Return(nil, u.NotFoundErr)
+	c.On("ID").Return(1, nil)
+	c.On("Bind", &dto.TeamDto{}).Return(nil)
 
 	v, _ := validator.NewValidator()
 
@@ -364,11 +444,16 @@ func (u *TeamHandlerTest) TestUpdateGrpcErrTeam() {
 	want := u.ServiceDownErr
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Update", int32(1)).Return(&proto.Team{}, u.ServiceDownErr)
-	c.On("Bind").Return(nil)
-	c.On("ID").Return(nil)
+	srv.On("Update", int32(1), u.TeamDto).Return(nil, u.ServiceDownErr)
+	c.On("Bind", &dto.TeamDto{}).Return(nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -383,10 +468,15 @@ func (u *TeamHandlerTest) TestDeleteTeam() {
 	want := u.Team
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Delete", int32(1)).Return(u.Team, &dto.ResponseErr{})
-	c.On("ID").Return(nil)
+	srv.On("Delete", int32(1)).Return(u.Team, nil)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -401,10 +491,15 @@ func (u *TeamHandlerTest) TestDeleteInvalidRequestParamIDTeam() {
 	want := u.InvalidIDErr
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Delete", int32(1)).Return(&proto.Team{}, &dto.ResponseErr{})
-	c.On("ID").Return(errors.New("Invalid ID"))
+	srv.On("Delete", int32(1)).Return(nil, nil)
+	c.On("ID").Return(-1, errors.New("Invalid ID"))
 
 	v, _ := validator.NewValidator()
 
@@ -419,10 +514,15 @@ func (u *TeamHandlerTest) TestDeleteErrorNotFoundTeam() {
 	want := u.NotFoundErr
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Delete", int32(1)).Return(&proto.Team{}, u.NotFoundErr)
-	c.On("ID").Return(nil)
+	srv.On("Delete", int32(1)).Return(nil, u.NotFoundErr)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 
@@ -437,10 +537,15 @@ func (u *TeamHandlerTest) TestDeleteGrpcErrTeam() {
 	want := u.ServiceDownErr
 
 	srv := new(mock.TeamServiceMock)
-	c := new(mock.TeamContextMock)
+	c := &mock.TeamContextMock{
+		Team:    u.Team,
+		Teams:   u.Teams,
+		TeamDto: u.TeamDto,
+		Query:   u.Query,
+	}
 
-	srv.On("Delete", int32(1)).Return(&proto.Team{}, u.ServiceDownErr)
-	c.On("ID").Return(nil)
+	srv.On("Delete", int32(1)).Return(nil, u.ServiceDownErr)
+	c.On("ID").Return(1, nil)
 
 	v, _ := validator.NewValidator()
 

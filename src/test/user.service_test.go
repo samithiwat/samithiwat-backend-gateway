@@ -16,7 +16,10 @@ import (
 type UserServiceTest struct {
 	suite.Suite
 	User           *proto.User
+	UserReq        *proto.User
 	Users          []*proto.User
+	UserDto        *dto.UserDto
+	Query          *dto.PaginationQueryParams
 	NotFoundErr    *dto.ResponseErr
 	ServiceDownErr *dto.ResponseErr
 }
@@ -31,6 +34,13 @@ func (s *UserServiceTest) SetupTest() {
 		Firstname: faker.FirstName(),
 		Lastname:  faker.LastName(),
 		ImageUrl:  faker.URL(),
+	}
+
+	s.UserReq = &proto.User{
+		Firstname:   s.User.Firstname,
+		Lastname:    s.User.Lastname,
+		DisplayName: s.User.DisplayName,
+		ImageUrl:    s.User.ImageUrl,
 	}
 
 	User2 := &proto.User{
@@ -55,6 +65,15 @@ func (s *UserServiceTest) SetupTest() {
 	}
 
 	s.Users = append(s.Users, s.User, User2, User3, User4)
+
+	s.UserDto = &dto.UserDto{
+		Firstname:   s.User.Firstname,
+		Lastname:    s.User.Lastname,
+		DisplayName: s.User.DisplayName,
+		ImageUrl:    s.User.ImageUrl,
+	}
+
+	_ = faker.FakeData(&s.Query)
 
 	s.ServiceDownErr = &dto.ResponseErr{
 		StatusCode: http.StatusServiceUnavailable,
@@ -83,7 +102,10 @@ func (s *UserServiceTest) TestFindAllUserService() {
 
 	client := new(mock.UserClientMock)
 
-	client.On("FindAll").Return(&proto.UserPaginationResponse{
+	client.On("FindAll", &proto.FindAllUserRequest{
+		Limit: s.Query.Limit,
+		Page:  s.Query.Page,
+	}).Return(&proto.UserPaginationResponse{
 		StatusCode: http.StatusOK,
 		Errors:     nil,
 		Data:       want,
@@ -91,7 +113,7 @@ func (s *UserServiceTest) TestFindAllUserService() {
 
 	srv := service.NewUserService(client)
 
-	users, err := srv.FindAll(&dto.PaginationQueryParams{Limit: 10, Page: 1})
+	users, err := srv.FindAll(s.Query)
 
 	assert.Nil(s.T(), err, "Must not got any error")
 	assert.Equal(s.T(), want, users)
@@ -102,11 +124,14 @@ func (s *UserServiceTest) TestFindAllGrpcErrUserService() {
 
 	client := new(mock.UserClientMock)
 
-	client.On("FindAll").Return(&proto.UserPaginationResponse{}, errors.New("Service is down"))
+	client.On("FindAll", &proto.FindAllUserRequest{
+		Limit: s.Query.Limit,
+		Page:  s.Query.Page,
+	}).Return(&proto.UserPaginationResponse{}, errors.New("Service is down"))
 
 	srv := service.NewUserService(client)
 
-	_, err := srv.FindAll(&dto.PaginationQueryParams{Limit: 10, Page: 1})
+	_, err := srv.FindAll(s.Query)
 
 	assert.Equal(s.T(), want, err)
 }
@@ -116,7 +141,10 @@ func (s *UserServiceTest) TestFindOneUserService() {
 
 	client := new(mock.UserClientMock)
 
-	client.On("FindOne").Return(&proto.UserResponse{
+	var id int32
+	_ = faker.FakeData(&id)
+
+	client.On("FindOne", &proto.FindOneUserRequest{Id: id}).Return(&proto.UserResponse{
 		StatusCode: http.StatusOK,
 		Errors:     nil,
 		Data:       s.User,
@@ -124,7 +152,7 @@ func (s *UserServiceTest) TestFindOneUserService() {
 
 	srv := service.NewUserService(client)
 
-	user, err := srv.FindOne(1)
+	user, err := srv.FindOne(id)
 
 	assert.Nil(s.T(), err, "Must not got any error")
 	assert.Equal(s.T(), want, user)
@@ -135,7 +163,10 @@ func (s *UserServiceTest) TestFindOneNotFoundUserService() {
 
 	client := new(mock.UserClientMock)
 
-	client.On("FindOne").Return(&proto.UserResponse{
+	var id int32
+	_ = faker.FakeData(&id)
+
+	client.On("FindOne", &proto.FindOneUserRequest{Id: id}).Return(&proto.UserResponse{
 		StatusCode: http.StatusNotFound,
 		Errors:     []string{"Not found user"},
 		Data:       nil,
@@ -143,7 +174,7 @@ func (s *UserServiceTest) TestFindOneNotFoundUserService() {
 
 	srv := service.NewUserService(client)
 
-	user, err := srv.FindOne(1)
+	user, err := srv.FindOne(id)
 
 	assert.Nil(s.T(), user)
 	assert.Equal(s.T(), want, err)
@@ -154,11 +185,14 @@ func (s *UserServiceTest) TestFindOneGrpcErrUserService() {
 
 	client := new(mock.UserClientMock)
 
-	client.On("FindOne").Return(&proto.UserResponse{}, errors.New("Service is down"))
+	var id int32
+	_ = faker.FakeData(&id)
+
+	client.On("FindOne", &proto.FindOneUserRequest{Id: id}).Return(&proto.UserResponse{}, errors.New("Service is down"))
 
 	srv := service.NewUserService(client)
 
-	_, err := srv.FindOne(1)
+	_, err := srv.FindOne(id)
 
 	assert.Equal(s.T(), want, err)
 }
@@ -168,7 +202,7 @@ func (s *UserServiceTest) TestCreateUserService() {
 
 	client := new(mock.UserClientMock)
 
-	client.On("Create").Return(&proto.UserResponse{
+	client.On("Create", *s.UserReq).Return(&proto.UserResponse{
 		StatusCode: http.StatusCreated,
 		Errors:     nil,
 		Data:       s.User,
@@ -176,7 +210,7 @@ func (s *UserServiceTest) TestCreateUserService() {
 
 	srv := service.NewUserService(client)
 
-	user, err := srv.Create(&dto.UserDto{})
+	user, err := srv.Create(s.UserDto)
 
 	assert.Nil(s.T(), err, "Must not got any error")
 	assert.Equal(s.T(), want, user)
@@ -191,7 +225,7 @@ func (s *UserServiceTest) TestCreateDuplicatedUserService() {
 
 	client := new(mock.UserClientMock)
 
-	client.On("Create").Return(&proto.UserResponse{
+	client.On("Create", *s.UserReq).Return(&proto.UserResponse{
 		StatusCode: http.StatusUnprocessableEntity,
 		Errors:     []string{"Duplicated email or username"},
 		Data:       nil,
@@ -199,7 +233,7 @@ func (s *UserServiceTest) TestCreateDuplicatedUserService() {
 
 	srv := service.NewUserService(client)
 
-	user, err := srv.Create(&dto.UserDto{})
+	user, err := srv.Create(s.UserDto)
 
 	assert.Nil(s.T(), user)
 	assert.Equal(s.T(), want, err)
@@ -210,11 +244,11 @@ func (s *UserServiceTest) TestCreateGrpcErrUserService() {
 
 	client := new(mock.UserClientMock)
 
-	client.On("Create").Return(&proto.UserResponse{}, errors.New("Service is down"))
+	client.On("Create", *s.UserReq).Return(&proto.UserResponse{}, errors.New("Service is down"))
 
 	srv := service.NewUserService(client)
 
-	_, err := srv.Create(&dto.UserDto{})
+	_, err := srv.Create(s.UserDto)
 
 	assert.Equal(s.T(), want, err)
 }
@@ -224,7 +258,7 @@ func (s *UserServiceTest) TestUpdateUserService() {
 
 	client := new(mock.UserClientMock)
 
-	client.On("Update").Return(&proto.UserResponse{
+	client.On("Update", *s.User).Return(&proto.UserResponse{
 		StatusCode: http.StatusOK,
 		Errors:     nil,
 		Data:       s.User,
@@ -232,7 +266,7 @@ func (s *UserServiceTest) TestUpdateUserService() {
 
 	srv := service.NewUserService(client)
 
-	user, err := srv.Update(1, &dto.UserDto{})
+	user, err := srv.Update(1, s.UserDto)
 
 	assert.Nil(s.T(), err, "Must not got any error")
 	assert.Equal(s.T(), want, user)
@@ -243,7 +277,7 @@ func (s *UserServiceTest) TestUpdateNotFoundUserService() {
 
 	client := new(mock.UserClientMock)
 
-	client.On("Update").Return(&proto.UserResponse{
+	client.On("Update", *s.User).Return(&proto.UserResponse{
 		StatusCode: http.StatusNotFound,
 		Errors:     []string{"Not found user"},
 		Data:       nil,
@@ -251,7 +285,7 @@ func (s *UserServiceTest) TestUpdateNotFoundUserService() {
 
 	srv := service.NewUserService(client)
 
-	user, err := srv.Update(1, &dto.UserDto{})
+	user, err := srv.Update(1, s.UserDto)
 
 	assert.Nil(s.T(), user)
 	assert.Equal(s.T(), want, err)
@@ -262,11 +296,11 @@ func (s *UserServiceTest) TestUpdateGrpcErrUserService() {
 
 	client := new(mock.UserClientMock)
 
-	client.On("Update").Return(&proto.UserResponse{}, errors.New("Service is down"))
+	client.On("Update", *s.User).Return(&proto.UserResponse{}, errors.New("Service is down"))
 
 	srv := service.NewUserService(client)
 
-	_, err := srv.Update(1, &dto.UserDto{})
+	_, err := srv.Update(1, s.UserDto)
 
 	assert.Equal(s.T(), want, err)
 }
@@ -274,9 +308,12 @@ func (s *UserServiceTest) TestUpdateGrpcErrUserService() {
 func (s *UserServiceTest) TestDeleteUserService() {
 	want := s.User
 
+	var id int32
+	_ = faker.FakeData(&id)
+
 	client := new(mock.UserClientMock)
 
-	client.On("Delete").Return(&proto.UserResponse{
+	client.On("Delete", &proto.DeleteUserRequest{Id: id}).Return(&proto.UserResponse{
 		StatusCode: http.StatusOK,
 		Errors:     nil,
 		Data:       s.User,
@@ -284,7 +321,7 @@ func (s *UserServiceTest) TestDeleteUserService() {
 
 	srv := service.NewUserService(client)
 
-	user, err := srv.Delete(1)
+	user, err := srv.Delete(id)
 
 	assert.Nil(s.T(), err, "Must not got any error")
 	assert.Equal(s.T(), want, user)
@@ -293,9 +330,12 @@ func (s *UserServiceTest) TestDeleteUserService() {
 func (s *UserServiceTest) TestDeleteNotFoundUserService() {
 	want := s.NotFoundErr
 
+	var id int32
+	_ = faker.FakeData(&id)
+
 	client := new(mock.UserClientMock)
 
-	client.On("Delete").Return(&proto.UserResponse{
+	client.On("Delete", &proto.DeleteUserRequest{Id: id}).Return(&proto.UserResponse{
 		StatusCode: http.StatusNotFound,
 		Errors:     []string{"Not found user"},
 		Data:       nil,
@@ -303,7 +343,7 @@ func (s *UserServiceTest) TestDeleteNotFoundUserService() {
 
 	srv := service.NewUserService(client)
 
-	user, err := srv.Delete(1)
+	user, err := srv.Delete(id)
 
 	assert.Nil(s.T(), user)
 	assert.Equal(s.T(), want, err)
@@ -312,13 +352,16 @@ func (s *UserServiceTest) TestDeleteNotFoundUserService() {
 func (s *UserServiceTest) TestDeleteGrpcErrUserService() {
 	want := s.ServiceDownErr
 
+	var id int32
+	_ = faker.FakeData(&id)
+
 	client := new(mock.UserClientMock)
 
-	client.On("Delete").Return(&proto.UserResponse{}, errors.New("Service is down"))
+	client.On("Delete", &proto.DeleteUserRequest{Id: id}).Return(&proto.UserResponse{}, errors.New("Service is down"))
 
 	srv := service.NewUserService(client)
 
-	_, err := srv.Delete(1)
+	_, err := srv.Delete(id)
 
 	assert.Equal(s.T(), want, err)
 }

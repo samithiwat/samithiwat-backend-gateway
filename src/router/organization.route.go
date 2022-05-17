@@ -6,28 +6,28 @@ import (
 )
 
 func (r *FiberRouter) GetOrganization(path string, handler func(ctx handler.OrganizationContext)) {
-	r.App.Get(path, func(c *fiber.Ctx) error {
+	r.org.Get(path, func(c *fiber.Ctx) error {
 		handler(NewFiberCtx(c))
 		return nil
 	})
 }
 
 func (r *FiberRouter) CreateOrganization(path string, handler func(handler.OrganizationContext)) {
-	r.App.Post(path, func(c *fiber.Ctx) error {
+	r.org.Post(path, func(c *fiber.Ctx) error {
 		handler(NewFiberCtx(c))
 		return nil
 	})
 }
 
 func (r *FiberRouter) PatchOrganization(path string, handler func(handler.OrganizationContext)) {
-	r.App.Patch(path, func(c *fiber.Ctx) error {
+	r.org.Patch(path, func(c *fiber.Ctx) error {
 		handler(NewFiberCtx(c))
 		return nil
 	})
 }
 
 func (r *FiberRouter) DeleteOrganization(path string, handler func(handler.OrganizationContext)) {
-	r.App.Delete(path, func(c *fiber.Ctx) error {
+	r.org.Delete(path, func(c *fiber.Ctx) error {
 		handler(NewFiberCtx(c))
 		return nil
 	})
