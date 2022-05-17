@@ -15,7 +15,7 @@ type Login struct {
 }
 
 type ChangePassword struct {
-	UserId      uint32 `json:"user_id" validate:"required" example:"1"`
+	UserId      uint32 `json:"user_id" example:"1"`
 	OldPassword string `json:"old_password" validate:"required" example:"password"`
 	NewPassword string `json:"new_password" validate:"password" example:"new_password"`
 }
