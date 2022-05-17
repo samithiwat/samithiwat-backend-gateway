@@ -42,7 +42,7 @@ message LoginResponse{
 // Logout
 
 message LogoutRequest{
-  string token = 1;
+  uint32 userId = 1;
 }
 
 message LogoutResponse{
