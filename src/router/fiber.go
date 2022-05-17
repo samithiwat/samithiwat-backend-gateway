@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/middleware"
+	"strconv"
 )
 
 type FiberRouter struct {
@@ -63,6 +64,17 @@ func (c *FiberCtx) ID() (id int32, err error) {
 	v, err := c.ParamsInt("id")
 
 	return int32(v), err
+}
+
+func (c *FiberCtx) UserID() int32 {
+	id := c.Ctx.Get("UserId")
+
+	result, err := strconv.Atoi(id)
+	if err != nil {
+		result = -1
+	}
+
+	return int32(result)
 }
 
 func (c *FiberCtx) PaginationQueryParam(query *dto.PaginationQueryParams) error {
