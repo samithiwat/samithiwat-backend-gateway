@@ -45,6 +45,7 @@ type UserService interface {
 // @Success 200 {object} proto.User
 // @Failure 400 {object} dto.ResponseErr Invalid query param
 // @Failure 503 {object} dto.ResponseErr Service is down
+// @Security     AuthToken
 // @Router /user [get]
 func (h *UserHandler) FindAll(c UserContext) {
 	query := dto.PaginationQueryParams{}
@@ -111,6 +112,7 @@ func (h *UserHandler) FindOne(c UserContext) {
 // @Failure 400 {object} dto.ResponseErr Invalid ID
 // @Failure 404 {object} dto.ResponseErr Not found user
 // @Failure 503 {object} dto.ResponseErr Service is down
+// @Security     AuthToken
 // @Router /user [post]
 func (h *UserHandler) Create(c UserContext) {
 	userDto := dto.UserDto{}
@@ -154,6 +156,7 @@ func (h *UserHandler) Create(c UserContext) {
 // @Failure 400 {object} dto.ResponseErr Invalid ID
 // @Failure 404 {object} dto.ResponseErr Not found user
 // @Failure 503 {object} dto.ResponseErr Service is down
+// @Security     AuthToken
 // @Router /user/{id} [patch]
 func (h *UserHandler) Update(c UserContext) {
 	userDto := dto.UserDto{}
@@ -205,6 +208,7 @@ func (h *UserHandler) Update(c UserContext) {
 // @Failure 400 {object} dto.ResponseErr Invalid ID
 // @Failure 404 {object} dto.ResponseErr Not found user
 // @Failure 503 {object} dto.ResponseErr Service is down
+// @Security     AuthToken
 // @Router /user/{id} [delete]
 func (h *UserHandler) Delete(c UserContext) {
 	id, err := c.ID()

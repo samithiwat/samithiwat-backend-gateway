@@ -45,6 +45,7 @@ type TeamService interface {
 // @Success 200 {object} proto.Team
 // @Failure 400 {object} dto.ResponseErr "Invalid query param"
 // @Failure 503 {object} dto.ResponseErr "Service is down"
+// @Security     AuthToken
 // @Router /team [get]
 func (h *TeamHandler) FindAll(c TeamContext) {
 	query := dto.PaginationQueryParams{}
@@ -111,6 +112,7 @@ func (h *TeamHandler) FindOne(c TeamContext) {
 // @Failure 400 {object} dto.ResponseErr "Invalid ID"
 // @Failure 404 {object} dto.ResponseErr "Not found team"
 // @Failure 503 {object} dto.ResponseErr "Service is down"
+// @Security     AuthToken
 // @Router /team [post]
 func (h *TeamHandler) Create(c TeamContext) {
 	teamDto := dto.TeamDto{}
@@ -154,6 +156,7 @@ func (h *TeamHandler) Create(c TeamContext) {
 // @Failure 400 {object} dto.ResponseErr "Invalid ID"
 // @Failure 404 {object} dto.ResponseErr "Not found team"
 // @Failure 503 {object} dto.ResponseErr "Service is down"
+// @Security     AuthToken
 // @Router /team/{id} [patch]
 func (h *TeamHandler) Update(c TeamContext) {
 	teamDto := dto.TeamDto{}
@@ -205,6 +208,7 @@ func (h *TeamHandler) Update(c TeamContext) {
 // @Failure 400 {object} dto.ResponseErr "Invalid ID"
 // @Failure 404 {object} dto.ResponseErr "Not found team"
 // @Failure 503 {object} dto.ResponseErr "Service is down"
+// @Security     AuthToken
 // @Router /team/{id} [delete]
 func (h *TeamHandler) Delete(c TeamContext) {
 	id, err := c.ID()

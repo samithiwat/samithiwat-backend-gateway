@@ -112,6 +112,7 @@ func (h *OrganizationHandler) FindOne(c OrganizationContext) {
 // @Failure 400 {object} dto.ResponseErr "Invalid ID"
 // @Failure 404 {object} dto.ResponseErr "Not found organization"
 // @Failure 503 {object} dto.ResponseErr "Service is down"
+// @Security     AuthToken
 // @Router /organization [post]
 func (h *OrganizationHandler) Create(c OrganizationContext) {
 	organizationDto := dto.OrganizationDto{}
@@ -155,6 +156,7 @@ func (h *OrganizationHandler) Create(c OrganizationContext) {
 // @Failure 400 {object} dto.ResponseErr "Invalid ID"
 // @Failure 404 {object} dto.ResponseErr "Not found organization"
 // @Failure 503 {object} dto.ResponseErr "Service is down"
+// @Security     AuthToken
 // @Router /organization/{id} [patch]
 func (h *OrganizationHandler) Update(c OrganizationContext) {
 	organizationDto := dto.OrganizationDto{}
@@ -206,6 +208,7 @@ func (h *OrganizationHandler) Update(c OrganizationContext) {
 // @Failure 400 {object} dto.ResponseErr "Invalid ID"
 // @Failure 404 {object} dto.ResponseErr "Not found organization"
 // @Failure 503 {object} dto.ResponseErr "Service is down"
+// @Security     AuthToken
 // @Router /organization/{id} [delete]
 func (h *OrganizationHandler) Delete(c OrganizationContext) {
 
