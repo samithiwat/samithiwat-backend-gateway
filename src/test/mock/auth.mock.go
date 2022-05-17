@@ -12,6 +12,7 @@ type AuthContextMock struct {
 	RegisterDto    *dto.Register
 	LoginDto       *dto.Login
 	ChangePassword *dto.ChangePassword
+	RefreshToken   *dto.RedeemNewToken
 	V              interface{}
 	Header         map[string]string
 }
@@ -25,9 +26,17 @@ func (c *AuthContextMock) Bind(v interface{}) error {
 		*v.(*dto.Login) = *c.LoginDto
 	case *dto.ChangePassword:
 		*v.(*dto.ChangePassword) = *c.ChangePassword
+	case *dto.RedeemNewToken:
+		*v.(*dto.RedeemNewToken) = *c.RefreshToken
 	}
 
 	return args.Error(0)
+}
+
+func (c *AuthContextMock) UserID() int32 {
+	args := c.Called()
+
+	return int32(args.Int(0))
 }
 
 func (c *AuthContextMock) ID() (int32, error) {
@@ -96,8 +105,8 @@ func (s *AuthServiceMock) Login(login *dto.Login) (res *proto.Credential, err *d
 	return
 }
 
-func (s *AuthServiceMock) Logout(token string) (res bool, err *dto.ResponseErr) {
-	args := s.Called(token)
+func (s *AuthServiceMock) Logout(userId uint32) (res bool, err *dto.ResponseErr) {
+	args := s.Called(userId)
 
 	if args.Get(0) != nil {
 		res = args.Bool(0)
@@ -110,10 +119,18 @@ func (s *AuthServiceMock) Logout(token string) (res bool, err *dto.ResponseErr) 
 	return
 }
 
-func (s *AuthServiceMock) ChangePassword(chPwd *dto.ChangePassword) (bool, *dto.ResponseErr) {
+func (s *AuthServiceMock) ChangePassword(chPwd *dto.ChangePassword) (res bool, err *dto.ResponseErr) {
 	args := s.Called(chPwd)
 
-	return args.Bool(0), args.Get(1).(*dto.ResponseErr)
+	if args.Get(0) != nil {
+		res = args.Bool(0)
+	}
+
+	if args.Get(1) != nil {
+		err = args.Get(1).(*dto.ResponseErr)
+	}
+
+	return
 }
 
 func (s *AuthServiceMock) Validate(token string) (userId uint32, err *dto.ResponseErr) {
@@ -126,8 +143,16 @@ func (s *AuthServiceMock) Validate(token string) (userId uint32, err *dto.Respon
 	return uint32(args.Int(0)), err
 }
 
-func (s *AuthServiceMock) RefreshToken(token string) (*proto.Credential, *dto.ResponseErr) {
+func (s *AuthServiceMock) RefreshToken(token string) (res *proto.Credential, err *dto.ResponseErr) {
 	args := s.Called(token)
 
-	return args.Get(0).(*proto.Credential), args.Get(1).(*dto.ResponseErr)
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.Credential)
+	}
+
+	if args.Get(1) != nil {
+		err = args.Get(1).(*dto.ResponseErr)
+	}
+
+	return
 }
