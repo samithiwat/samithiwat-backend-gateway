@@ -63,6 +63,12 @@ func (c *AuthContextMock) SetHeader(key string, val string) {
 	c.Header = map[string]string{key: val}
 }
 
+func (c *AuthContextMock) Method() string {
+	args := c.Called()
+
+	return args.String(0)
+}
+
 func (c *AuthContextMock) Path() string {
 	args := c.Called()
 

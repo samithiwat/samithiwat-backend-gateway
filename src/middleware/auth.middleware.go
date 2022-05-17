@@ -15,6 +15,7 @@ type AuthGuard struct {
 
 type AuthContext interface {
 	Token() string
+	Method() string
 	Path() string
 	SetHeader(string, string)
 	JSON(int, interface{})
@@ -29,6 +30,7 @@ func NewAuthGuard(s handler.AuthService, e map[string]struct{}) AuthGuard {
 }
 
 func (m *AuthGuard) Validate(ctx AuthContext) {
+	method := ctx.Method()
 	path := ctx.Path()
 
 	var id int32
@@ -37,7 +39,7 @@ func (m *AuthGuard) Validate(ctx AuthContext) {
 		id = ids[0]
 	}
 
-	path = common.FormatPathID(path, id)
+	path = common.FormatPath(method, path, id)
 	if common.IsExisted(m.excludes, path) {
 		ctx.Next()
 		return

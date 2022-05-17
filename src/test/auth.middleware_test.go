@@ -43,8 +43,8 @@ func (u *AuthGuardTest) SetupTest() {
 	u.UserId = int32(rand.Intn(100))
 
 	u.ExcludePath = map[string]struct{}{
-		"/exclude":     {},
-		"/exclude/:id": {},
+		"POST /exclude":     {},
+		"POST /exclude/:id": {},
 	}
 }
 
@@ -54,6 +54,7 @@ func (u *AuthGuardTest) TestValidateSuccess() {
 	srv := new(mock.AuthServiceMock)
 	c := new(mock.AuthContextMock)
 
+	c.On("Method").Return("POST")
 	c.On("Path").Return("/auth")
 	c.On("Token").Return(u.Token)
 	srv.On("Validate", u.Token).Return(int(u.UserId), nil)
@@ -74,6 +75,7 @@ func (u *AuthGuardTest) TestValidateSkippedFromExcludePath() {
 	srv := new(mock.AuthServiceMock)
 	c := new(mock.AuthContextMock)
 
+	c.On("Method").Return("POST")
 	c.On("Path").Return("/exclude")
 	c.On("Token").Return("")
 	c.On("Next")
@@ -89,6 +91,7 @@ func (u *AuthGuardTest) TestValidateSkippedFromExcludePathWithID() {
 	srv := new(mock.AuthServiceMock)
 	c := new(mock.AuthContextMock)
 
+	c.On("Method").Return("POST")
 	c.On("Path").Return("/exclude/1")
 	c.On("Token").Return("")
 	c.On("Next")
@@ -106,6 +109,7 @@ func (u *AuthGuardTest) TestValidateFailed() {
 	srv := new(mock.AuthServiceMock)
 	c := new(mock.AuthContextMock)
 
+	c.On("Method").Return("POST")
 	c.On("Path").Return("/auth")
 	c.On("Token").Return(u.Token)
 	srv.On("Validate", u.Token).Return(-1, u.UnauthorizedErr)
@@ -122,6 +126,7 @@ func (u *AuthGuardTest) TestValidateTokenNotIncluded() {
 	srv := new(mock.AuthServiceMock)
 	c := new(mock.AuthContextMock)
 
+	c.On("Method").Return("POST")
 	c.On("Path").Return("/auth")
 	c.On("Token").Return("")
 	srv.On("Validate")
@@ -140,6 +145,7 @@ func (u *AuthGuardTest) TestValidateTokenGrpcErr() {
 	srv := new(mock.AuthServiceMock)
 	c := new(mock.AuthContextMock)
 
+	c.On("Method").Return("POST")
 	c.On("Path").Return("/auth")
 	c.On("Token").Return(u.Token)
 	srv.On("Validate", u.Token).Return(-1, u.ServiceDownErr)
