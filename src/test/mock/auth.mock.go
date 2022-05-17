@@ -1,9 +1,11 @@
 package mock
 
 import (
+	"context"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	"github.com/stretchr/testify/mock"
+	"google.golang.org/grpc"
 )
 
 type AuthContextMock struct {
@@ -155,4 +157,63 @@ func (s *AuthServiceMock) RefreshToken(token string) (res *proto.Credential, err
 	}
 
 	return
+}
+
+type AuthClientMock struct {
+	mock.Mock
+}
+
+func (c *AuthClientMock) Register(ctx context.Context, in *proto.RegisterRequest, opts ...grpc.CallOption) (res *proto.RegisterResponse, err error) {
+	args := c.Called(*in.Register)
+
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.RegisterResponse)
+	}
+
+	return res, args.Error(1)
+}
+func (c *AuthClientMock) Login(ctx context.Context, in *proto.LoginRequest, opts ...grpc.CallOption) (res *proto.LoginResponse, err error) {
+	args := c.Called(*in.Login)
+
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.LoginResponse)
+	}
+
+	return res, args.Error(1)
+}
+func (c *AuthClientMock) Logout(ctx context.Context, in *proto.LogoutRequest, opts ...grpc.CallOption) (res *proto.LogoutResponse, err error) {
+	args := c.Called(in)
+
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.LogoutResponse)
+	}
+
+	return res, args.Error(1)
+}
+func (c *AuthClientMock) ChangePassword(ctx context.Context, in *proto.ChangePasswordRequest, opts ...grpc.CallOption) (res *proto.ChangePasswordResponse, err error) {
+	args := c.Called(*in.ChangePassword)
+
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.ChangePasswordResponse)
+	}
+
+	return res, args.Error(1)
+}
+func (c *AuthClientMock) Validate(ctx context.Context, in *proto.ValidateRequest, opts ...grpc.CallOption) (res *proto.ValidateResponse, err error) {
+	args := c.Called(in)
+
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.ValidateResponse)
+	}
+
+	return res, args.Error(1)
+}
+func (c *AuthClientMock) RefreshToken(ctx context.Context, in *proto.RefreshTokenRequest, opts ...grpc.CallOption) (res *proto.RefreshTokenResponse, err error) {
+	args := c.Called(in)
+
+	if args.Get(0) != nil {
+		res = args.Get(0).(*proto.RefreshTokenResponse)
+	}
+
+	return res, args.Error(1)
 }
