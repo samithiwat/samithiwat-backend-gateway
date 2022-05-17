@@ -22,6 +22,11 @@ const docTemplate = `{
     "paths": {
         "/auth/change-password": {
             "post": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
                 "description": "Return the true if successfully",
                 "consumes": [
                     "application/json"
@@ -129,6 +134,11 @@ const docTemplate = `{
         },
         "/auth/logout": {
             "get": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
                 "description": "Return the user dto if successfully",
                 "consumes": [
                     "application/json"
@@ -161,6 +171,11 @@ const docTemplate = `{
         },
         "/auth/me": {
             "get": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
                 "description": "Return the user dto if successfully",
                 "consumes": [
                     "application/json"
@@ -347,6 +362,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
                 "description": "Return the organization dto if successfully",
                 "consumes": [
                     "application/json"
@@ -447,6 +467,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
                 "description": "Return the organization dto if successfully",
                 "consumes": [
                     "application/json"
@@ -495,6 +520,11 @@ const docTemplate = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
                 "description": "Return the organization dto if successfully",
                 "consumes": [
                     "application/json"
@@ -554,6 +584,11 @@ const docTemplate = `{
         },
         "/team": {
             "get": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
                 "description": "Return the arrays of team dto if successfully",
                 "consumes": [
                     "application/json"
@@ -601,6 +636,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
                 "description": "Return the team dto if successfully",
                 "consumes": [
                     "application/json"
@@ -701,6 +741,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
                 "description": "Return the team dto if successfully",
                 "consumes": [
                     "application/json"
@@ -749,6 +794,11 @@ const docTemplate = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "AuthToken": []
+                    }
+                ],
                 "description": "Return the team dto if successfully",
                 "consumes": [
                     "application/json"
@@ -1085,8 +1135,7 @@ const docTemplate = `{
         "dto.ChangePassword": {
             "type": "object",
             "required": [
-                "old_password",
-                "user_id"
+                "old_password"
             ],
             "properties": {
                 "new_password": {

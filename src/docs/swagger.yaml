@@ -12,7 +12,6 @@ definitions:
         type: integer
     required:
     - old_password
-    - user_id
     type: object
   dto.Login:
     properties:
@@ -301,6 +300,8 @@ paths:
           description: Service is down
           schema:
             $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
       summary: ChangePassword of user account
       tags:
       - auth
@@ -356,6 +357,8 @@ paths:
           description: Service is down
           schema:
             $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
       summary: Logout user from service
       tags:
       - auth
@@ -379,6 +382,8 @@ paths:
           description: Service is down
           schema:
             $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
       summary: Check user status and user info
       tags:
       - auth
@@ -512,6 +517,8 @@ paths:
           description: Service is down
           schema:
             $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
       summary: Create the organization
       tags:
       - organization
@@ -545,6 +552,8 @@ paths:
           description: Service is down
           schema:
             $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
       summary: Delete the organization
       tags:
       - organization
@@ -615,6 +624,8 @@ paths:
           description: Service is down
           schema:
             $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
       summary: Update the existing organization
       tags:
       - organization
@@ -647,6 +658,8 @@ paths:
           description: Service is down
           schema:
             $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
       summary: Get all teams
       tags:
       - team
@@ -680,6 +693,8 @@ paths:
           description: Service is down
           schema:
             $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
       summary: Create the team
       tags:
       - team
@@ -713,6 +728,8 @@ paths:
           description: Service is down
           schema:
             $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
       summary: Delete the team
       tags:
       - team
@@ -783,6 +800,8 @@ paths:
           description: Service is down
           schema:
             $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
       summary: Update the existing team
       tags:
       - team
