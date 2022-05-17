@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
+	"github.com/samithiwat/samithiwat-backend-gateway/src/middleware"
 )
 
 type FiberRouter struct {
@@ -16,25 +17,28 @@ type FiberRouter struct {
 	org  fiber.Router
 }
 
-func NewFiberRouter() *FiberRouter {
-	r := fiber.New()
+func NewFiberRouter(authGuard middleware.AuthGuard) *FiberRouter {
+	r := fiber.New(fiber.Config{
+		StrictRouting: true,
+		AppName:       "Samithiwat.dev API",
+	})
 
 	r.Use(cors.New())
 	r.Use(logger.New())
 
 	r.Get("/docs/*", swagger.HandlerDefault)
 
-	auth := r.Group("/auth")
-	user := r.Group("/user")
-	team := r.Group("/team")
-	org := r.Group("/organization")
+	auth := NewGroupRoute(r, "/auth", authGuard.Validate)
+	user := NewGroupRoute(r, "/user", authGuard.Validate)
+	team := NewGroupRoute(r, "/team", authGuard.Validate)
+	org := NewGroupRoute(r, "/organization", authGuard.Validate)
 
 	return &FiberRouter{r, auth, user, team, org}
 }
 
-func (r *FiberRouter) UseMiddleware(m func(ctx *FiberCtx)) {
-	r.App.Use(func(c *fiber.Ctx) error {
-		m(NewFiberCtx(c))
+func NewGroupRoute(r *fiber.App, path string, middleware func(ctx middleware.AuthContext)) fiber.Router {
+	return r.Group(path, func(c *fiber.Ctx) error {
+		middleware(NewFiberCtx(c))
 		return nil
 	})
 }
@@ -57,6 +61,7 @@ func (c *FiberCtx) JSON(statusCode int, v interface{}) {
 
 func (c *FiberCtx) ID() (id int32, err error) {
 	v, err := c.ParamsInt("id")
+
 	return int32(v), err
 }
 
@@ -66,4 +71,20 @@ func (c *FiberCtx) PaginationQueryParam(query *dto.PaginationQueryParams) error 
 	}
 
 	return nil
+}
+
+func (c *FiberCtx) Token() string {
+	return c.Ctx.Get(fiber.HeaderAuthorization, "")
+}
+
+func (c *FiberCtx) Path() string {
+	return c.Ctx.Path()
+}
+
+func (c *FiberCtx) SetHeader(k string, v string) {
+	c.Ctx.Set(k, v)
+}
+
+func (c *FiberCtx) Next() {
+	c.Ctx.Next()
 }
