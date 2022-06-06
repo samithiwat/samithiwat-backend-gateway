@@ -32,24 +32,28 @@ func (u *OrganizationHandlerTest) SetupTest() {
 	u.Organization = &proto.Organization{
 		Id:          1,
 		Name:        faker.Word(),
+		Email:       faker.Email(),
 		Description: faker.Sentence(),
 	}
 
 	Organization2 := &proto.Organization{
 		Id:          2,
 		Name:        faker.Word(),
+		Email:       faker.Email(),
 		Description: faker.Sentence(),
 	}
 
 	Organization3 := &proto.Organization{
 		Id:          3,
 		Name:        faker.Word(),
+		Email:       faker.Email(),
 		Description: faker.Sentence(),
 	}
 
 	Organization4 := &proto.Organization{
 		Id:          4,
 		Name:        faker.Word(),
+		Email:       faker.Email(),
 		Description: faker.Sentence(),
 	}
 

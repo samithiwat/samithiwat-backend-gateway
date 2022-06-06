@@ -31,34 +31,40 @@ func (s *OrganizationServiceTest) SetupTest() {
 	s.Organization = &proto.Organization{
 		Id:          1,
 		Name:        faker.Word(),
+		Email:       faker.Email(),
 		Description: faker.Sentence(),
 	}
 
 	s.OrganizationReq = &proto.Organization{
 		Name:        s.Organization.Name,
+		Email:       s.Organization.Email,
 		Description: s.Organization.Description,
 	}
 
 	s.OrganizationDto = &dto.OrganizationDto{
 		Name:        s.Organization.Name,
+		Email:       s.Organization.Email,
 		Description: s.Organization.Description,
 	}
 
 	Organization2 := &proto.Organization{
 		Id:          2,
 		Name:        faker.Word(),
+		Email:       faker.Email(),
 		Description: faker.Sentence(),
 	}
 
 	Organization3 := &proto.Organization{
 		Id:          3,
 		Name:        faker.Word(),
+		Email:       faker.Email(),
 		Description: faker.Sentence(),
 	}
 
 	Organization4 := &proto.Organization{
 		Id:          4,
 		Name:        faker.Word(),
+		Email:       faker.Email(),
 		Description: faker.Sentence(),
 	}
 
