@@ -1,4 +1,4 @@
-package test
+package organization
 
 import (
 	"github.com/bxcodec/faker/v3"
@@ -6,7 +6,6 @@ import (
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/service"
-	"github.com/samithiwat/samithiwat-backend-gateway/src/test/mock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"net/http"
@@ -92,7 +91,7 @@ func (s *OrganizationServiceTest) TestFindAllOrganizationService() {
 		},
 	}
 
-	client := new(mock.OrganizationClientMock)
+	client := new(ClientMock)
 
 	client.On("FindAll", &proto.FindAllOrganizationRequest{
 		Limit: s.Query.Limit,
@@ -114,7 +113,7 @@ func (s *OrganizationServiceTest) TestFindAllOrganizationService() {
 func (s *OrganizationServiceTest) TestFindAllGrpcErrOrganizationService() {
 	want := s.ServiceDownErr
 
-	client := new(mock.OrganizationClientMock)
+	client := new(ClientMock)
 
 	client.On("FindAll", &proto.FindAllOrganizationRequest{
 		Limit: s.Query.Limit,
@@ -134,7 +133,7 @@ func (s *OrganizationServiceTest) TestFindOneOrganizationService() {
 	var id int32
 	_ = faker.FakeData(&id)
 
-	client := new(mock.OrganizationClientMock)
+	client := new(ClientMock)
 
 	client.On("FindOne", &proto.FindOneOrganizationRequest{Id: id}).Return(&proto.OrganizationResponse{
 		StatusCode: http.StatusOK,
@@ -156,7 +155,7 @@ func (s *OrganizationServiceTest) TestFindOneNotFoundOrganizationService() {
 	var id int32
 	_ = faker.FakeData(&id)
 
-	client := new(mock.OrganizationClientMock)
+	client := new(ClientMock)
 
 	client.On("FindOne", &proto.FindOneOrganizationRequest{Id: id}).Return(&proto.OrganizationResponse{
 		StatusCode: http.StatusNotFound,
@@ -178,7 +177,7 @@ func (s *OrganizationServiceTest) TestFindOneGrpcErrOrganizationService() {
 	var id int32
 	_ = faker.FakeData(&id)
 
-	client := new(mock.OrganizationClientMock)
+	client := new(ClientMock)
 
 	client.On("FindOne", &proto.FindOneOrganizationRequest{Id: id}).Return(nil, errors.New("Service is down"))
 
@@ -192,9 +191,9 @@ func (s *OrganizationServiceTest) TestFindOneGrpcErrOrganizationService() {
 func (s *OrganizationServiceTest) TestCreateOrganizationService() {
 	want := s.Organization
 
-	client := new(mock.OrganizationClientMock)
+	client := new(ClientMock)
 
-	client.On("Create", *s.OrganizationReq).Return(&proto.OrganizationResponse{
+	client.On("Create", s.OrganizationReq).Return(&proto.OrganizationResponse{
 		StatusCode: http.StatusCreated,
 		Errors:     nil,
 		Data:       s.Organization,
@@ -211,15 +210,15 @@ func (s *OrganizationServiceTest) TestCreateOrganizationService() {
 func (s *OrganizationServiceTest) TestCreateDuplicatedOrganizationService() {
 	want := &dto.ResponseErr{
 		StatusCode: http.StatusUnprocessableEntity,
-		Message:    "Duplicated email or organizationname",
+		Message:    "Duplicated organization name",
 		Data:       nil,
 	}
 
-	client := new(mock.OrganizationClientMock)
+	client := new(ClientMock)
 
-	client.On("Create", *s.OrganizationReq).Return(&proto.OrganizationResponse{
+	client.On("Create", s.OrganizationReq).Return(&proto.OrganizationResponse{
 		StatusCode: http.StatusUnprocessableEntity,
-		Errors:     []string{"Duplicated email or organizationname"},
+		Errors:     []string{"Duplicated organization name"},
 		Data:       nil,
 	}, nil)
 
@@ -234,9 +233,9 @@ func (s *OrganizationServiceTest) TestCreateDuplicatedOrganizationService() {
 func (s *OrganizationServiceTest) TestCreateGrpcErrOrganizationService() {
 	want := s.ServiceDownErr
 
-	client := new(mock.OrganizationClientMock)
+	client := new(ClientMock)
 
-	client.On("Create", *s.OrganizationReq).Return(nil, errors.New("Service is down"))
+	client.On("Create", s.OrganizationReq).Return(nil, errors.New("Service is down"))
 
 	srv := service.NewOrganizationService(client)
 
@@ -248,9 +247,9 @@ func (s *OrganizationServiceTest) TestCreateGrpcErrOrganizationService() {
 func (s *OrganizationServiceTest) TestUpdateOrganizationService() {
 	want := s.Organization
 
-	client := new(mock.OrganizationClientMock)
+	client := new(ClientMock)
 
-	client.On("Update", *s.Organization).Return(&proto.OrganizationResponse{
+	client.On("Update", s.Organization).Return(&proto.OrganizationResponse{
 		StatusCode: http.StatusOK,
 		Errors:     nil,
 		Data:       s.Organization,
@@ -267,9 +266,9 @@ func (s *OrganizationServiceTest) TestUpdateOrganizationService() {
 func (s *OrganizationServiceTest) TestUpdateNotFoundOrganizationService() {
 	want := s.NotFoundErr
 
-	client := new(mock.OrganizationClientMock)
+	client := new(ClientMock)
 
-	client.On("Update", *s.Organization).Return(&proto.OrganizationResponse{
+	client.On("Update", s.Organization).Return(&proto.OrganizationResponse{
 		StatusCode: http.StatusNotFound,
 		Errors:     []string{"Not found organization"},
 		Data:       nil,
@@ -286,9 +285,9 @@ func (s *OrganizationServiceTest) TestUpdateNotFoundOrganizationService() {
 func (s *OrganizationServiceTest) TestUpdateGrpcErrOrganizationService() {
 	want := s.ServiceDownErr
 
-	client := new(mock.OrganizationClientMock)
+	client := new(ClientMock)
 
-	client.On("Update", *s.Organization).Return(nil, errors.New("Service is down"))
+	client.On("Update", s.Organization).Return(nil, errors.New("Service is down"))
 
 	srv := service.NewOrganizationService(client)
 
@@ -303,7 +302,7 @@ func (s *OrganizationServiceTest) TestDeleteOrganizationService() {
 	var id int32
 	_ = faker.FakeData(&id)
 
-	client := new(mock.OrganizationClientMock)
+	client := new(ClientMock)
 
 	client.On("Delete", &proto.DeleteOrganizationRequest{Id: id}).Return(&proto.OrganizationResponse{
 		StatusCode: http.StatusOK,
@@ -325,7 +324,7 @@ func (s *OrganizationServiceTest) TestDeleteNotFoundOrganizationService() {
 	var id int32
 	_ = faker.FakeData(&id)
 
-	client := new(mock.OrganizationClientMock)
+	client := new(ClientMock)
 
 	client.On("Delete", &proto.DeleteOrganizationRequest{Id: id}).Return(&proto.OrganizationResponse{
 		StatusCode: http.StatusNotFound,
@@ -347,7 +346,7 @@ func (s *OrganizationServiceTest) TestDeleteGrpcErrOrganizationService() {
 	var id int32
 	_ = faker.FakeData(&id)
 
-	client := new(mock.OrganizationClientMock)
+	client := new(ClientMock)
 
 	client.On("Delete", &proto.DeleteOrganizationRequest{Id: id}).Return(nil, errors.New("Service is down"))
 

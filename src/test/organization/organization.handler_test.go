@@ -1,4 +1,4 @@
-package test
+package organization
 
 import (
 	"github.com/bxcodec/faker/v3"
@@ -6,7 +6,6 @@ import (
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/handler"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
-	"github.com/samithiwat/samithiwat-backend-gateway/src/test/mock"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/validator"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -89,8 +88,8 @@ func (u *OrganizationHandlerTest) TestFindAllOrganization() {
 		},
 	}
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,
@@ -114,8 +113,8 @@ func (u *OrganizationHandlerTest) TestFindAllInvalidQueryParamOrganization() {
 		Message:    "Cannot parse query param",
 	}
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,
@@ -137,8 +136,8 @@ func (u *OrganizationHandlerTest) TestFindAllInvalidQueryParamOrganization() {
 func (u *OrganizationHandlerTest) TestFindAllGrpcErrOrganization() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,
@@ -160,8 +159,8 @@ func (u *OrganizationHandlerTest) TestFindAllGrpcErrOrganization() {
 func (u *OrganizationHandlerTest) TestFindOneOrganization() {
 	want := u.Organization
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,
@@ -183,8 +182,8 @@ func (u *OrganizationHandlerTest) TestFindOneOrganization() {
 func (u *OrganizationHandlerTest) TestFindOneInvalidRequestParamIDOrganization() {
 	want := u.InvalidIDErr
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,
@@ -205,8 +204,8 @@ func (u *OrganizationHandlerTest) TestFindOneInvalidRequestParamIDOrganization()
 func (u *OrganizationHandlerTest) TestFindOneErrorNotFoundOrganization() {
 	want := u.NotFoundErr
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,
@@ -228,8 +227,8 @@ func (u *OrganizationHandlerTest) TestFindOneErrorNotFoundOrganization() {
 func (u *OrganizationHandlerTest) TestFindOneGrpcErrOrganization() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,
@@ -251,8 +250,8 @@ func (u *OrganizationHandlerTest) TestFindOneGrpcErrOrganization() {
 func (u *OrganizationHandlerTest) TestCreateOrganization() {
 	want := u.Organization
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,
@@ -276,8 +275,8 @@ func (u *OrganizationHandlerTest) TestCreateErrorDuplicatedOrganization() {
 		Message:    "Duplicated organization name",
 	}
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,
@@ -301,8 +300,8 @@ func (u *OrganizationHandlerTest) TestCreateInvalidBodyRequest() {
 		Message:    "Cannot parse organization dto",
 	}
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,
@@ -323,8 +322,8 @@ func (u *OrganizationHandlerTest) TestCreateInvalidBodyRequest() {
 func (u *OrganizationHandlerTest) TestCreateGrpcErrOrganization() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,
@@ -346,8 +345,8 @@ func (u *OrganizationHandlerTest) TestCreateGrpcErrOrganization() {
 func (u *OrganizationHandlerTest) TestUpdateOrganization() {
 	want := u.Organization
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,
@@ -370,8 +369,8 @@ func (u *OrganizationHandlerTest) TestUpdateOrganization() {
 func (u *OrganizationHandlerTest) TestUpdateInvalidRequestParamIDOrganization() {
 	want := u.InvalidIDErr
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,
@@ -397,8 +396,8 @@ func (u *OrganizationHandlerTest) TestUpdateInvalidBodyRequest() {
 		Message:    "Cannot parse organization dto",
 	}
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,
@@ -420,8 +419,8 @@ func (u *OrganizationHandlerTest) TestUpdateInvalidBodyRequest() {
 func (u *OrganizationHandlerTest) TestUpdateErrorNotFoundOrganization() {
 	want := u.NotFoundErr
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,
@@ -443,8 +442,8 @@ func (u *OrganizationHandlerTest) TestUpdateErrorNotFoundOrganization() {
 func (u *OrganizationHandlerTest) TestUpdateGrpcErrOrganization() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,
@@ -467,8 +466,8 @@ func (u *OrganizationHandlerTest) TestUpdateGrpcErrOrganization() {
 func (u *OrganizationHandlerTest) TestDeleteOrganization() {
 	want := u.Organization
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,
@@ -490,8 +489,8 @@ func (u *OrganizationHandlerTest) TestDeleteOrganization() {
 func (u *OrganizationHandlerTest) TestDeleteInvalidRequestParamIDOrganization() {
 	want := u.InvalidIDErr
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,
@@ -513,8 +512,8 @@ func (u *OrganizationHandlerTest) TestDeleteInvalidRequestParamIDOrganization() 
 func (u *OrganizationHandlerTest) TestDeleteErrorNotFoundOrganization() {
 	want := u.NotFoundErr
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,
@@ -536,8 +535,8 @@ func (u *OrganizationHandlerTest) TestDeleteErrorNotFoundOrganization() {
 func (u *OrganizationHandlerTest) TestDeleteGrpcErrOrganization() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.OrganizationServiceMock)
-	c := &mock.OrganizationContextMock{
+	srv := new(OrganizationServiceMock)
+	c := &ContextMock{
 		Organization:    u.Organization,
 		Organizations:   u.Organizations,
 		OrganizationDto: u.OrganizationDto,

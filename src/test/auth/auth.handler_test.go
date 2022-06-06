@@ -1,4 +1,4 @@
-package test
+package auth
 
 import (
 	"github.com/bxcodec/faker/v3"
@@ -6,7 +6,7 @@ import (
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/handler"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
-	"github.com/samithiwat/samithiwat-backend-gateway/src/test/mock"
+	"github.com/samithiwat/samithiwat-backend-gateway/src/test/user"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/validator"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -92,9 +92,9 @@ func (u *AuthHandlerTest) SetupTest() {
 func (u *AuthHandlerTest) TestRegisterSuccess() {
 	want := u.User
 
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,
@@ -119,9 +119,9 @@ func (u *AuthHandlerTest) TestRegisterErrEmailDuplicated() {
 		Data:       nil,
 	}
 
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,
@@ -146,9 +146,9 @@ func (u *AuthHandlerTest) TestRegisterInvalidDTO() {
 		Data:       nil,
 	}
 
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,
@@ -169,9 +169,9 @@ func (u *AuthHandlerTest) TestRegisterInvalidDTO() {
 func (u *AuthHandlerTest) TestRegisterGrpcErr() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,
@@ -193,9 +193,9 @@ func (u *AuthHandlerTest) TestRegisterGrpcErr() {
 func (u *AuthHandlerTest) TestLoginSuccess() {
 	want := u.Credential
 
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,
@@ -217,9 +217,9 @@ func (u *AuthHandlerTest) TestLoginSuccess() {
 func (u *AuthHandlerTest) TestLoginUnAuthorizeErr() {
 	want := u.UnauthorizedErr
 
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,
@@ -245,9 +245,9 @@ func (u *AuthHandlerTest) TestLoginInvalidDTO() {
 		Data:       nil,
 	}
 
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,
@@ -269,9 +269,9 @@ func (u *AuthHandlerTest) TestLoginInvalidDTO() {
 func (u *AuthHandlerTest) TestLoginGrpcErr() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,
@@ -291,9 +291,9 @@ func (u *AuthHandlerTest) TestLoginGrpcErr() {
 }
 
 func (u *AuthHandlerTest) TestLogoutSuccess() {
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,
@@ -315,9 +315,9 @@ func (u *AuthHandlerTest) TestLogoutSuccess() {
 func (u *AuthHandlerTest) TestLogoutBadRequest() {
 	want := u.BadRequestErr
 
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,
@@ -339,9 +339,9 @@ func (u *AuthHandlerTest) TestLogoutBadRequest() {
 func (u *AuthHandlerTest) TestLogoutGrpcErr() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,
@@ -361,9 +361,9 @@ func (u *AuthHandlerTest) TestLogoutGrpcErr() {
 }
 
 func (u *AuthHandlerTest) TestChangePasswordSuccess() {
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,
@@ -386,9 +386,9 @@ func (u *AuthHandlerTest) TestChangePasswordSuccess() {
 func (u *AuthHandlerTest) TestChangePasswordInvalidUserID() {
 	want := u.BadRequestErr
 
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,
@@ -411,9 +411,9 @@ func (u *AuthHandlerTest) TestChangePasswordInvalidUserID() {
 func (u *AuthHandlerTest) TestChangePasswordGrpcErr() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,
@@ -436,9 +436,9 @@ func (u *AuthHandlerTest) TestChangePasswordGrpcErr() {
 func (u *AuthHandlerTest) TestValidateSuccess() {
 	want := u.User
 
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,
@@ -460,9 +460,9 @@ func (u *AuthHandlerTest) TestValidateSuccess() {
 func (u *AuthHandlerTest) TestValidateFail() {
 	want := u.UnauthorizedErr
 
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,
@@ -484,9 +484,9 @@ func (u *AuthHandlerTest) TestValidateFail() {
 func (u *AuthHandlerTest) TestValidateGrpcErr() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,
@@ -508,9 +508,9 @@ func (u *AuthHandlerTest) TestValidateGrpcErr() {
 func (u *AuthHandlerTest) TestRefreshTokenSuccess() {
 	want := u.Credential
 
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,
@@ -533,9 +533,9 @@ func (u *AuthHandlerTest) TestRefreshTokenSuccess() {
 func (u *AuthHandlerTest) TestRefreshTokenUnauthorized() {
 	want := u.UnauthorizedErr
 
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,
@@ -558,9 +558,9 @@ func (u *AuthHandlerTest) TestRefreshTokenUnauthorized() {
 func (u *AuthHandlerTest) TestRefreshTokenGrpcErr() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.AuthServiceMock)
-	userSrv := new(mock.UserServiceMock)
-	c := &mock.AuthContextMock{
+	srv := new(ServiceMock)
+	userSrv := new(user.ServiceMock)
+	c := &ContextMock{
 		User:           u.User,
 		RegisterDto:    u.RegisterDto,
 		LoginDto:       u.LoginDto,

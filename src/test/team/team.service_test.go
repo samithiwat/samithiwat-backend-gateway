@@ -1,4 +1,4 @@
-package test
+package team
 
 import (
 	"github.com/bxcodec/faker/v3"
@@ -6,7 +6,6 @@ import (
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/service"
-	"github.com/samithiwat/samithiwat-backend-gateway/src/test/mock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"net/http"
@@ -92,7 +91,7 @@ func (s *TeamServiceTest) TestFindAllTeamService() {
 		},
 	}
 
-	client := new(mock.TeamClientMock)
+	client := new(ClientMock)
 
 	client.On("FindAll", &proto.FindAllTeamRequest{
 		Limit: s.Query.Limit,
@@ -114,7 +113,7 @@ func (s *TeamServiceTest) TestFindAllTeamService() {
 func (s *TeamServiceTest) TestFindAllGrpcErrTeamService() {
 	want := s.ServiceDownErr
 
-	client := new(mock.TeamClientMock)
+	client := new(ClientMock)
 
 	client.On("FindAll", &proto.FindAllTeamRequest{
 		Limit: s.Query.Limit,
@@ -134,7 +133,7 @@ func (s *TeamServiceTest) TestFindOneTeamService() {
 	var id int32
 	_ = faker.FakeData(&id)
 
-	client := new(mock.TeamClientMock)
+	client := new(ClientMock)
 
 	client.On("FindOne", &proto.FindOneTeamRequest{Id: id}).Return(&proto.TeamResponse{
 		StatusCode: http.StatusOK,
@@ -156,7 +155,7 @@ func (s *TeamServiceTest) TestFindOneNotFoundTeamService() {
 	var id int32
 	_ = faker.FakeData(&id)
 
-	client := new(mock.TeamClientMock)
+	client := new(ClientMock)
 
 	client.On("FindOne", &proto.FindOneTeamRequest{Id: id}).Return(&proto.TeamResponse{
 		StatusCode: http.StatusNotFound,
@@ -178,7 +177,7 @@ func (s *TeamServiceTest) TestFindOneGrpcErrTeamService() {
 	var id int32
 	_ = faker.FakeData(&id)
 
-	client := new(mock.TeamClientMock)
+	client := new(ClientMock)
 
 	client.On("FindOne", &proto.FindOneTeamRequest{Id: id}).Return(&proto.TeamResponse{}, errors.New("Service is down"))
 
@@ -192,9 +191,9 @@ func (s *TeamServiceTest) TestFindOneGrpcErrTeamService() {
 func (s *TeamServiceTest) TestCreateTeamService() {
 	want := s.Team
 
-	client := new(mock.TeamClientMock)
+	client := new(ClientMock)
 
-	client.On("Create", *s.TeamReq).Return(&proto.TeamResponse{
+	client.On("Create", s.TeamReq).Return(&proto.TeamResponse{
 		StatusCode: http.StatusCreated,
 		Errors:     nil,
 		Data:       s.Team,
@@ -215,9 +214,9 @@ func (s *TeamServiceTest) TestCreateDuplicatedTeamService() {
 		Data:       nil,
 	}
 
-	client := new(mock.TeamClientMock)
+	client := new(ClientMock)
 
-	client.On("Create", *s.TeamReq).Return(&proto.TeamResponse{
+	client.On("Create", s.TeamReq).Return(&proto.TeamResponse{
 		StatusCode: http.StatusUnprocessableEntity,
 		Errors:     []string{"Duplicated email or teamname"},
 		Data:       nil,
@@ -234,9 +233,9 @@ func (s *TeamServiceTest) TestCreateDuplicatedTeamService() {
 func (s *TeamServiceTest) TestCreateGrpcErrTeamService() {
 	want := s.ServiceDownErr
 
-	client := new(mock.TeamClientMock)
+	client := new(ClientMock)
 
-	client.On("Create", *s.TeamReq).Return(&proto.TeamResponse{}, errors.New("Service is down"))
+	client.On("Create", s.TeamReq).Return(&proto.TeamResponse{}, errors.New("Service is down"))
 
 	srv := service.NewTeamService(client)
 
@@ -248,9 +247,9 @@ func (s *TeamServiceTest) TestCreateGrpcErrTeamService() {
 func (s *TeamServiceTest) TestUpdateTeamService() {
 	want := s.Team
 
-	client := new(mock.TeamClientMock)
+	client := new(ClientMock)
 
-	client.On("Update", *s.Team).Return(&proto.TeamResponse{
+	client.On("Update", s.Team).Return(&proto.TeamResponse{
 		StatusCode: http.StatusOK,
 		Errors:     nil,
 		Data:       s.Team,
@@ -267,9 +266,9 @@ func (s *TeamServiceTest) TestUpdateTeamService() {
 func (s *TeamServiceTest) TestUpdateNotFoundTeamService() {
 	want := s.NotFoundErr
 
-	client := new(mock.TeamClientMock)
+	client := new(ClientMock)
 
-	client.On("Update", *s.Team).Return(&proto.TeamResponse{
+	client.On("Update", s.Team).Return(&proto.TeamResponse{
 		StatusCode: http.StatusNotFound,
 		Errors:     []string{"Not found team"},
 		Data:       nil,
@@ -286,9 +285,9 @@ func (s *TeamServiceTest) TestUpdateNotFoundTeamService() {
 func (s *TeamServiceTest) TestUpdateGrpcErrTeamService() {
 	want := s.ServiceDownErr
 
-	client := new(mock.TeamClientMock)
+	client := new(ClientMock)
 
-	client.On("Update", *s.Team).Return(&proto.TeamResponse{}, errors.New("Service is down"))
+	client.On("Update", s.Team).Return(&proto.TeamResponse{}, errors.New("Service is down"))
 
 	srv := service.NewTeamService(client)
 
@@ -303,7 +302,7 @@ func (s *TeamServiceTest) TestDeleteTeamService() {
 	var id int32
 	_ = faker.FakeData(&id)
 
-	client := new(mock.TeamClientMock)
+	client := new(ClientMock)
 
 	client.On("Delete", &proto.DeleteTeamRequest{Id: id}).Return(&proto.TeamResponse{
 		StatusCode: http.StatusOK,
@@ -325,7 +324,7 @@ func (s *TeamServiceTest) TestDeleteNotFoundTeamService() {
 	var id int32
 	_ = faker.FakeData(&id)
 
-	client := new(mock.TeamClientMock)
+	client := new(ClientMock)
 
 	client.On("Delete", &proto.DeleteTeamRequest{Id: id}).Return(&proto.TeamResponse{
 		StatusCode: http.StatusNotFound,
@@ -347,7 +346,7 @@ func (s *TeamServiceTest) TestDeleteGrpcErrTeamService() {
 	var id int32
 	_ = faker.FakeData(&id)
 
-	client := new(mock.TeamClientMock)
+	client := new(ClientMock)
 
 	client.On("Delete", &proto.DeleteTeamRequest{Id: id}).Return(&proto.TeamResponse{}, errors.New("Service is down"))
 

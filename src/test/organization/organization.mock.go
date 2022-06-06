@@ -1,4 +1,4 @@
-package mock
+package organization
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-type OrganizationContextMock struct {
+type ContextMock struct {
 	mock.Mock
 	V               interface{}
 	Organization    *proto.Organization
@@ -17,7 +17,7 @@ type OrganizationContextMock struct {
 	Query           *dto.PaginationQueryParams
 }
 
-func (c *OrganizationContextMock) Bind(v interface{}) error {
+func (c *ContextMock) Bind(v interface{}) error {
 	args := c.Called(v)
 
 	*v.(*dto.OrganizationDto) = *c.OrganizationDto
@@ -25,17 +25,17 @@ func (c *OrganizationContextMock) Bind(v interface{}) error {
 	return args.Error(0)
 }
 
-func (c *OrganizationContextMock) JSON(_ int, v interface{}) {
+func (c *ContextMock) JSON(_ int, v interface{}) {
 	c.V = v
 }
 
-func (c *OrganizationContextMock) ID() (int32, error) {
+func (c *ContextMock) ID() (int32, error) {
 	args := c.Called()
 
 	return int32(args.Int(0)), args.Error(1)
 }
 
-func (c *OrganizationContextMock) PaginationQueryParam(query *dto.PaginationQueryParams) error {
+func (c *ContextMock) PaginationQueryParam(query *dto.PaginationQueryParams) error {
 	args := c.Called(query)
 
 	*query = *c.Query
@@ -117,11 +117,11 @@ func (s *OrganizationServiceMock) Delete(id int32) (res *proto.Organization, err
 	return
 }
 
-type OrganizationClientMock struct {
+type ClientMock struct {
 	mock.Mock
 }
 
-func (c *OrganizationClientMock) FindAll(ctx context.Context, in *proto.FindAllOrganizationRequest, opts ...grpc.CallOption) (res *proto.OrganizationPaginationResponse, err error) {
+func (c *ClientMock) FindAll(ctx context.Context, in *proto.FindAllOrganizationRequest, opts ...grpc.CallOption) (res *proto.OrganizationPaginationResponse, err error) {
 	args := c.Called(in)
 
 	if args.Get(0) != nil {
@@ -131,7 +131,7 @@ func (c *OrganizationClientMock) FindAll(ctx context.Context, in *proto.FindAllO
 	return res, args.Error(1)
 }
 
-func (c *OrganizationClientMock) FindOne(ctx context.Context, in *proto.FindOneOrganizationRequest, opts ...grpc.CallOption) (res *proto.OrganizationResponse, err error) {
+func (c *ClientMock) FindOne(ctx context.Context, in *proto.FindOneOrganizationRequest, opts ...grpc.CallOption) (res *proto.OrganizationResponse, err error) {
 	args := c.Called(in)
 
 	if args.Get(0) != nil {
@@ -141,12 +141,12 @@ func (c *OrganizationClientMock) FindOne(ctx context.Context, in *proto.FindOneO
 	return res, args.Error(1)
 }
 
-func (c *OrganizationClientMock) FindMulti(ctx context.Context, in *proto.FindMultiOrganizationRequest, opts ...grpc.CallOption) (*proto.OrganizationListResponse, error) {
+func (c *ClientMock) FindMulti(ctx context.Context, in *proto.FindMultiOrganizationRequest, opts ...grpc.CallOption) (*proto.OrganizationListResponse, error) {
 	return nil, nil
 }
 
-func (c *OrganizationClientMock) Create(ctx context.Context, in *proto.CreateOrganizationRequest, opts ...grpc.CallOption) (res *proto.OrganizationResponse, err error) {
-	args := c.Called(*in.Organization)
+func (c *ClientMock) Create(ctx context.Context, in *proto.CreateOrganizationRequest, opts ...grpc.CallOption) (res *proto.OrganizationResponse, err error) {
+	args := c.Called(in.Organization)
 
 	if args.Get(0) != nil {
 		res = args.Get(0).(*proto.OrganizationResponse)
@@ -155,8 +155,8 @@ func (c *OrganizationClientMock) Create(ctx context.Context, in *proto.CreateOrg
 	return res, args.Error(1)
 }
 
-func (c *OrganizationClientMock) Update(ctx context.Context, in *proto.UpdateOrganizationRequest, opts ...grpc.CallOption) (res *proto.OrganizationResponse, err error) {
-	args := c.Called(*in.Organization)
+func (c *ClientMock) Update(ctx context.Context, in *proto.UpdateOrganizationRequest, opts ...grpc.CallOption) (res *proto.OrganizationResponse, err error) {
+	args := c.Called(in.Organization)
 
 	if args.Get(0) != nil {
 		res = args.Get(0).(*proto.OrganizationResponse)
@@ -165,7 +165,7 @@ func (c *OrganizationClientMock) Update(ctx context.Context, in *proto.UpdateOrg
 	return res, args.Error(1)
 }
 
-func (c *OrganizationClientMock) Delete(ctx context.Context, in *proto.DeleteOrganizationRequest, opts ...grpc.CallOption) (res *proto.OrganizationResponse, err error) {
+func (c *ClientMock) Delete(ctx context.Context, in *proto.DeleteOrganizationRequest, opts ...grpc.CallOption) (res *proto.OrganizationResponse, err error) {
 	args := c.Called(in)
 
 	if args.Get(0) != nil {

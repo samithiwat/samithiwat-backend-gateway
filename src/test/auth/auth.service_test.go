@@ -1,4 +1,4 @@
-package test
+package auth
 
 import (
 	"github.com/bxcodec/faker/v3"
@@ -6,7 +6,6 @@ import (
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/service"
-	"github.com/samithiwat/samithiwat-backend-gateway/src/test/mock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"net/http"
@@ -91,9 +90,9 @@ func (s *AuthServiceTest) SetupTest() {
 func (s *AuthServiceTest) TestRegisterSuccess() {
 	want := s.User
 
-	client := new(mock.AuthClientMock)
+	client := new(ClientMock)
 
-	client.On("Register", proto.Register{
+	client.On("Register", &proto.Register{
 		Email:       s.RegisterDto.Email,
 		Password:    s.RegisterDto.Password,
 		Firstname:   s.RegisterDto.Firstname,
@@ -121,9 +120,9 @@ func (s *AuthServiceTest) TestRegisterEmailDuplicated() {
 		Data:       nil,
 	}
 
-	client := new(mock.AuthClientMock)
+	client := new(ClientMock)
 
-	client.On("Register", proto.Register{
+	client.On("Register", &proto.Register{
 		Email:       s.RegisterDto.Email,
 		Password:    s.RegisterDto.Password,
 		Firstname:   s.RegisterDto.Firstname,
@@ -147,9 +146,9 @@ func (s *AuthServiceTest) TestRegisterEmailDuplicated() {
 func (s *AuthServiceTest) TestRegisterGrpcError() {
 	want := s.ServiceDownErr
 
-	client := new(mock.AuthClientMock)
+	client := new(ClientMock)
 
-	client.On("Register", proto.Register{
+	client.On("Register", &proto.Register{
 		Email:       s.RegisterDto.Email,
 		Password:    s.RegisterDto.Password,
 		Firstname:   s.RegisterDto.Firstname,
@@ -169,9 +168,9 @@ func (s *AuthServiceTest) TestRegisterGrpcError() {
 func (s *AuthServiceTest) TestLoginSuccess() {
 	want := s.Credential
 
-	client := new(mock.AuthClientMock)
+	client := new(ClientMock)
 
-	client.On("Login", proto.Login{
+	client.On("Login", &proto.Login{
 		Email:    s.LoginDto.Email,
 		Password: s.LoginDto.Password,
 	}).Return(&proto.LoginResponse{
@@ -195,9 +194,9 @@ func (s *AuthServiceTest) TestLoginUnauthorized() {
 		Data:       nil,
 	}
 
-	client := new(mock.AuthClientMock)
+	client := new(ClientMock)
 
-	client.On("Login", proto.Login{
+	client.On("Login", &proto.Login{
 		Email:    s.LoginDto.Email,
 		Password: s.LoginDto.Password,
 	}).Return(&proto.LoginResponse{
@@ -217,9 +216,9 @@ func (s *AuthServiceTest) TestLoginUnauthorized() {
 func (s *AuthServiceTest) TestLoginGrpcError() {
 	want := s.ServiceDownErr
 
-	client := new(mock.AuthClientMock)
+	client := new(ClientMock)
 
-	client.On("Login", proto.Login{
+	client.On("Login", &proto.Login{
 		Email:    s.LoginDto.Email,
 		Password: s.LoginDto.Password,
 	}).Return(nil, errors.New("Service is down"))
@@ -233,7 +232,7 @@ func (s *AuthServiceTest) TestLoginGrpcError() {
 }
 
 func (s *AuthServiceTest) TestLogoutSuccess() {
-	client := new(mock.AuthClientMock)
+	client := new(ClientMock)
 
 	client.On("Logout", &proto.LogoutRequest{UserId: s.User.Id}).Return(&proto.LogoutResponse{
 		StatusCode: http.StatusNoContent,
@@ -256,7 +255,7 @@ func (s *AuthServiceTest) TestLogoutUnauthorized() {
 		Data:       nil,
 	}
 
-	client := new(mock.AuthClientMock)
+	client := new(ClientMock)
 
 	client.On("Logout", &proto.LogoutRequest{UserId: s.User.Id}).Return(&proto.LogoutResponse{
 		StatusCode: http.StatusUnauthorized,
@@ -275,7 +274,7 @@ func (s *AuthServiceTest) TestLogoutUnauthorized() {
 func (s *AuthServiceTest) TestLogoutGrpcError() {
 	want := s.ServiceDownErr
 
-	client := new(mock.AuthClientMock)
+	client := new(ClientMock)
 
 	client.On("Logout", &proto.LogoutRequest{
 		UserId: s.User.Id,
@@ -290,9 +289,9 @@ func (s *AuthServiceTest) TestLogoutGrpcError() {
 }
 
 func (s *AuthServiceTest) TestChangePasswordSuccess() {
-	client := new(mock.AuthClientMock)
+	client := new(ClientMock)
 
-	client.On("ChangePassword", proto.ChangePassword{
+	client.On("ChangePassword", &proto.ChangePassword{
 		UserId:      s.ChangePassword.UserId,
 		OldPassword: s.ChangePassword.OldPassword,
 		NewPassword: s.ChangePassword.NewPassword,
@@ -317,9 +316,9 @@ func (s *AuthServiceTest) TestChangePasswordUnauthorized() {
 		Data:       nil,
 	}
 
-	client := new(mock.AuthClientMock)
+	client := new(ClientMock)
 
-	client.On("ChangePassword", proto.ChangePassword{
+	client.On("ChangePassword", &proto.ChangePassword{
 		UserId:      s.ChangePassword.UserId,
 		OldPassword: s.ChangePassword.OldPassword,
 		NewPassword: s.ChangePassword.NewPassword,
@@ -340,9 +339,9 @@ func (s *AuthServiceTest) TestChangePasswordUnauthorized() {
 func (s *AuthServiceTest) TestChangePasswordGrpcError() {
 	want := s.ServiceDownErr
 
-	client := new(mock.AuthClientMock)
+	client := new(ClientMock)
 
-	client.On("ChangePassword", proto.ChangePassword{
+	client.On("ChangePassword", &proto.ChangePassword{
 		UserId:      s.ChangePassword.UserId,
 		OldPassword: s.ChangePassword.OldPassword,
 		NewPassword: s.ChangePassword.NewPassword,
@@ -360,7 +359,7 @@ func (s *AuthServiceTest) TestValidateSuccess() {
 	want := s.User.Id
 	token := faker.Word()
 
-	client := new(mock.AuthClientMock)
+	client := new(ClientMock)
 
 	client.On("Validate", &proto.ValidateRequest{Token: token}).Return(&proto.ValidateResponse{
 		StatusCode: http.StatusOK,
@@ -384,7 +383,7 @@ func (s *AuthServiceTest) TestValidateUnauthorized() {
 	}
 	token := faker.Word()
 
-	client := new(mock.AuthClientMock)
+	client := new(ClientMock)
 
 	client.On("Validate", &proto.ValidateRequest{Token: token}).Return(&proto.ValidateResponse{
 		StatusCode: http.StatusUnauthorized,
@@ -404,7 +403,7 @@ func (s *AuthServiceTest) TestValidateGrpcError() {
 	want := s.ServiceDownErr
 	token := faker.Word()
 
-	client := new(mock.AuthClientMock)
+	client := new(ClientMock)
 
 	client.On("Validate", &proto.ValidateRequest{Token: token}).Return(nil, errors.New("Service is down"))
 
@@ -420,7 +419,7 @@ func (s *AuthServiceTest) TestRefreshTokenSuccess() {
 	want := s.Credential
 	token := faker.Word()
 
-	client := new(mock.AuthClientMock)
+	client := new(ClientMock)
 
 	client.On("RefreshToken", &proto.RefreshTokenRequest{RefreshToken: token}).Return(&proto.RefreshTokenResponse{
 		StatusCode: http.StatusOK,
@@ -444,7 +443,7 @@ func (s *AuthServiceTest) TestRefreshTokenUnauthorized() {
 	}
 	token := faker.Word()
 
-	client := new(mock.AuthClientMock)
+	client := new(ClientMock)
 
 	client.On("RefreshToken", &proto.RefreshTokenRequest{RefreshToken: token}).Return(&proto.RefreshTokenResponse{
 		StatusCode: http.StatusUnauthorized,
@@ -464,7 +463,7 @@ func (s *AuthServiceTest) TestRefreshTokenGrpcError() {
 	want := s.ServiceDownErr
 	token := faker.Word()
 
-	client := new(mock.AuthClientMock)
+	client := new(ClientMock)
 
 	client.On("RefreshToken", &proto.RefreshTokenRequest{RefreshToken: token}).Return(nil, errors.New("Service is down"))
 

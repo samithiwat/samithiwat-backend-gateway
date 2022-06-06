@@ -1,4 +1,4 @@
-package test
+package team
 
 import (
 	"github.com/bxcodec/faker/v3"
@@ -6,7 +6,6 @@ import (
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/handler"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
-	"github.com/samithiwat/samithiwat-backend-gateway/src/test/mock"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/validator"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -89,8 +88,8 @@ func (u *TeamHandlerTest) TestFindAllTeam() {
 		},
 	}
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,
@@ -114,8 +113,8 @@ func (u *TeamHandlerTest) TestFindAllInvalidQueryParamTeam() {
 		Message:    "Cannot parse query param",
 	}
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,
@@ -137,8 +136,8 @@ func (u *TeamHandlerTest) TestFindAllInvalidQueryParamTeam() {
 func (u *TeamHandlerTest) TestFindAllGrpcErrTeam() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,
@@ -160,8 +159,8 @@ func (u *TeamHandlerTest) TestFindAllGrpcErrTeam() {
 func (u *TeamHandlerTest) TestFindOneTeam() {
 	want := u.Team
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,
@@ -183,8 +182,8 @@ func (u *TeamHandlerTest) TestFindOneTeam() {
 func (u *TeamHandlerTest) TestFindOneInvalidRequestParamIDTeam() {
 	want := u.InvalidIDErr
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,
@@ -205,8 +204,8 @@ func (u *TeamHandlerTest) TestFindOneInvalidRequestParamIDTeam() {
 func (u *TeamHandlerTest) TestFindOneErrorNotFoundTeam() {
 	want := u.NotFoundErr
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,
@@ -228,8 +227,8 @@ func (u *TeamHandlerTest) TestFindOneErrorNotFoundTeam() {
 func (u *TeamHandlerTest) TestFindOneGrpcErrTeam() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,
@@ -251,8 +250,8 @@ func (u *TeamHandlerTest) TestFindOneGrpcErrTeam() {
 func (u *TeamHandlerTest) TestCreateTeam() {
 	want := u.Team
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,
@@ -276,8 +275,8 @@ func (u *TeamHandlerTest) TestCreateErrorDuplicatedTeam() {
 		Message:    "Duplicated team name",
 	}
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,
@@ -301,8 +300,8 @@ func (u *TeamHandlerTest) TestCreateInvalidBodyRequest() {
 		Message:    "Cannot parse team dto",
 	}
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,
@@ -323,8 +322,8 @@ func (u *TeamHandlerTest) TestCreateInvalidBodyRequest() {
 func (u *TeamHandlerTest) TestCreateGrpcErrTeam() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,
@@ -346,8 +345,8 @@ func (u *TeamHandlerTest) TestCreateGrpcErrTeam() {
 func (u *TeamHandlerTest) TestUpdateTeam() {
 	want := u.Team
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,
@@ -370,8 +369,8 @@ func (u *TeamHandlerTest) TestUpdateTeam() {
 func (u *TeamHandlerTest) TestUpdateInvalidRequestParamIDTeam() {
 	want := u.InvalidIDErr
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,
@@ -397,8 +396,8 @@ func (u *TeamHandlerTest) TestUpdateInvalidBodyRequest() {
 		Message:    "Cannot parse team dto",
 	}
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,
@@ -420,8 +419,8 @@ func (u *TeamHandlerTest) TestUpdateInvalidBodyRequest() {
 func (u *TeamHandlerTest) TestUpdateErrorNotFoundTeam() {
 	want := u.NotFoundErr
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,
@@ -443,8 +442,8 @@ func (u *TeamHandlerTest) TestUpdateErrorNotFoundTeam() {
 func (u *TeamHandlerTest) TestUpdateGrpcErrTeam() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,
@@ -467,8 +466,8 @@ func (u *TeamHandlerTest) TestUpdateGrpcErrTeam() {
 func (u *TeamHandlerTest) TestDeleteTeam() {
 	want := u.Team
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,
@@ -490,8 +489,8 @@ func (u *TeamHandlerTest) TestDeleteTeam() {
 func (u *TeamHandlerTest) TestDeleteInvalidRequestParamIDTeam() {
 	want := u.InvalidIDErr
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,
@@ -513,8 +512,8 @@ func (u *TeamHandlerTest) TestDeleteInvalidRequestParamIDTeam() {
 func (u *TeamHandlerTest) TestDeleteErrorNotFoundTeam() {
 	want := u.NotFoundErr
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,
@@ -536,8 +535,8 @@ func (u *TeamHandlerTest) TestDeleteErrorNotFoundTeam() {
 func (u *TeamHandlerTest) TestDeleteGrpcErrTeam() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.TeamServiceMock)
-	c := &mock.TeamContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		Team:    u.Team,
 		Teams:   u.Teams,
 		TeamDto: u.TeamDto,

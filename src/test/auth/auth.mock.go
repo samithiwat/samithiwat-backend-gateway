@@ -1,4 +1,4 @@
-package mock
+package auth
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-type AuthContextMock struct {
+type ContextMock struct {
 	mock.Mock
 	User           *proto.User
 	RegisterDto    *dto.Register
@@ -19,7 +19,7 @@ type AuthContextMock struct {
 	Header         map[string]string
 }
 
-func (c *AuthContextMock) Bind(v interface{}) error {
+func (c *ContextMock) Bind(v interface{}) error {
 	args := c.Called(v)
 	switch v.(type) {
 	case *dto.Register:
@@ -35,57 +35,57 @@ func (c *AuthContextMock) Bind(v interface{}) error {
 	return args.Error(0)
 }
 
-func (c *AuthContextMock) UserID() int32 {
+func (c *ContextMock) UserID() int32 {
 	args := c.Called()
 
 	return int32(args.Int(0))
 }
 
-func (c *AuthContextMock) ID() (int32, error) {
+func (c *ContextMock) ID() (int32, error) {
 	args := c.Called()
 
 	return int32(args.Int(0)), args.Error(1)
 }
 
-func (c *AuthContextMock) JSON(_ int, v interface{}) {
+func (c *ContextMock) JSON(_ int, v interface{}) {
 	c.V = v
 }
 
-func (c *AuthContextMock) Token() string {
+func (c *ContextMock) Token() string {
 	args := c.Called()
 
 	return args.String(0)
 }
 
-func (c *AuthContextMock) StoreValue(key string, val string) {
+func (c *ContextMock) StoreValue(key string, val string) {
 	_ = c.Called(key, val)
 
 	c.Header = map[string]string{key: val}
 }
 
-func (c *AuthContextMock) Method() string {
+func (c *ContextMock) Method() string {
 	args := c.Called()
 
 	return args.String(0)
 }
 
-func (c *AuthContextMock) Path() string {
+func (c *ContextMock) Path() string {
 	args := c.Called()
 
 	return args.String(0)
 }
 
-func (c *AuthContextMock) Next() {
+func (c *ContextMock) Next() {
 	_ = c.Called()
 
 	return
 }
 
-type AuthServiceMock struct {
+type ServiceMock struct {
 	mock.Mock
 }
 
-func (s *AuthServiceMock) Register(register *dto.Register) (res *proto.User, err *dto.ResponseErr) {
+func (s *ServiceMock) Register(register *dto.Register) (res *proto.User, err *dto.ResponseErr) {
 	args := s.Called(register)
 
 	if args.Get(0) != nil {
@@ -99,7 +99,7 @@ func (s *AuthServiceMock) Register(register *dto.Register) (res *proto.User, err
 	return
 }
 
-func (s *AuthServiceMock) Login(login *dto.Login) (res *proto.Credential, err *dto.ResponseErr) {
+func (s *ServiceMock) Login(login *dto.Login) (res *proto.Credential, err *dto.ResponseErr) {
 	args := s.Called(login)
 
 	if args.Get(0) != nil {
@@ -113,7 +113,7 @@ func (s *AuthServiceMock) Login(login *dto.Login) (res *proto.Credential, err *d
 	return
 }
 
-func (s *AuthServiceMock) Logout(userId uint32) (res bool, err *dto.ResponseErr) {
+func (s *ServiceMock) Logout(userId uint32) (res bool, err *dto.ResponseErr) {
 	args := s.Called(userId)
 
 	if args.Get(0) != nil {
@@ -127,7 +127,7 @@ func (s *AuthServiceMock) Logout(userId uint32) (res bool, err *dto.ResponseErr)
 	return
 }
 
-func (s *AuthServiceMock) ChangePassword(chPwd *dto.ChangePassword) (res bool, err *dto.ResponseErr) {
+func (s *ServiceMock) ChangePassword(chPwd *dto.ChangePassword) (res bool, err *dto.ResponseErr) {
 	args := s.Called(chPwd)
 
 	if args.Get(0) != nil {
@@ -141,7 +141,7 @@ func (s *AuthServiceMock) ChangePassword(chPwd *dto.ChangePassword) (res bool, e
 	return
 }
 
-func (s *AuthServiceMock) Validate(token string) (userId uint32, err *dto.ResponseErr) {
+func (s *ServiceMock) Validate(token string) (userId uint32, err *dto.ResponseErr) {
 	args := s.Called(token)
 
 	if args.Get(1) != nil {
@@ -151,7 +151,7 @@ func (s *AuthServiceMock) Validate(token string) (userId uint32, err *dto.Respon
 	return uint32(args.Int(0)), err
 }
 
-func (s *AuthServiceMock) RefreshToken(token string) (res *proto.Credential, err *dto.ResponseErr) {
+func (s *ServiceMock) RefreshToken(token string) (res *proto.Credential, err *dto.ResponseErr) {
 	args := s.Called(token)
 
 	if args.Get(0) != nil {
@@ -165,12 +165,12 @@ func (s *AuthServiceMock) RefreshToken(token string) (res *proto.Credential, err
 	return
 }
 
-type AuthClientMock struct {
+type ClientMock struct {
 	mock.Mock
 }
 
-func (c *AuthClientMock) Register(ctx context.Context, in *proto.RegisterRequest, opts ...grpc.CallOption) (res *proto.RegisterResponse, err error) {
-	args := c.Called(*in.Register)
+func (c *ClientMock) Register(ctx context.Context, in *proto.RegisterRequest, opts ...grpc.CallOption) (res *proto.RegisterResponse, err error) {
+	args := c.Called(in.Register)
 
 	if args.Get(0) != nil {
 		res = args.Get(0).(*proto.RegisterResponse)
@@ -178,8 +178,8 @@ func (c *AuthClientMock) Register(ctx context.Context, in *proto.RegisterRequest
 
 	return res, args.Error(1)
 }
-func (c *AuthClientMock) Login(ctx context.Context, in *proto.LoginRequest, opts ...grpc.CallOption) (res *proto.LoginResponse, err error) {
-	args := c.Called(*in.Login)
+func (c *ClientMock) Login(ctx context.Context, in *proto.LoginRequest, opts ...grpc.CallOption) (res *proto.LoginResponse, err error) {
+	args := c.Called(in.Login)
 
 	if args.Get(0) != nil {
 		res = args.Get(0).(*proto.LoginResponse)
@@ -187,7 +187,7 @@ func (c *AuthClientMock) Login(ctx context.Context, in *proto.LoginRequest, opts
 
 	return res, args.Error(1)
 }
-func (c *AuthClientMock) Logout(ctx context.Context, in *proto.LogoutRequest, opts ...grpc.CallOption) (res *proto.LogoutResponse, err error) {
+func (c *ClientMock) Logout(ctx context.Context, in *proto.LogoutRequest, opts ...grpc.CallOption) (res *proto.LogoutResponse, err error) {
 	args := c.Called(in)
 
 	if args.Get(0) != nil {
@@ -196,8 +196,8 @@ func (c *AuthClientMock) Logout(ctx context.Context, in *proto.LogoutRequest, op
 
 	return res, args.Error(1)
 }
-func (c *AuthClientMock) ChangePassword(ctx context.Context, in *proto.ChangePasswordRequest, opts ...grpc.CallOption) (res *proto.ChangePasswordResponse, err error) {
-	args := c.Called(*in.ChangePassword)
+func (c *ClientMock) ChangePassword(ctx context.Context, in *proto.ChangePasswordRequest, opts ...grpc.CallOption) (res *proto.ChangePasswordResponse, err error) {
+	args := c.Called(in.ChangePassword)
 
 	if args.Get(0) != nil {
 		res = args.Get(0).(*proto.ChangePasswordResponse)
@@ -205,7 +205,7 @@ func (c *AuthClientMock) ChangePassword(ctx context.Context, in *proto.ChangePas
 
 	return res, args.Error(1)
 }
-func (c *AuthClientMock) Validate(ctx context.Context, in *proto.ValidateRequest, opts ...grpc.CallOption) (res *proto.ValidateResponse, err error) {
+func (c *ClientMock) Validate(ctx context.Context, in *proto.ValidateRequest, opts ...grpc.CallOption) (res *proto.ValidateResponse, err error) {
 	args := c.Called(in)
 
 	if args.Get(0) != nil {
@@ -214,7 +214,7 @@ func (c *AuthClientMock) Validate(ctx context.Context, in *proto.ValidateRequest
 
 	return res, args.Error(1)
 }
-func (c *AuthClientMock) RefreshToken(ctx context.Context, in *proto.RefreshTokenRequest, opts ...grpc.CallOption) (res *proto.RefreshTokenResponse, err error) {
+func (c *ClientMock) RefreshToken(ctx context.Context, in *proto.RefreshTokenRequest, opts ...grpc.CallOption) (res *proto.RefreshTokenResponse, err error) {
 	args := c.Called(in)
 
 	if args.Get(0) != nil {
