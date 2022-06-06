@@ -45,13 +45,14 @@ message Contact{
 message Organization{
   uint32 id = 1;
   string name = 2;
-  string description = 3;
-  Location location = 4;
-  Contact  contact = 5;
-  repeated User members = 6;
-  repeated Team teams = 7;
-  repeated Role roles = 8;
-  repeated Log logs = 9;
+  string email = 3;
+  string description = 4;
+  Location location = 5;
+  Contact  contact = 6;
+  repeated User members = 7;
+  repeated Team teams = 8;
+  repeated Role roles = 9;
+  repeated Log logs = 10;
 }
 
 message Team {
