@@ -1,4 +1,4 @@
-package test
+package user
 
 import (
 	"github.com/bxcodec/faker/v3"
@@ -6,7 +6,6 @@ import (
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/service"
-	"github.com/samithiwat/samithiwat-backend-gateway/src/test/mock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"net/http"
@@ -100,7 +99,7 @@ func (s *UserServiceTest) TestFindAllUserService() {
 		},
 	}
 
-	client := new(mock.UserClientMock)
+	client := new(ClientMock)
 
 	client.On("FindAll", &proto.FindAllUserRequest{
 		Limit: s.Query.Limit,
@@ -122,7 +121,7 @@ func (s *UserServiceTest) TestFindAllUserService() {
 func (s *UserServiceTest) TestFindAllGrpcErrUserService() {
 	want := s.ServiceDownErr
 
-	client := new(mock.UserClientMock)
+	client := new(ClientMock)
 
 	client.On("FindAll", &proto.FindAllUserRequest{
 		Limit: s.Query.Limit,
@@ -139,7 +138,7 @@ func (s *UserServiceTest) TestFindAllGrpcErrUserService() {
 func (s *UserServiceTest) TestFindOneUserService() {
 	want := s.User
 
-	client := new(mock.UserClientMock)
+	client := new(ClientMock)
 
 	var id int32
 	_ = faker.FakeData(&id)
@@ -161,7 +160,7 @@ func (s *UserServiceTest) TestFindOneUserService() {
 func (s *UserServiceTest) TestFindOneNotFoundUserService() {
 	want := s.NotFoundErr
 
-	client := new(mock.UserClientMock)
+	client := new(ClientMock)
 
 	var id int32
 	_ = faker.FakeData(&id)
@@ -183,7 +182,7 @@ func (s *UserServiceTest) TestFindOneNotFoundUserService() {
 func (s *UserServiceTest) TestFindOneGrpcErrUserService() {
 	want := s.ServiceDownErr
 
-	client := new(mock.UserClientMock)
+	client := new(ClientMock)
 
 	var id int32
 	_ = faker.FakeData(&id)
@@ -200,9 +199,9 @@ func (s *UserServiceTest) TestFindOneGrpcErrUserService() {
 func (s *UserServiceTest) TestCreateUserService() {
 	want := s.User
 
-	client := new(mock.UserClientMock)
+	client := new(ClientMock)
 
-	client.On("Create", *s.UserReq).Return(&proto.UserResponse{
+	client.On("Create", s.UserReq).Return(&proto.UserResponse{
 		StatusCode: http.StatusCreated,
 		Errors:     nil,
 		Data:       s.User,
@@ -223,9 +222,9 @@ func (s *UserServiceTest) TestCreateDuplicatedUserService() {
 		Data:       nil,
 	}
 
-	client := new(mock.UserClientMock)
+	client := new(ClientMock)
 
-	client.On("Create", *s.UserReq).Return(&proto.UserResponse{
+	client.On("Create", s.UserReq).Return(&proto.UserResponse{
 		StatusCode: http.StatusUnprocessableEntity,
 		Errors:     []string{"Duplicated email or username"},
 		Data:       nil,
@@ -242,9 +241,9 @@ func (s *UserServiceTest) TestCreateDuplicatedUserService() {
 func (s *UserServiceTest) TestCreateGrpcErrUserService() {
 	want := s.ServiceDownErr
 
-	client := new(mock.UserClientMock)
+	client := new(ClientMock)
 
-	client.On("Create", *s.UserReq).Return(&proto.UserResponse{}, errors.New("Service is down"))
+	client.On("Create", s.UserReq).Return(&proto.UserResponse{}, errors.New("Service is down"))
 
 	srv := service.NewUserService(client)
 
@@ -256,9 +255,9 @@ func (s *UserServiceTest) TestCreateGrpcErrUserService() {
 func (s *UserServiceTest) TestUpdateUserService() {
 	want := s.User
 
-	client := new(mock.UserClientMock)
+	client := new(ClientMock)
 
-	client.On("Update", *s.User).Return(&proto.UserResponse{
+	client.On("Update", s.User).Return(&proto.UserResponse{
 		StatusCode: http.StatusOK,
 		Errors:     nil,
 		Data:       s.User,
@@ -275,9 +274,9 @@ func (s *UserServiceTest) TestUpdateUserService() {
 func (s *UserServiceTest) TestUpdateNotFoundUserService() {
 	want := s.NotFoundErr
 
-	client := new(mock.UserClientMock)
+	client := new(ClientMock)
 
-	client.On("Update", *s.User).Return(&proto.UserResponse{
+	client.On("Update", s.User).Return(&proto.UserResponse{
 		StatusCode: http.StatusNotFound,
 		Errors:     []string{"Not found user"},
 		Data:       nil,
@@ -294,9 +293,9 @@ func (s *UserServiceTest) TestUpdateNotFoundUserService() {
 func (s *UserServiceTest) TestUpdateGrpcErrUserService() {
 	want := s.ServiceDownErr
 
-	client := new(mock.UserClientMock)
+	client := new(ClientMock)
 
-	client.On("Update", *s.User).Return(&proto.UserResponse{}, errors.New("Service is down"))
+	client.On("Update", s.User).Return(&proto.UserResponse{}, errors.New("Service is down"))
 
 	srv := service.NewUserService(client)
 
@@ -311,7 +310,7 @@ func (s *UserServiceTest) TestDeleteUserService() {
 	var id int32
 	_ = faker.FakeData(&id)
 
-	client := new(mock.UserClientMock)
+	client := new(ClientMock)
 
 	client.On("Delete", &proto.DeleteUserRequest{Id: id}).Return(&proto.UserResponse{
 		StatusCode: http.StatusOK,
@@ -333,7 +332,7 @@ func (s *UserServiceTest) TestDeleteNotFoundUserService() {
 	var id int32
 	_ = faker.FakeData(&id)
 
-	client := new(mock.UserClientMock)
+	client := new(ClientMock)
 
 	client.On("Delete", &proto.DeleteUserRequest{Id: id}).Return(&proto.UserResponse{
 		StatusCode: http.StatusNotFound,
@@ -355,7 +354,7 @@ func (s *UserServiceTest) TestDeleteGrpcErrUserService() {
 	var id int32
 	_ = faker.FakeData(&id)
 
-	client := new(mock.UserClientMock)
+	client := new(ClientMock)
 
 	client.On("Delete", &proto.DeleteUserRequest{Id: id}).Return(&proto.UserResponse{}, errors.New("Service is down"))
 

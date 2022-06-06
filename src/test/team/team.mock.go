@@ -1,4 +1,4 @@
-package mock
+package team
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-type TeamContextMock struct {
+type ContextMock struct {
 	mock.Mock
 	V       interface{}
 	Team    *proto.Team
@@ -17,7 +17,7 @@ type TeamContextMock struct {
 	Query   *dto.PaginationQueryParams
 }
 
-func (c *TeamContextMock) Bind(v interface{}) error {
+func (c *ContextMock) Bind(v interface{}) error {
 	args := c.Called(v)
 
 	*v.(*dto.TeamDto) = *c.TeamDto
@@ -25,17 +25,17 @@ func (c *TeamContextMock) Bind(v interface{}) error {
 	return args.Error(0)
 }
 
-func (c *TeamContextMock) JSON(_ int, v interface{}) {
+func (c *ContextMock) JSON(_ int, v interface{}) {
 	c.V = v
 }
 
-func (c *TeamContextMock) ID() (int32, error) {
+func (c *ContextMock) ID() (int32, error) {
 	args := c.Called()
 
 	return int32(args.Int(0)), args.Error(1)
 }
 
-func (c *TeamContextMock) PaginationQueryParam(query *dto.PaginationQueryParams) error {
+func (c *ContextMock) PaginationQueryParam(query *dto.PaginationQueryParams) error {
 	args := c.Called(query)
 
 	*query = *c.Query
@@ -43,11 +43,11 @@ func (c *TeamContextMock) PaginationQueryParam(query *dto.PaginationQueryParams)
 	return args.Error(0)
 }
 
-type TeamServiceMock struct {
+type ServiceMock struct {
 	mock.Mock
 }
 
-func (s *TeamServiceMock) FindAll(query *dto.PaginationQueryParams) (res *proto.TeamPagination, err *dto.ResponseErr) {
+func (s *ServiceMock) FindAll(query *dto.PaginationQueryParams) (res *proto.TeamPagination, err *dto.ResponseErr) {
 	args := s.Called(query)
 
 	if args.Get(0) != nil {
@@ -61,7 +61,7 @@ func (s *TeamServiceMock) FindAll(query *dto.PaginationQueryParams) (res *proto.
 	return
 }
 
-func (s *TeamServiceMock) FindOne(id int32) (res *proto.Team, err *dto.ResponseErr) {
+func (s *ServiceMock) FindOne(id int32) (res *proto.Team, err *dto.ResponseErr) {
 	args := s.Called(id)
 
 	if args.Get(0) != nil {
@@ -75,7 +75,7 @@ func (s *TeamServiceMock) FindOne(id int32) (res *proto.Team, err *dto.ResponseE
 	return
 }
 
-func (s *TeamServiceMock) Create(team *dto.TeamDto) (res *proto.Team, err *dto.ResponseErr) {
+func (s *ServiceMock) Create(team *dto.TeamDto) (res *proto.Team, err *dto.ResponseErr) {
 	args := s.Called(team)
 
 	if args.Get(0) != nil {
@@ -89,7 +89,7 @@ func (s *TeamServiceMock) Create(team *dto.TeamDto) (res *proto.Team, err *dto.R
 	return
 }
 
-func (s *TeamServiceMock) Update(id int32, team *dto.TeamDto) (res *proto.Team, err *dto.ResponseErr) {
+func (s *ServiceMock) Update(id int32, team *dto.TeamDto) (res *proto.Team, err *dto.ResponseErr) {
 	args := s.Called(id, team)
 
 	if args.Get(0) != nil {
@@ -103,7 +103,7 @@ func (s *TeamServiceMock) Update(id int32, team *dto.TeamDto) (res *proto.Team, 
 	return
 }
 
-func (s *TeamServiceMock) Delete(id int32) (res *proto.Team, err *dto.ResponseErr) {
+func (s *ServiceMock) Delete(id int32) (res *proto.Team, err *dto.ResponseErr) {
 	args := s.Called(id)
 
 	if args.Get(0) != nil {
@@ -117,11 +117,11 @@ func (s *TeamServiceMock) Delete(id int32) (res *proto.Team, err *dto.ResponseEr
 	return
 }
 
-type TeamClientMock struct {
+type ClientMock struct {
 	mock.Mock
 }
 
-func (c TeamClientMock) FindAll(ctx context.Context, in *proto.FindAllTeamRequest, opts ...grpc.CallOption) (res *proto.TeamPaginationResponse, err error) {
+func (c *ClientMock) FindAll(ctx context.Context, in *proto.FindAllTeamRequest, opts ...grpc.CallOption) (res *proto.TeamPaginationResponse, err error) {
 	args := c.Called(in)
 
 	if args.Get(0) != nil {
@@ -131,7 +131,7 @@ func (c TeamClientMock) FindAll(ctx context.Context, in *proto.FindAllTeamReques
 	return res, args.Error(1)
 }
 
-func (c TeamClientMock) FindOne(ctx context.Context, in *proto.FindOneTeamRequest, opts ...grpc.CallOption) (res *proto.TeamResponse, err error) {
+func (c *ClientMock) FindOne(ctx context.Context, in *proto.FindOneTeamRequest, opts ...grpc.CallOption) (res *proto.TeamResponse, err error) {
 	args := c.Called(in)
 
 	if args.Get(0) != nil {
@@ -141,12 +141,12 @@ func (c TeamClientMock) FindOne(ctx context.Context, in *proto.FindOneTeamReques
 	return res, args.Error(1)
 }
 
-func (c TeamClientMock) FindMulti(ctx context.Context, in *proto.FindMultiTeamRequest, opts ...grpc.CallOption) (*proto.TeamListResponse, error) {
+func (c *ClientMock) FindMulti(ctx context.Context, in *proto.FindMultiTeamRequest, opts ...grpc.CallOption) (*proto.TeamListResponse, error) {
 	return nil, nil
 }
 
-func (c TeamClientMock) Create(ctx context.Context, in *proto.CreateTeamRequest, opts ...grpc.CallOption) (res *proto.TeamResponse, err error) {
-	args := c.Called(*in.Team)
+func (c *ClientMock) Create(ctx context.Context, in *proto.CreateTeamRequest, opts ...grpc.CallOption) (res *proto.TeamResponse, err error) {
+	args := c.Called(in.Team)
 
 	if args.Get(0) != nil {
 		res = args.Get(0).(*proto.TeamResponse)
@@ -155,8 +155,8 @@ func (c TeamClientMock) Create(ctx context.Context, in *proto.CreateTeamRequest,
 	return res, args.Error(1)
 }
 
-func (c TeamClientMock) Update(ctx context.Context, in *proto.UpdateTeamRequest, opts ...grpc.CallOption) (res *proto.TeamResponse, err error) {
-	args := c.Called(*in.Team)
+func (c *ClientMock) Update(ctx context.Context, in *proto.UpdateTeamRequest, opts ...grpc.CallOption) (res *proto.TeamResponse, err error) {
+	args := c.Called(in.Team)
 
 	if args.Get(0) != nil {
 		res = args.Get(0).(*proto.TeamResponse)
@@ -165,7 +165,7 @@ func (c TeamClientMock) Update(ctx context.Context, in *proto.UpdateTeamRequest,
 	return res, args.Error(1)
 }
 
-func (c TeamClientMock) Delete(ctx context.Context, in *proto.DeleteTeamRequest, opts ...grpc.CallOption) (res *proto.TeamResponse, err error) {
+func (c *ClientMock) Delete(ctx context.Context, in *proto.DeleteTeamRequest, opts ...grpc.CallOption) (res *proto.TeamResponse, err error) {
 	args := c.Called(in)
 
 	if args.Get(0) != nil {

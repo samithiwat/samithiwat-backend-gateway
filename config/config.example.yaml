@@ -4,5 +4,4 @@ app:
 
 service:
   auth: localhost:3001
-  user: localhost:3002
-  organization: localhost:3004
+  samithiwat: localhost:3002

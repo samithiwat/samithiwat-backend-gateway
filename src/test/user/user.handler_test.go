@@ -1,4 +1,4 @@
-package test
+package user
 
 import (
 	"github.com/bxcodec/faker/v3"
@@ -6,7 +6,6 @@ import (
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/handler"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
-	"github.com/samithiwat/samithiwat-backend-gateway/src/test/mock"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/validator"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -99,8 +98,8 @@ func (u *UserHandlerTest) TestFindAllUser() {
 		},
 	}
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
@@ -123,8 +122,8 @@ func (u *UserHandlerTest) TestFindAllInvalidQueryParamUser() {
 		Message:    "Cannot parse query param",
 	}
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
@@ -146,8 +145,8 @@ func (u *UserHandlerTest) TestFindAllInvalidQueryParamUser() {
 func (u *UserHandlerTest) TestFindAllGrpcErrUser() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
@@ -169,8 +168,8 @@ func (u *UserHandlerTest) TestFindAllGrpcErrUser() {
 func (u *UserHandlerTest) TestFindOneUser() {
 	want := u.User
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
@@ -192,8 +191,8 @@ func (u *UserHandlerTest) TestFindOneUser() {
 func (u *UserHandlerTest) TestFindOneInvalidRequestParamIDUser() {
 	want := u.InvalidIDErr
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
@@ -214,8 +213,8 @@ func (u *UserHandlerTest) TestFindOneInvalidRequestParamIDUser() {
 func (u *UserHandlerTest) TestFindOneErrorNotFoundUser() {
 	want := u.NotFoundErr
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
@@ -237,8 +236,8 @@ func (u *UserHandlerTest) TestFindOneErrorNotFoundUser() {
 func (u *UserHandlerTest) TestFindOneGrpcErrUser() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
@@ -260,8 +259,8 @@ func (u *UserHandlerTest) TestFindOneGrpcErrUser() {
 func (u *UserHandlerTest) TestCreateUser() {
 	want := u.User
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
@@ -285,8 +284,8 @@ func (u *UserHandlerTest) TestCreateErrorDuplicatedUser() {
 		Message:    "Duplicated username or email",
 	}
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
@@ -310,8 +309,8 @@ func (u *UserHandlerTest) TestCreateInvalidBodyRequest() {
 		Message:    "Cannot parse user dto",
 	}
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
@@ -332,8 +331,8 @@ func (u *UserHandlerTest) TestCreateInvalidBodyRequest() {
 func (u *UserHandlerTest) TestCreateGrpcErrUser() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
@@ -355,8 +354,8 @@ func (u *UserHandlerTest) TestCreateGrpcErrUser() {
 func (u *UserHandlerTest) TestUpdateUser() {
 	want := u.User
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
@@ -379,8 +378,8 @@ func (u *UserHandlerTest) TestUpdateUser() {
 func (u *UserHandlerTest) TestUpdateInvalidRequestParamIDUser() {
 	want := u.InvalidIDErr
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
@@ -406,8 +405,8 @@ func (u *UserHandlerTest) TestUpdateInvalidBodyRequest() {
 		Message:    "Cannot parse user dto",
 	}
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
@@ -429,8 +428,8 @@ func (u *UserHandlerTest) TestUpdateInvalidBodyRequest() {
 func (u *UserHandlerTest) TestUpdateErrorNotFoundUser() {
 	want := u.NotFoundErr
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
@@ -452,8 +451,8 @@ func (u *UserHandlerTest) TestUpdateErrorNotFoundUser() {
 func (u *UserHandlerTest) TestUpdateGrpcErrUser() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
@@ -476,8 +475,8 @@ func (u *UserHandlerTest) TestUpdateGrpcErrUser() {
 func (u *UserHandlerTest) TestDeleteUser() {
 	want := u.User
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
@@ -499,8 +498,8 @@ func (u *UserHandlerTest) TestDeleteUser() {
 func (u *UserHandlerTest) TestDeleteInvalidRequestParamIDUser() {
 	want := u.InvalidIDErr
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
@@ -522,8 +521,8 @@ func (u *UserHandlerTest) TestDeleteInvalidRequestParamIDUser() {
 func (u *UserHandlerTest) TestDeleteErrorNotFoundUser() {
 	want := u.NotFoundErr
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
@@ -545,8 +544,8 @@ func (u *UserHandlerTest) TestDeleteErrorNotFoundUser() {
 func (u *UserHandlerTest) TestDeleteGrpcErrUser() {
 	want := u.ServiceDownErr
 
-	srv := new(mock.UserServiceMock)
-	c := &mock.UserContextMock{
+	srv := new(ServiceMock)
+	c := &ContextMock{
 		User:    u.User,
 		Users:   u.Users,
 		UserDto: u.UserDto,
