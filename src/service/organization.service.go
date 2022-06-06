@@ -160,6 +160,7 @@ func (s *OrganizationService) Delete(id int32) (result *proto.Organization, err 
 func (OrganizationService) DtoToRaw(organizationDto *dto.OrganizationDto) *proto.Organization {
 	return &proto.Organization{
 		Name:        organizationDto.Name,
+		Email:       organizationDto.Email,
 		Description: organizationDto.Description,
 	}
 }
