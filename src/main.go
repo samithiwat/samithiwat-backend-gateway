@@ -61,25 +61,20 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	userConn, err := grpc.Dial(conf.Service.User, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	smithConn, err := grpc.Dial(conf.Service.Samithiwat, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatal("Cannot connect to user service: ", err.Error())
+		log.Fatal("Cannot connect to samithiwat service: ", err.Error())
 	}
 
-	userClient := proto.NewUserServiceClient(userConn)
+	userClient := proto.NewUserServiceClient(smithConn)
 	userSrv := service.NewUserService(userClient)
 	userHandler := handler.NewUserHandler(userSrv, v)
 
-	orgConn, err := grpc.Dial(conf.Service.Organization, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatal("Cannot connect to team service ", err.Error())
-	}
-
-	teamClient := proto.NewTeamServiceClient(orgConn)
+	teamClient := proto.NewTeamServiceClient(smithConn)
 	teamSrv := service.NewTeamService(teamClient)
 	teamHandler := handler.NewTeamHandler(teamSrv, v)
 
-	orgClient := proto.NewOrganizationServiceClient(orgConn)
+	orgClient := proto.NewOrganizationServiceClient(smithConn)
 	orgSrv := service.NewOrganizationService(orgClient)
 	orgHandler := handler.NewOrganizationHandler(orgSrv, v)
 

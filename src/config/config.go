@@ -6,9 +6,8 @@ import (
 )
 
 type Service struct {
-	Auth         string `mapstructure:"auth"`
-	User         string `mapstructure:"user"`
-	Organization string `mapstructure:"organization"`
+	Auth       string `mapstructure:"auth"`
+	Samithiwat string `mapstructure:"samithiwat"`
 }
 
 type App struct {
