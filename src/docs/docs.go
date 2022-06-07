@@ -1171,10 +1171,14 @@ const docTemplate = `{
         "dto.OrganizationDto": {
             "type": "object",
             "required": [
+                "email",
                 "name"
             ],
             "properties": {
                 "description": {
+                    "type": "string"
+                },
+                "email": {
                     "type": "string"
                 },
                 "name": {
@@ -1359,6 +1363,9 @@ const docTemplate = `{
                     "$ref": "#/definitions/proto.Contact"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "email": {
                     "type": "string"
                 },
                 "id": {
