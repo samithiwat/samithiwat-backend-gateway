@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"github.com/google/martian/log"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
 	"net/http"
@@ -29,6 +30,7 @@ func (s *UserService) FindAll(query *dto.PaginationQueryParams) (result *proto.U
 
 	res, errRes := s.client.FindAll(ctx, req)
 	if errRes != nil {
+		log.Errorf("%v", errRes)
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -55,6 +57,7 @@ func (s *UserService) FindOne(id int32) (result *proto.User, err *dto.ResponseEr
 
 	res, errRes := s.client.FindOne(ctx, &proto.FindOneUserRequest{Id: id})
 	if errRes != nil {
+		log.Errorf("%v", errRes)
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -83,6 +86,7 @@ func (s *UserService) Create(userDto *dto.UserDto) (result *proto.User, err *dto
 
 	res, errRes := s.client.Create(ctx, &proto.CreateUserRequest{User: user})
 	if errRes != nil {
+		log.Errorf("%v", errRes)
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -111,6 +115,7 @@ func (s *UserService) Update(id int32, userDto *dto.UserDto) (result *proto.User
 
 	res, errRes := s.client.Update(ctx, &proto.UpdateUserRequest{User: user})
 	if errRes != nil {
+		log.Errorf("%v", errRes)
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -137,6 +142,7 @@ func (s *UserService) Delete(id int32) (result *proto.User, err *dto.ResponseErr
 
 	res, errRes := s.client.Delete(ctx, &proto.DeleteUserRequest{Id: id})
 	if errRes != nil {
+		log.Errorf("%v", errRes)
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
