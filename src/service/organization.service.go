@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	"github.com/google/martian/log"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
+	"log"
 	"net/http"
 	"time"
 )
@@ -30,7 +30,7 @@ func (s *OrganizationService) FindAll(query *dto.PaginationQueryParams) (result 
 
 	res, errRes := s.client.FindAll(ctx, req)
 	if errRes != nil {
-		log.Errorf("%v", errRes)
+		log.Printf("%v\n", errRes)
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -57,7 +57,7 @@ func (s *OrganizationService) FindOne(id int32) (result *proto.Organization, err
 
 	res, errRes := s.client.FindOne(ctx, &proto.FindOneOrganizationRequest{Id: id})
 	if errRes != nil {
-		log.Errorf("%v", errRes)
+		log.Printf("%v\n", errRes)
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -86,7 +86,7 @@ func (s *OrganizationService) Create(organizationDto *dto.OrganizationDto) (resu
 
 	res, errRes := s.client.Create(ctx, &proto.CreateOrganizationRequest{Organization: organization})
 	if errRes != nil {
-		log.Errorf("%v", errRes)
+		log.Printf("%v\n", errRes)
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -115,7 +115,7 @@ func (s *OrganizationService) Update(id int32, organizationDto *dto.Organization
 
 	res, errRes := s.client.Update(ctx, &proto.UpdateOrganizationRequest{Organization: organization})
 	if errRes != nil {
-		log.Errorf("%v", errRes)
+		log.Printf("%v\n", errRes)
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -142,7 +142,7 @@ func (s *OrganizationService) Delete(id int32) (result *proto.Organization, err 
 
 	res, errRes := s.client.Delete(ctx, &proto.DeleteOrganizationRequest{Id: id})
 	if errRes != nil {
-		log.Errorf("%v", errRes)
+		log.Printf("%v\n", errRes)
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",

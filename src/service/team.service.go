@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	"github.com/google/martian/log"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
+	"log"
 	"net/http"
 	"time"
 )
@@ -30,7 +30,7 @@ func (s *TeamService) FindAll(query *dto.PaginationQueryParams) (result *proto.T
 
 	res, errRes := s.client.FindAll(ctx, req)
 	if errRes != nil {
-		log.Errorf("%v", errRes)
+		log.Printf("%v\n", errRes)
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -57,7 +57,7 @@ func (s *TeamService) FindOne(id int32) (result *proto.Team, err *dto.ResponseEr
 
 	res, errRes := s.client.FindOne(ctx, &proto.FindOneTeamRequest{Id: id})
 	if errRes != nil {
-		log.Errorf("%v", errRes)
+		log.Printf("%v\n", errRes)
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -86,7 +86,7 @@ func (s *TeamService) Create(teamDto *dto.TeamDto) (result *proto.Team, err *dto
 
 	res, errRes := s.client.Create(ctx, &proto.CreateTeamRequest{Team: team})
 	if errRes != nil {
-		log.Errorf("%v", errRes)
+		log.Printf("%v\n", errRes)
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -115,7 +115,7 @@ func (s *TeamService) Update(id int32, teamDto *dto.TeamDto) (result *proto.Team
 
 	res, errRes := s.client.Update(ctx, &proto.UpdateTeamRequest{Team: team})
 	if errRes != nil {
-		log.Errorf("%v", errRes)
+		log.Printf("%v\n", errRes)
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -142,7 +142,7 @@ func (s *TeamService) Delete(id int32) (result *proto.Team, err *dto.ResponseErr
 
 	res, errRes := s.client.Delete(ctx, &proto.DeleteTeamRequest{Id: id})
 	if errRes != nil {
-		log.Errorf("%v", errRes)
+		log.Printf("%v\n", errRes)
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",

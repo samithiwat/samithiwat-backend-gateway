@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	"github.com/google/martian/log"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/dto"
 	"github.com/samithiwat/samithiwat-backend-gateway/src/proto"
+	"log"
 	"net/http"
 	"time"
 )
@@ -28,7 +28,7 @@ func (s *AuthService) Register(register *dto.Register) (result *proto.User, err 
 	res, errRes := s.client.Register(ctx, &proto.RegisterRequest{Register: r})
 
 	if errRes != nil {
-		log.Errorf("%v", errRes)
+		log.Printf("%v\n", errRes)
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -56,7 +56,7 @@ func (s *AuthService) Login(login *dto.Login) (result *proto.Credential, err *dt
 
 	res, errRes := s.client.Login(ctx, &proto.LoginRequest{Login: l})
 	if errRes != nil {
-		log.Errorf("%v", errRes)
+		log.Printf("%v\n", errRes)
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -84,7 +84,7 @@ func (s *AuthService) ChangePassword(changePwd *dto.ChangePassword) (result bool
 
 	res, errRes := s.client.ChangePassword(ctx, &proto.ChangePasswordRequest{ChangePassword: chPwd})
 	if errRes != nil {
-		log.Errorf("%v", errRes)
+		log.Printf("%v\n", errRes)
 		return false, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -110,7 +110,7 @@ func (s *AuthService) Logout(userId uint32) (result bool, err *dto.ResponseErr) 
 
 	res, errRes := s.client.Logout(ctx, &proto.LogoutRequest{UserId: uint32(userId)})
 	if errRes != nil {
-		log.Errorf("%v", errRes)
+		log.Printf("%v\n", errRes)
 		return false, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -136,7 +136,7 @@ func (s *AuthService) Validate(token string) (result uint32, err *dto.ResponseEr
 
 	res, errRes := s.client.Validate(ctx, &proto.ValidateRequest{Token: token})
 	if errRes != nil {
-		log.Errorf("%v", errRes)
+		log.Println(errRes)
 		return 0, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
@@ -162,7 +162,7 @@ func (s *AuthService) RefreshToken(token string) (result *proto.Credential, err 
 
 	res, errRes := s.client.RefreshToken(ctx, &proto.RefreshTokenRequest{RefreshToken: token})
 	if errRes != nil {
-		log.Errorf("%v", errRes)
+		log.Println(errRes)
 		return nil, &dto.ResponseErr{
 			StatusCode: http.StatusServiceUnavailable,
 			Message:    "Service is down",
