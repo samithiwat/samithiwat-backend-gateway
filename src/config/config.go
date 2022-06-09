@@ -5,18 +5,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Database struct {
-	Host     string `mapstructure:"host"`
-	Port     int    `mapstructure:"port"`
-	User     string `mapstructure:"username"`
-	Password string `mapstructure:"password"`
-	Name     string `mapstructure:"name"`
-	SSL      string `mapstructure:"ssl"`
-}
-
-type Redis struct {
-	Host string `mapstructure:"host"`
-	Port int    `mapstructure:"port"`
+type Service struct {
+	Auth       string `mapstructure:"auth"`
+	Samithiwat string `mapstructure:"samithiwat"`
 }
 
 type App struct {
@@ -25,9 +16,8 @@ type App struct {
 }
 
 type Config struct {
-	Database Database `mapstructure:"database"`
-	Redis    Redis    `mapstructure:"redis"`
-	App      App      `mapstructure:"app"`
+	Service Service `mapstructure:"service"`
+	App     App     `mapstructure:"app"`
 }
 
 func LoadConfig() (config *Config, err error) {

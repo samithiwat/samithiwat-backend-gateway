@@ -1,0 +1,39 @@
+name: 'Pull request: Run unit test'
+
+on:
+  pull_request:
+    branches:
+      - dev
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Vet
+        run: |
+          go vet ./...
+
+      - name: Test
+        run: |
+          go test  -v -coverpkg ./... -coverprofile coverage.out -covermode count ./...
+          go tool cover -func="./coverage.out"
+
+      - name: Convert coverage.out to coverage.lcov
+        uses: jandelgado/gcov2lcov-action@v1.0.6
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          path-to-lcov: coverage.lcov

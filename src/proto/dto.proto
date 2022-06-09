@@ -16,6 +16,7 @@ message User{
   uint32 id = 1;
   string firstname = 2;
   string lastname = 3;
+  string displayName = 4;
   string imageUrl = 5;
   Location address = 6;
   Contact contact = 7;
@@ -44,13 +45,14 @@ message Contact{
 message Organization{
   uint32 id = 1;
   string name = 2;
-  string description = 3;
-  Location location = 4;
-  Contact  contact = 5;
-  repeated User members = 6;
-  repeated Team teams = 7;
-  repeated Role roles = 8;
-  repeated Log logs = 9;
+  string email = 3;
+  string description = 4;
+  Location location = 5;
+  Contact  contact = 6;
+  repeated User members = 7;
+  repeated Team teams = 8;
+  repeated Role roles = 9;
+  repeated Log logs = 10;
 }
 
 message Team {
@@ -84,4 +86,30 @@ message Role {
   string description = 3;
   repeated Permission permissions = 4;
   repeated User users  = 5;
+}
+
+message Credential{
+  string accessToken = 1;
+  string refreshToken = 2;
+  int32 expiresIn = 3;
+}
+
+message Register{
+  string email = 1;
+  string password = 2;
+  string firstname = 3;
+  string lastname = 4;
+  string displayName = 5;
+  string imageUrl = 6;
+}
+
+message Login{
+  string email = 1;
+  string password = 2;
+}
+
+message ChangePassword{
+  uint32 userId = 1;
+  string oldPassword = 2;
+  string newPassword = 3;
 }

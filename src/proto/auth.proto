@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package auth;
+
+import "dto.proto";
+
+option go_package = "github.com/samithiwat/samithiwat-backend-user/src/proto";
+
+service AuthService {
+  rpc Register(RegisterRequest) returns (RegisterResponse){}
+  rpc Login(LoginRequest) returns (LoginResponse){}
+  rpc Logout(LogoutRequest) returns (LogoutResponse){}
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse){}
+  rpc Validate(ValidateRequest) returns (ValidateResponse){}
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse){}
+}
+
+// Register
+
+message RegisterRequest{
+  dto.Register register = 1;
+}
+
+message RegisterResponse{
+  int32 statusCode = 1;
+  repeated string errors = 2;
+  dto.User data = 3;
+}
+
+// Login
+
+message LoginRequest{
+  dto.Login login = 1;
+}
+
+message LoginResponse{
+  int32 statusCode = 1;
+  repeated string errors = 2;
+  dto.Credential data = 3;
+}
+
+// Logout
+
+message LogoutRequest{
+  uint32 userId = 1;
+}
+
+message LogoutResponse{
+  int32 statusCode = 1;
+  repeated string errors = 2;
+  bool data = 3;
+}
+
+// Change Password
+
+message ChangePasswordRequest{
+  dto.ChangePassword changePassword = 1;
+}
+
+message ChangePasswordResponse{
+  int32 statusCode = 1;
+  repeated string errors = 2;
+  bool data = 3;
+}
+
+// Validate
+
+message ValidateRequest{
+  string token = 1;
+}
+
+message ValidateResponse{
+  int32 statusCode = 1;
+  repeated string errors = 2;
+  uint32 data = 3;
+}
+
+// Redeem Refresh Token
+
+message RefreshTokenRequest{
+  string refreshToken = 1;
+}
+
+message RefreshTokenResponse{
+  int32 statusCode = 1;
+  repeated string errors = 2;
+  dto.Credential data = 3;
+}

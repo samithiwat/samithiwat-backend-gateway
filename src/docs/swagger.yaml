@@ -1,4 +1,1007 @@
+definitions:
+  dto.ChangePassword:
+    properties:
+      new_password:
+        example: new_password
+        type: string
+      old_password:
+        example: password
+        type: string
+      user_id:
+        example: 1
+        type: integer
+    required:
+    - old_password
+    type: object
+  dto.Login:
+    properties:
+      email:
+        example: admin@samithiwat.dev
+        type: string
+      password:
+        example: password
+        type: string
+    required:
+    - password
+    type: object
+  dto.OrganizationDto:
+    properties:
+      description:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+    required:
+    - email
+    - name
+    type: object
+  dto.RedeemNewToken:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  dto.Register:
+    properties:
+      display_name:
+        example: Smithy
+        type: string
+      email:
+        example: admin@samithiwat.dev
+        type: string
+      firstname:
+        example: Samithiwat
+        type: string
+      image_url:
+        example: https://storage.googleapis.com/samithiwat-bucket/about-me-protrait.png
+        type: string
+      lastname:
+        example: Boonchai
+        type: string
+      password:
+        example: password
+        type: string
+    required:
+    - display_name
+    - firstname
+    - lastname
+    type: object
+  dto.ResponseErr:
+    properties:
+      data: {}
+      message:
+        type: string
+      status_code:
+        type: integer
+    type: object
+  dto.TeamDto:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  dto.UserDto:
+    properties:
+      display_name:
+        type: string
+      firstname:
+        type: string
+      image_url:
+        type: string
+      lastname:
+        type: string
+    required:
+    - display_name
+    - firstname
+    - lastname
+    type: object
+  proto.Contact:
+    properties:
+      facebook:
+        type: string
+      id:
+        type: integer
+      instagram:
+        type: string
+      linkedin:
+        type: string
+      twitter:
+        type: string
+    type: object
+  proto.Credential:
+    properties:
+      accessToken:
+        type: string
+      expiresIn:
+        type: integer
+      refreshToken:
+        type: string
+    type: object
+  proto.Location:
+    properties:
+      address:
+        type: string
+      country:
+        type: string
+      district:
+        type: string
+      id:
+        type: integer
+      province:
+        type: string
+      zipcode:
+        type: string
+    type: object
+  proto.Log:
+    properties:
+      description:
+        type: string
+      timestamp:
+        type: string
+      title:
+        type: string
+      type:
+        type: integer
+      user:
+        $ref: '#/definitions/proto.User'
+    type: object
+  proto.Organization:
+    properties:
+      contact:
+        $ref: '#/definitions/proto.Contact'
+      description:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      location:
+        $ref: '#/definitions/proto.Location'
+      logs:
+        items:
+          $ref: '#/definitions/proto.Log'
+        type: array
+      members:
+        items:
+          $ref: '#/definitions/proto.User'
+        type: array
+      name:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/proto.Role'
+        type: array
+      teams:
+        items:
+          $ref: '#/definitions/proto.Team'
+        type: array
+    type: object
+  proto.Permission:
+    properties:
+      code:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/proto.Role'
+        type: array
+    type: object
+  proto.Role:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      permissions:
+        items:
+          $ref: '#/definitions/proto.Permission'
+        type: array
+      users:
+        items:
+          $ref: '#/definitions/proto.User'
+        type: array
+    type: object
+  proto.Team:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      logs:
+        items:
+          $ref: '#/definitions/proto.Log'
+        type: array
+      members:
+        items:
+          $ref: '#/definitions/proto.User'
+        type: array
+      name:
+        type: string
+      organization:
+        $ref: '#/definitions/proto.Organization'
+      subTeams:
+        items:
+          $ref: '#/definitions/proto.Team'
+        type: array
+    type: object
+  proto.User:
+    properties:
+      address:
+        $ref: '#/definitions/proto.Location'
+      contact:
+        $ref: '#/definitions/proto.Contact'
+      displayName:
+        type: string
+      firstname:
+        type: string
+      id:
+        type: integer
+      imageUrl:
+        type: string
+      lastname:
+        type: string
+      logs:
+        items:
+          $ref: '#/definitions/proto.Log'
+        type: array
+      organizations:
+        items:
+          $ref: '#/definitions/proto.Organization'
+        type: array
+      teams:
+        items:
+          $ref: '#/definitions/proto.Team'
+        type: array
+    type: object
 info:
-  contact: {}
-paths: {}
+  contact:
+    email: admin@samithiwat.dev
+    name: Samithiwat
+    url: https://samithiwat.dev
+  description: "# Samithiwat's API\r\nThis is the documentation for https://samithiwat.dev"
+  title: Samithiwat Backend
+  version: "1.0"
+paths:
+  /auth/change-password:
+    post:
+      consumes:
+      - application/json
+      description: Return the true if successfully
+      parameters:
+      - description: change password dto
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ChangePassword'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "401":
+          description: Invalid access token
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "403":
+          description: Insufficiency permission
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: ChangePassword of user account
+      tags:
+      - auth
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Return the credentials if successfully
+      parameters:
+      - description: login dto
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Login'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/proto.Credential'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "401":
+          description: Invalid email or username
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      summary: Login user account
+      tags:
+      - auth
+  /auth/logout:
+    get:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "401":
+          description: Invalid token
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Logout user from service
+      tags:
+      - auth
+  /auth/me:
+    get:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/proto.User'
+        "401":
+          description: Invalid token
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Check user status and user info
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      parameters:
+      - description: register dto
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Register'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "422":
+          description: Email is already existed
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      summary: Register user account
+      tags:
+      - auth
+  /auth/token:
+    post:
+      consumes:
+      - application/json
+      description: Return the credentials if successfully
+      parameters:
+      - description: refresh token dto
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RedeemNewToken'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/proto.Credential'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "401":
+          description: Invalid refresh token
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      summary: Redeem new token
+      tags:
+      - auth
+  /organization:
+    get:
+      consumes:
+      - application/json
+      description: Return the arrays of organization dto if successfully
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Organization'
+        "400":
+          description: Invalid query param
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      summary: Get all organizations
+      tags:
+      - organization
+    post:
+      consumes:
+      - application/json
+      description: Return the organization dto if successfully
+      parameters:
+      - description: organization dto
+        in: body
+        name: organization
+        required: true
+        schema:
+          $ref: '#/definitions/dto.OrganizationDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/proto.Organization'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not found organization
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Create the organization
+      tags:
+      - organization
+  /organization/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Return the organization dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Organization'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not found organization
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Delete the organization
+      tags:
+      - organization
+    get:
+      consumes:
+      - application/json
+      description: Return the organization dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Organization'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not found organization
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      summary: Get specific organization with id
+      tags:
+      - organization
+    patch:
+      consumes:
+      - application/json
+      description: Return the organization dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: organization dto
+        in: body
+        name: organization
+        required: true
+        schema:
+          $ref: '#/definitions/dto.OrganizationDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Organization'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not found organization
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Update the existing organization
+      tags:
+      - organization
+  /team:
+    get:
+      consumes:
+      - application/json
+      description: Return the arrays of team dto if successfully
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Team'
+        "400":
+          description: Invalid query param
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Get all teams
+      tags:
+      - team
+    post:
+      consumes:
+      - application/json
+      description: Return the team dto if successfully
+      parameters:
+      - description: team dto
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TeamDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/proto.Team'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not found team
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Create the team
+      tags:
+      - team
+  /team/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Return the team dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Team'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not found team
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Delete the team
+      tags:
+      - team
+    get:
+      consumes:
+      - application/json
+      description: Return the team dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Team'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not found team
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      summary: Get specific team with id
+      tags:
+      - team
+    patch:
+      consumes:
+      - application/json
+      description: Return the team dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: team dto
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TeamDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Team'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not found team
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Update the existing team
+      tags:
+      - team
+  /user:
+    get:
+      consumes:
+      - application/json
+      description: Return the arrays of user dto if successfully
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Get all users
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      parameters:
+      - description: User DTO
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Create the user
+      tags:
+      - user
+  /user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Delete the user
+      tags:
+      - user
+    get:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not found user
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      summary: Get specific user with id
+      tags:
+      - user
+    patch:
+      consumes:
+      - application/json
+      description: Return the user dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: user dto
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Update the existing user
+      tags:
+      - user
+schemes:
+- https
+- http
+securityDefinitions:
+  AuthToken:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
+tags:
+- description: "# Auth Tag API Documentation\r\n**Auth** functions goes here"
+  name: auth
+- description: "# User Tag API Documentation\r\n**User** functions goes here"
+  name: user
+- description: "# Organization Tag API Documentation\r\n**Organization** functions
+    goes here"
+  name: organization
+- description: "# Team Tag API Documentation\r\n**Team** functions goes here"
+  name: team
