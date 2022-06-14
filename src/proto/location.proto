@@ -4,7 +4,7 @@ package location;
 
 import "dto.proto";
 
-option go_package = "github.com/samithiwat/samithiwat-backend-user/src/proto";
+option go_package = "src/proto";
 
 service LocationService {
   rpc FindOne(FindOneLocationRequest) returns (LocationResponse){}

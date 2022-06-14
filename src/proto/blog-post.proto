@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package blog_post;
+
+import "dto.proto";
+import "common.proto";
+
+option go_package = "src/proto";
+
+option java_multiple_files = true;
+option java_package = "com.samithiwat.blog.grpc.post";
+option java_outer_classname = "BlogPost";
+
+service BlogPostService{
+  rpc findAll(FindAllPostRequest) returns (BlogPostPaginationResponse) {}
+  rpc findOne(FindOnePostRequest) returns (BlogPostResponse) {}
+  rpc findBySlug(FindBySlugPostRequest) returns (BlogPostResponse) {}
+  rpc create(CreatePostRequest) returns (BlogPostResponse) {}
+  rpc update(UpdatePostRequest) returns (BlogPostStatusResponse) {}
+  rpc delete(DeletePostRequest) returns (BlogPostStatusResponse) {}
+}
+
+message BlogPostResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  dto.BlogPost data = 3;
+}
+
+message BlogPostStatusResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  bool data = 3;
+}
+
+message BlogPostListResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  repeated dto.BlogPost data = 3;
+}
+
+message BlogPostPagination{
+  repeated dto.BlogPost items = 1;
+  common.PaginationMetadata meta = 2;
+}
+
+message BlogPostPaginationResponse{
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  BlogPostPagination data = 3;
+}
+
+// findAll
+
+message FindAllPostRequest{
+  int64 limit = 1;
+  int64 page = 2;
+}
+
+// findOne
+
+message FindOnePostRequest{
+  uint32 id = 1;
+}
+
+// findBySlug
+message FindBySlugPostRequest{
+  string slug = 1;
+}
+
+// create
+
+message CreatePostRequest{
+  string slug = 1;
+  string summary = 2;
+  bool isPublish = 3;
+  string PublishDate = 4;
+  uint32 authorId = 5;
+}
+
+// update
+
+message UpdatePostRequest{
+  uint32 id = 1;
+  string slug = 2;
+  string summary = 3;
+  bool isPublish = 4;
+  string PublishDate = 5;
+}
+
+// delete
+
+message DeletePostRequest{
+  uint32 id = 1;
+}

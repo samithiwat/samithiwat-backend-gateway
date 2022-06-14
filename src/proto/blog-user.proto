@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+package blog_user;
+
+import "dto.proto";
+
+option go_package = "src/proto";
+
+option java_multiple_files = true;
+option java_package = "com.samithiwat.blog.grpc.bloguser";
+option java_outer_classname = "BlogUser";
+
+service BlogUserService{
+  rpc findOne(FindOneUserRequest) returns (BlogUserResponse) {}
+  rpc create(CreateUserRequest) returns (BlogUserResponse) {}
+  rpc update(UpdateUserRequest) returns (BlogUserResponse) {}
+  rpc delete(DeleteUserRequest) returns (BlogUserResponse) {}
+  rpc addBookmark(AddBookmarkRequest) returns (BookmarkResponse) {}
+  rpc findAllBookmark(FindAllBookmarkRequest) returns (BookmarkResponse){}
+  rpc deleteBookmark(DeleteBookmarkRequest) returns(BookmarkResponse) {}
+  rpc read(ReadRequest) returns (ReadResponse) {}
+}
+
+message BlogUserResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  dto.BlogUser data = 3;
+}
+
+// findOne
+
+message FindOneUserRequest{
+  uint32 id = 1;
+}
+
+// create
+
+message CreateUserRequest{
+  uint32 userId = 1;
+  string description = 2;
+}
+
+// update
+
+message UpdateUserRequest{
+  uint32 id = 1;
+  uint32 userId = 2;
+  string description = 3;
+}
+
+// delete
+
+message DeleteUserRequest{
+  uint32 id = 1;
+}
+
+message BookmarkResponse{
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  repeated uint32 data = 3;
+}
+
+message BookmarkStatusResponse{
+  bool data = 1;
+}
+
+// addBookmark
+
+message AddBookmarkRequest{
+  uint32 userId = 1; // userId
+  uint32 postId = 2;
+}
+
+// findAllBookmark
+
+message FindAllBookmarkRequest{
+  uint32 userId = 1;
+}
+
+// deleteBookmark
+
+message DeleteBookmarkRequest{
+  uint32 userId = 1;
+  uint32 postId = 2;
+}
+
+message ReadResponse{
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  bool data = 3;
+}
+
+// read
+
+message ReadRequest{
+  uint32 userId = 1;
+  uint32 postId = 2;
+}

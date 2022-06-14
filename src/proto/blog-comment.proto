@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package blog_comment;
+
+import "dto.proto";
+
+option go_package = "src/proto";
+
+option java_multiple_files = true;
+option java_package = "com.samithiwat.blog.grpc.comment";
+option java_outer_classname = "BlogComment";
+
+service BlogCommentService{
+  rpc findAllCommentFromPost(FindAllCommentByPostRequest) returns (BlogCommentListResponse) {}
+  rpc create(CreateCommentRequest) returns (BlogCommentResponse) {}
+  rpc update(UpdateCommentRequest) returns (BlogCommentResponse) {}
+  rpc updateLikes(UpdateCommentLikeRequest) returns (BlogCommentStatusResponse) {}
+  rpc delete(DeleteCommentRequest) returns (BlogCommentStatusResponse) {}
+}
+
+message BlogCommentResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  dto.BlogComment data = 3;
+}
+
+message BlogCommentStatusResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  bool data = 3;
+}
+
+message BlogCommentListResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  repeated dto.BlogComment data = 3;
+}
+
+// findByPost
+
+message FindAllCommentByPostRequest{
+  string slug = 1;
+  int64 limit = 2;
+  int64 page = 3;
+}
+
+// findOne
+
+message FindOneComment{
+  uint32 id = 1;
+}
+
+// create
+
+message CreateCommentRequest{
+  string slug = 1;
+  uint32 userId = 2;
+  uint32 parentId = 3;
+  string content = 4;
+}
+
+// update
+
+message UpdateCommentRequest{
+  uint32 id = 1;
+  string content = 2;
+}
+
+// updateLikes
+
+message UpdateCommentLikeRequest{
+  uint32 id = 1;
+  dto.StatCountType type = 2;
+}
+
+// delete
+
+message DeleteCommentRequest{
+  uint32 id = 1;
+}

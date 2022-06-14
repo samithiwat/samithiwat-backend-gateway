@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package blog_tag;
+
+import "dto.proto";
+
+option go_package = "src/proto";
+
+option java_multiple_files = true;
+option java_package = "com.samithiwat.blog.grpc.tag";
+option java_outer_classname = "BlogTag";
+
+service BlogTagService{
+  rpc findAll(FindAllTagRequest) returns (BlogTagListResponse) {}
+  rpc findOne(FindOneTagRequest) returns(BlogTagResponse){} // return with posts
+  rpc create(CreateTagRequest) returns (BlogTagResponse) {}
+  rpc update(UpdateTagRequest) returns (BlogTagStatusResponse) {}
+  rpc delete(DeleteTagRequest) returns (BlogTagStatusResponse) {}
+}
+
+message BlogTagResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  dto.BlogTag data = 3;
+}
+
+message BlogTagStatusResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  bool data = 3;
+}
+
+message BlogTagListResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  repeated dto.BlogTag data = 3;
+}
+
+// findByPost
+
+message FindAllTagRequest{
+  dto.SortByType sortType = 1;
+}
+
+// findOne
+
+message FindOneTagRequest{
+  uint32 id = 1;
+}
+
+// create
+
+message CreateTagRequest{
+  string name = 1;
+}
+
+// update
+
+message UpdateTagRequest{
+  uint32 id = 1;
+  string name = 2;
+}
+
+// delete
+
+message DeleteTagRequest{
+  uint32 id = 1;
+}

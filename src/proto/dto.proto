@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package dto;
 
-option go_package = "github.com/samithiwat/samithiwat-backend-user/src/proto";
+option go_package = "src/proto";
 
 enum LogType{
   POST = 0;
@@ -10,6 +10,26 @@ enum LogType{
   LOGIN = 2;
   CHANGE_PASSWORD = 3;
   BOOKMARK = 4;
+}
+
+enum PostContentType{
+  TEXT = 0;
+  IMAGE = 1;
+  CODE = 2;
+}
+
+enum SortByType{
+  ALPHABET_ASC = 0;
+  ALPHABET_DESC = 1;
+  ID_ASC = 2;
+  ID_DESC = 3;
+}
+
+enum StatCountType {
+  VIEW_INCREASE = 0;
+  LIKE_INCREASE = 1;
+  LIKE_DECREASE = 2;
+  SHARE_INCREASE = 3;
 }
 
 message User{
@@ -112,4 +132,53 @@ message ChangePassword{
   uint32 userId = 1;
   string oldPassword = 2;
   string newPassword = 3;
+}
+
+message BlogUser{
+  uint32 id = 1;
+  string firstname = 2;
+  string lastname = 3;
+  string displayName = 4;
+  string imageUrl = 5;
+  string description = 6;
+}
+
+message BlogPost{
+  uint32 id = 1;
+  BlogUser author = 2;
+  string slug = 3;
+  string summary = 4;
+  bool isPublish = 5;
+  string PublishDate = 6;
+  dto.BlogPostStat stat = 7;
+  repeated BlogPostSection sections = 8;
+}
+
+message BlogPostSection{
+  uint32 id = 1;
+  uint32 pos = 2;
+  PostContentType contentType = 3;
+  string content = 4;
+}
+
+message BlogPostStat{
+  uint32 id = 1;
+  uint32 likes = 2;
+  uint32 views = 3;
+  uint32 shares = 4;
+}
+
+message BlogComment{
+  uint32 id = 1;
+  uint32 userId = 2;
+  string content = 3;
+  uint32 likes = 4;
+  string createdDate = 5;
+  string updatedDate = 6;
+}
+
+message BlogTag{
+  uint32 id = 1;
+  string name = 2;
+  repeated BlogPost posts = 3;
 }

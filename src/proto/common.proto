@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package common;
 
-option go_package = "github.com/samithiwat/samithiwat-backend-user/src/proto";
+option go_package = "src/proto";
 
 message PaginationQuery {
     int32 limit = 1;

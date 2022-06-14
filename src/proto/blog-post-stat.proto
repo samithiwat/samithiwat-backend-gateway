@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package blog_post_stat;
+
+import "dto.proto";
+
+option go_package = "src/proto";
+
+option java_multiple_files = true;
+option java_package = "com.samithiwat.blog.grpc.stat";
+option java_outer_classname = "BlogPostStat";
+
+service BlogPostStatService{
+  rpc update(UpdateBlogPostStatRequest) returns (BlogPostStatStatusResponse) {}
+}
+
+message BlogPostStatResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  dto.BlogPostStat data = 3;
+}
+
+message BlogPostStatStatusResponse {
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  bool data = 3;
+}
+
+// update
+
+message UpdateBlogPostStatRequest{
+  uint32 id = 1;
+  dto.StatCountType countType = 2;
+}
