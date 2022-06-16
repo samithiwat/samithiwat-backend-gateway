@@ -43,11 +43,11 @@ func (c *ContextMock) PaginationQueryParam(query *dto.PaginationQueryParams) err
 	return args.Error(0)
 }
 
-type OrganizationServiceMock struct {
+type ServiceMock struct {
 	mock.Mock
 }
 
-func (s *OrganizationServiceMock) FindAll(query *dto.PaginationQueryParams) (res *proto.OrganizationPagination, err *dto.ResponseErr) {
+func (s *ServiceMock) FindAll(query *dto.PaginationQueryParams) (res *proto.OrganizationPagination, err *dto.ResponseErr) {
 	args := s.Called(query)
 
 	if args.Get(0) != nil {
@@ -61,7 +61,7 @@ func (s *OrganizationServiceMock) FindAll(query *dto.PaginationQueryParams) (res
 	return
 }
 
-func (s *OrganizationServiceMock) FindOne(id int32) (res *proto.Organization, err *dto.ResponseErr) {
+func (s *ServiceMock) FindOne(id int32) (res *proto.Organization, err *dto.ResponseErr) {
 	args := s.Called(id)
 
 	if args.Get(0) != nil {
@@ -75,7 +75,7 @@ func (s *OrganizationServiceMock) FindOne(id int32) (res *proto.Organization, er
 	return
 }
 
-func (s *OrganizationServiceMock) Create(org *dto.OrganizationDto) (res *proto.Organization, err *dto.ResponseErr) {
+func (s *ServiceMock) Create(org *dto.OrganizationDto) (res *proto.Organization, err *dto.ResponseErr) {
 	args := s.Called(org)
 
 	if args.Get(0) != nil {
@@ -89,7 +89,7 @@ func (s *OrganizationServiceMock) Create(org *dto.OrganizationDto) (res *proto.O
 	return
 }
 
-func (s *OrganizationServiceMock) Update(id int32, org *dto.OrganizationDto) (res *proto.Organization, err *dto.ResponseErr) {
+func (s *ServiceMock) Update(id int32, org *dto.OrganizationDto) (res *proto.Organization, err *dto.ResponseErr) {
 	args := s.Called(id, org)
 
 	if args.Get(0) != nil {
@@ -103,7 +103,7 @@ func (s *OrganizationServiceMock) Update(id int32, org *dto.OrganizationDto) (re
 	return
 }
 
-func (s *OrganizationServiceMock) Delete(id int32) (res *proto.Organization, err *dto.ResponseErr) {
+func (s *ServiceMock) Delete(id int32) (res *proto.Organization, err *dto.ResponseErr) {
 	args := s.Called(id)
 
 	if args.Get(0) != nil {
