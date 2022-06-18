@@ -11,13 +11,13 @@ option java_package = "com.samithiwat.blog.grpc.bloguser";
 option java_outer_classname = "BlogUser";
 
 service BlogUserService{
-  rpc findOne(FindOneUserRequest) returns (BlogUserResponse) {}
-  rpc create(CreateUserRequest) returns (BlogUserResponse) {}
-  rpc update(UpdateUserRequest) returns (BlogUserResponse) {}
-  rpc delete(DeleteUserRequest) returns (BlogUserResponse) {}
+  rpc findOne(FindOneBlogUserRequest) returns (BlogUserResponse) {}
+  rpc create(CreateBlogUserRequest) returns (BlogUserResponse) {}
+  rpc update(UpdateBlogUserRequest) returns (BlogUserResponse) {}
+  rpc delete(DeleteBlogUserRequest) returns (BlogUserResponse) {}
   rpc addBookmark(AddBookmarkRequest) returns (BookmarkResponse) {}
   rpc findAllBookmark(FindAllBookmarkRequest) returns (BookmarkResponse){}
-  rpc deleteBookmark(DeleteBookmarkRequest) returns(BookmarkResponse) {}
+  rpc deleteBookmark(DeleteBookmarkRequest) returns(BookmarkStatusResponse) {}
   rpc read(ReadRequest) returns (ReadResponse) {}
 }
 
@@ -29,20 +29,20 @@ message BlogUserResponse {
 
 // findOne
 
-message FindOneUserRequest{
+message FindOneBlogUserRequest{
   uint32 id = 1;
 }
 
 // create
 
-message CreateUserRequest{
+message CreateBlogUserRequest{
   uint32 userId = 1;
   string description = 2;
 }
 
 // update
 
-message UpdateUserRequest{
+message UpdateBlogUserRequest{
   uint32 id = 1;
   uint32 userId = 2;
   string description = 3;
@@ -50,7 +50,7 @@ message UpdateUserRequest{
 
 // delete
 
-message DeleteUserRequest{
+message DeleteBlogUserRequest{
   uint32 id = 1;
 }
 
@@ -61,7 +61,9 @@ message BookmarkResponse{
 }
 
 message BookmarkStatusResponse{
-  bool data = 1;
+  int32 StatusCode = 1;
+  repeated string errors = 2;
+  bool data = 3;
 }
 
 // addBookmark
