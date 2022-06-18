@@ -1,4 +1,13 @@
 definitions:
+  dto.BlogUserDto:
+    properties:
+      description:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - user_id
+    type: object
   dto.ChangePassword:
     properties:
       new_password:
@@ -99,6 +108,39 @@ definitions:
     - display_name
     - firstname
     - lastname
+    type: object
+  proto.BlogUser:
+    properties:
+      description:
+        type: string
+      displayName:
+        type: string
+      firstname:
+        type: string
+      id:
+        type: integer
+      imageUrl:
+        type: string
+      lastname:
+        type: string
+    type: object
+  proto.BookmarkResponse:
+    properties:
+      StatusCode:
+        type: integer
+      data:
+        items:
+          type: integer
+        type: array
+      errors:
+        items:
+          type: string
+        type: array
+    type: object
+  proto.BookmarkStatusResponse:
+    properties:
+      data:
+        type: boolean
     type: object
   proto.Contact:
     properties:
@@ -460,6 +502,276 @@ paths:
       summary: Redeem new token
       tags:
       - auth
+  /blog/user:
+    post:
+      consumes:
+      - application/json
+      description: Return the blog user dto if successfully
+      parameters:
+      - description: BUser dto
+        in: body
+        name: BUser
+        required: true
+        schema:
+          $ref: '#/definitions/dto.BlogUserDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/proto.BlogUser'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not found User
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Create the BUser
+      tags:
+      - Blog User
+  /blog/user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Return the blog user dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.BlogUser'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not found User
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Delete the BUser
+      tags:
+      - Blog User
+    get:
+      consumes:
+      - application/json
+      description: Return the blog user dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.BlogUser'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not found User
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      summary: Get specific BUser with id
+      tags:
+      - Blog User
+    patch:
+      consumes:
+      - application/json
+      description: Return the blog user dto if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: BUser dto
+        in: body
+        name: BUser
+        required: true
+        schema:
+          $ref: '#/definitions/dto.BlogUserDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.BlogUser'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not found User
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Update the existing BUser
+      tags:
+      - Blog User
+  /blog/user/bookmark:
+    get:
+      consumes:
+      - application/json
+      description: Return true if successfully
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.BookmarkResponse'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not found User
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Find all blog post from user's bookmark
+      tags:
+      - Blog User
+  /blog/user/bookmark/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Return true if successfully
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.BookmarkStatusResponse'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not found User
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Delete blog post from user's bookmark
+      tags:
+      - Blog User
+    post:
+      consumes:
+      - application/json
+      description: Return true if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.BookmarkResponse'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not found User
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Add blog to user's bookmark
+      tags:
+      - Blog User
+  /blog/user/read/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Return true if successfully
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.BookmarkResponse'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "404":
+          description: Not found User
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+        "503":
+          description: Service is down
+          schema:
+            $ref: '#/definitions/dto.ResponseErr'
+      security:
+      - AuthToken: []
+      summary: Update that user read blog post
+      tags:
+      - Blog User
   /organization:
     get:
       consumes:
